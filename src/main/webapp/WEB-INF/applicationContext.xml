@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-4.0.xsd
+    http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd" >
+
+    <!-- Enable annotation driven controllers, validation etc... -->
+    <mvc:annotation-driven> 
+    	<mvc:argument-resolvers> 
+    		<bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver"/> 
+    		<bean class="org.springframework.data.web.SortHandlerMethodArgumentResolver"/> 
+   		</mvc:argument-resolvers> 
+ 	</mvc:annotation-driven> 
+
+	<jpa:repositories base-package="com.runcible.abbot"/>
+
+    <context:component-scan base-package="com.runcible.abbot"/>
+	
+ 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+   		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+   		<property name="url" value="jdbc:hsqldb:file:./AbbotDB;shutdown=true;hsqldb.write_delay=false" />		
+   		<property name="username" value="sa" />
+   		<property name="password" value="" />
+   		<property name="initialSize" value="5" />
+   		<property name="maxActive" value="10" />
+	</bean>
+
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="packagesToScan" value="com.runcible.abbot.model" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+	<bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="database" value="HSQL" />
+		<property name="showSql" value="true"/>
+        <property name="generateDdl" value="true"/>
+		<property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect" />		
+	</bean>
+	
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
+        <property name="persistenceUnitName" value="Abbot" />
+        <!-- spring based scanning for entity classes>-->
+        <property name="packagesToScan">
+        	<list>
+        		<value>com.runcible.abbot.model</value>
+       		</list>
+      	</property>
+    </bean>
+
+    <!-- Enables the Hibernate @Transactional programming model -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    	<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+
+	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+		  <list>
+		    <ref bean="jacksonMessageConverter"/>
+		  </list>
+		</property>
+	</bean>
+	
+   <security:authentication-manager>
+   	<security:authentication-provider ref="authenticationService"/>
+    	<!--  
+    	<security:authentication-provider>
+            <security:user-service>
+                <security:user name="tom" password="password"
+                    authorities="ROLE_USER, ROLE_ADMIN" />
+                <security:user name="bob" password="bobspassword"
+                    authorities="ROLE_USER" />
+            </security:user-service>
+        </security:authentication-provider>
+    	 -->
+    </security:authentication-manager>
+
+	<security:http pattern="/css/**" security="none" />
+	<security:http pattern="/js/**" security="none" />
+	<security:http pattern="/img/**" security="none" />
+	<security:http pattern="/fonts/**" security="none" />
+	
+	<security:http auto-config="true" use-expressions="true">
+		<security:intercept-url pattern="/views/loginform.jsp" access="true" />
+		<security:intercept-url pattern="/index.jsp" access="true" />
+		<security:intercept-url pattern="/views/welcome.jsp" access="true" />
+		<security:intercept-url pattern="/register" access="true" />
+  		<!--  <security:intercept-url pattern="/" access="true" /> -->		
+		
+		<security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
+	
+	  	<security:form-login 
+	    	login-page="/views/loginform.jsp"
+	    	authentication-failure-url="/views/loginform.jsp?login_error=t"
+	    	default-target-url="/views/raceserieslist.jsp" />
+	</security:http>
+    
+    
+</beans>
