@@ -15,20 +15,19 @@ ENV TOMCAT_MAJOR 8
 ENV TOMCAT_VERSION 8.0.37
 ENV TOMCAT_TGZ_URL $TOMCAT_MIRROR/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 
-#http://mirror.ventraip.net.au/apache/tomcat/tomcat-8/v8.0.37/bin/apache-tomcat-8.0.37.tar.gz
-
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$PATH
 
 RUN mkdir -p "$CATALINA_HOME"
 WORKDIR $CATALINA_HOME
 
-RUN echo $TOMCAT_TGZ_URL
-RUN curl -fSL "$TOMCAT_TGZ_URL" -o tomcat.tar.gz
-RUN tar -xvf tomcat.tar.gz --strip-components=1
-RUN rm bin/*.bat
-RUN rm tomcat.tar.gz*
+RUN	wget "$TOMCAT_TGZ_URL" && \
+	tar -xvf apache-tomcat-$TOMCAT_VERSION.tar.gz --strip-components=1 && \
+	rm bin/*.bat &&\
+	rm apache-tomcat-$TOMCAT_VERSION.tar.gz
     
 EXPOSE 8080
+
+ADD Abbot3.war webapps/
 
 CMD ["catalina.sh", "run"]
