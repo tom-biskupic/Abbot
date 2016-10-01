@@ -37,7 +37,7 @@
 	
  	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
    		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-   		<property name="url" value="jdbc:hsqldb:file:./AbbotDB;shutdown=true;hsqldb.write_delay=false" />		
+   		<property name="url" value="jdbc:hsqldb:file:/opt/Abbot/AbbotDB;shutdown=true;hsqldb.write_delay=false" />		
    		<property name="username" value="sa" />
    		<property name="password" value="" />
    		<property name="initialSize" value="5" />
