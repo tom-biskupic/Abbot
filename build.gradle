@@ -44,8 +44,7 @@ docker
 {
 	name 'tombi/abbot'
 	dockerfile 'src/main/docker/abbot/Dockerfile'
-	dependsOn tasks.war	
-	files 'build/libs/Abbot3.war'
+	dependsOn tasks.war, tasks.bootRepackage
 }
 
 dependencyManagement 
