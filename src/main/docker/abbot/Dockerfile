@@ -31,6 +31,5 @@ EXPOSE 8080
 ADD Abbot3.war webapps/
 
 RUN mkdir /opt/Abbot
-# VOLUME /opt/Abbot
 
 CMD ["catalina.sh", "run"]
