@@ -44,7 +44,13 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
             { 
                 $scope.fleets = response.data
             });
-    
+
+    $http.get(context+'/raceseries/'+${raceSeries.id}+'/competitionlist.json/all').then(
+            function(response) 
+            { 
+                $scope.competitions = response.data
+            });
+
     $scope.dateOptions = 
     {
     	    formatYear: 'yy',
@@ -62,6 +68,28 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
     {
         $scope.raceDatePopup.opened = true;
     };
+
+    $scope.addCompetition = function(competition)
+    {
+        if ( $scope.object.competitions === undefined )
+        {
+            $scope.object.competitions = new Array();
+        }
+        
+    	$scope.object.competitions.push(competition)
+    };
+    
+    $scope.removeCompetition = function(competitionToRemove)
+    {
+        for( var i=0;i< $scope.object.competitions.length;i++ )
+        {
+            if ( $scope.object.competitions[i] == competitionToRemove )
+            {
+                $scope.object.competitions.splice(i,1);
+                return;
+            }
+        }
+    }
 
 });
 

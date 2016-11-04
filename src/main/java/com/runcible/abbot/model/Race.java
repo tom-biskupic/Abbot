@@ -1,10 +1,12 @@
 package com.runcible.abbot.model;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -33,7 +35,7 @@ public class Race implements ModelWithId
             Date                    raceDate,
             String                  name,
             Fleet                   fleet,
-            Collection<Competition> competitions)
+            Set<Competition> 		competitions)
     {
         this(null,raceSeriesId,raceDate,name,fleet,competitions);
     }
@@ -44,7 +46,7 @@ public class Race implements ModelWithId
             Date                    raceDate,
             String                  name,
             Fleet                   fleet,
-            Collection<Competition> competitions)
+            Set<Competition> competitions)
     {
         this();
         
@@ -136,14 +138,14 @@ public class Race implements ModelWithId
         this.raceStatus = raceStatus;
     }
     
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinColumn(name="COMPETITION")
-    public Collection<Competition> getCompetitions()
+    public Set<Competition> getCompetitions()
     {
         return competitions;
     }
     
-    public void setCompetitions(Collection<Competition> competitions)
+    public void setCompetitions(Set<Competition> competitions)
     {
         this.competitions = competitions;
     }
@@ -190,5 +192,5 @@ public class Race implements ModelWithId
     private   Fleet                         fleet;
     //private   Collection<RaceResultModel>   raceResults;
     private   RaceStatus                    raceStatus = RaceStatus.NOT_RUN;
-    private   Collection<Competition>       competitions;
+    private   Set<Competition>              competitions;
 }

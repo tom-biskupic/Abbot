@@ -33,7 +33,7 @@
                     <tr>
                         <th sort-header column-name="raceDate" column-heading="Race Date"></th>
                         <th sort-header column-name="name" column-heading="Race Name"></th>
-                        <th sort-header column-name="fleet.name" column-heading="Fleet"></th>
+                        <th sort-header column-name="fleet.fleetName" column-heading="Fleet"></th>
                         <th sort-header column-name="raceStatus" column-heading="Status"></th>
                     </tr>
                 </thead>
@@ -42,10 +42,10 @@
                     		<button type="button" class="btn" ng-click="deleteObject(race.id)" >
                             	<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             </button>
-                            <a ng-click="editObject(race.id)">{{race.raceDate}}</a>
+                            <a ng-click="editObject(race.id)">{{race.raceDate | date:'medium'}}</a>
                         </td>
                         <td>{{race.name}}</td>
-                        <td>{{race.fleet.name}}</td>
+                        <td>{{race.fleet.fleetName}}</td>
                         <td>{{race.raceStatus}}</td>
                     </tr>
                 </tbody>                 

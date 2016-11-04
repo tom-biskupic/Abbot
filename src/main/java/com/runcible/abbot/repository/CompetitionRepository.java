@@ -18,5 +18,5 @@ public interface CompetitionRepository extends CrudRepository<Competition, Integ
     public Page<Competition> findByRaceSeries(@Param("seriesid") Integer seriesid, Pageable pageable);
 
     @Query("select c from Competition c where c.raceSeriesId = :seriesid")
-    public List<Competition> findByRaceSeries(Integer raceSeriesId);
+    public List<Competition> findByRaceSeries(@Param("seriesid") Integer raceSeriesId);
 }
