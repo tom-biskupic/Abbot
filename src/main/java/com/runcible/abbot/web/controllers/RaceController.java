@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.runcible.abbot.model.Race;
+import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.RaceService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
@@ -28,10 +29,12 @@ import com.runcible.abbot.web.model.ValidationResponse;
 @Controller
 public class RaceController
 {
-    @RequestMapping(value="/raceseries/{id}/races",method=GET)
-    public ModelAndView showPage()
+    @RequestMapping(value="/raceseries/{id}/racelist",method=GET)
+    public ModelAndView showPage(@PathVariable("id") Integer raceSeriesId) throws NoSuchUser, UserNotPermitted
     {
-        return new ModelAndView("racelist");
+    	ModelAndView mav = new ModelAndView("racelist");
+    	mav.addObject("raceSeries",raceSeriesService.findByID(raceSeriesId));
+        return mav;
     }
 
     @RequestMapping(value="/raceseries/{id}/racelist.json",method=GET)
@@ -90,4 +93,7 @@ public class RaceController
 
     @Autowired
     private RaceService raceService;
+    
+    @Autowired
+    private RaceSeriesService raceSeriesService;
 }
