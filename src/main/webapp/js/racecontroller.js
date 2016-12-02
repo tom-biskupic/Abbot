@@ -22,13 +22,29 @@ abbotModule.controller("raceController",function($scope,$http,$controller)
         $scope.edit(
                 $scope.contextPath,
                 $scope.itemResource,
-                $scope.editDialogId,id,
+                $scope.editDialogId,
+                id,
                 "raceDialogInstanceController").then(
                         function() 
                         { 
                             $scope.loadPage($scope.page.number) 
                         });;
     }
+
+    $scope.editResults = function(id)
+    {
+        $scope.edit(
+                $scope.contextPath,
+                $scope.itemResource,
+                "editRaceResults",
+                id,
+                "raceDialogInstanceController").then(
+                        function() 
+                        { 
+                            $scope.loadPage($scope.page.number) 
+                        });;
+    }
+
 });
 
 angular.module("abbot").controller("raceDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )

@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +34,15 @@ public class MvcTestWithJSON
     public MvcTestWithJSON()
     {
         super();
+        
+        competitionSet.add(testCompetition);
+        testRace = new Race(
+                TEST_RACE_ID,
+                TEST_RACE_SERIES_ID,
+                Calendar.getInstance().getTime(),
+                TEST_RACE_NAME,
+                testFleet,
+                competitionSet);
     }
 
     public byte[] convertObjectToJsonBytes(Object object) throws IOException
@@ -126,13 +136,9 @@ public class MvcTestWithJSON
     protected Integer TEST_RACE_ID = 1212;
     protected String  TEST_RACE_NAME="The Muppet's Trophy";
 
-    protected Race testRace = new Race(
-            TEST_RACE_ID,
-            TEST_RACE_SERIES_ID,
-            Calendar.getInstance().getTime(),
-            TEST_RACE_NAME,
-            testFleet,
-            Arrays.asList(testCompetition));
+    protected Set<Competition> competitionSet = new HashSet<Competition>();
+    
+    protected Race testRace;
     
     @Autowired
     protected WebApplicationContext wac;

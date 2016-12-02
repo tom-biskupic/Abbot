@@ -35,6 +35,7 @@
                         <th sort-header column-name="name" column-heading="Race Name"></th>
                         <th sort-header column-name="fleet.fleetName" column-heading="Fleet"></th>
                         <th sort-header column-name="raceStatus" column-heading="Status"></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tr ng-repeat="race in page.content">
@@ -47,6 +48,7 @@
                         <td>{{race.name}}</td>
                         <td>{{race.fleet.fleetName}}</td>
                         <td>{{race.raceStatus}}</td>
+                        <td><button type="button" class="btn btn-default" ng-click="editResults(race.id)">Edit Results</button></td>
                     </tr>
                 </tbody>                 
 			</table>
@@ -122,7 +124,7 @@
                                     <select name="competitionToAdd" 
                                         class="form-control" 
                                         ng-model="competitionToAdd" 
-                                        ng-options="competition.name for competition in competitions track by competition.id"
+                                        ng-options="competition.name for competition in competitions | filter:{ fleet.id : object.fleet.id } track by competition.id"
                                         required>
                                     </select>
                                 </div>
@@ -130,6 +132,70 @@
                                     <button class="btn" type="button" ng-click="addCompetition(competitionToAdd)">Add</button>
                                 </div>
                             </div>
+                        </div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+	            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+	            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+	        </div>
+		</script>
+
+		<script type="text/ng-template" id="editRaceResults">
+	      	<div class="modal-header">
+  				<button type="button" class="close" data-dismiss="modal" ng-click="cancel()">
+  					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+    			<h4 class="modal-title" id="myModalLabel">Edit Results</h4>
+  			</div>
+			<div class="modal-body" >
+				<div class="form-group">
+					<label for="startTime">Start Time<span class="required">*</span></label>
+					<div class="input-group" >
+						<input 	type="text" 
+							class="form-control" 
+							uib-datepicker-popup="{{format}}" 
+							ng-model="object.startTime" 
+							is-open="raceTimePopup.opened" 
+							datepicker-options="raceTimeOptions" 
+							ng-required="true" 
+							close-text="Close" 
+							alt-input-formats="altInputFormats" />
+          				<span class="input-group-btn">
+            				<button type="button" class="btn btn-default" ng-click="raceTimePopupOpen()">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</button>
+          				</span>
+					</div>
+					<span class="help-inline" ng-show="hasError('startTime')">{{getError("startTime")}}</span>
+				</div>
+				<div class="form-group">
+ 					<div class="panel panel-default">
+                        <div class="panel-heading">Results</div>
+                        <div class="panel-body">
+                            <table class="table table-striped" >
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+										<th>Boat Name</th>
+										<th>Finish Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="result in object.results">
+                                        <td>
+                                            <button type="button" class="btn" ng-click="removeResult(result)" >
+                                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            </button>
+                                            {{result.status}}</a>
+                                        </td>
+										<td>{{result.boat.name}}</td>
+										<td>{{result.finishTime}}</td>
+                                    </tr>
+                                </tbody>                 
+                            </table>
+                            <p class="help-block" ng-show="(object.competitions === undefined || object.competitions.length == 0)">No Results</p>
                         </div>
 					</div>
 				</div>
