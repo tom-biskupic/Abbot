@@ -67,6 +67,11 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
                 $scope.competitions = response.data
             });
 
+    if ( $scope.object.competitions === undefined )
+    {
+        $scope.object.competitions = new Array();
+    }
+    
     $scope.dateOptions = 
     {
     	    formatYear: 'yy',
@@ -87,12 +92,10 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
 
     $scope.addCompetition = function(competition)
     {
-        if ( $scope.object.competitions === undefined )
-        {
-            $scope.object.competitions = new Array();
-        }
-        
-    	$scope.object.competitions.push(competition)
+    	if ( competition != undefined )
+    	{
+	    	$scope.object.competitions.push(competition);
+    	}
     };
     
     $scope.removeCompetition = function(competitionToRemove)
@@ -109,3 +112,26 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
 
 });
 
+angular.module("abbot").filter("competitionForFleet",function()
+{
+	return function (competitions,fleet)
+	{
+		if (fleet)
+		{
+			filteredComps = [];
+			for(i=0;i<competitions.length;i++)
+			{
+				if ( competitions[i].fleet.id == fleet.id )
+				{
+					filteredComps.push(competitions[i]);
+				}
+			}
+			
+			return filteredComps;
+		}
+		else
+		{
+			return competitions;
+		}
+	}
+});

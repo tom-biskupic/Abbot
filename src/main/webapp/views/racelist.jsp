@@ -124,12 +124,12 @@
                                     <select name="competitionToAdd" 
                                         class="form-control" 
                                         ng-model="competitionToAdd" 
-                                        ng-options="competition.name for competition in competitions | filter:{ fleet.id : object.fleet.id } track by competition.id"
+                                        ng-options="competition.name for competition in competitions | competitionForFleet: object.fleet | notAlreadySelected: object.competitions track by competition.id"
                                         required>
                                     </select>
                                 </div>
                                 <div class="col-sm-2 bottom-column">
-                                    <button class="btn" type="button" ng-click="addCompetition(competitionToAdd)">Add</button>
+                                    <button class="btn" type="button" ng-click="addCompetition(competitionToAdd)" ng-enabled="angular.isDefined($scope.competitionToAdd)">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -212,6 +212,7 @@
             <%@include file="/js/dialog.js" %>
             <%@include file="/js/listcontroller.js" %>
             <%@include file="/js/racecontroller.js" %>
+            <%@include file="/js/utils.js" %>
         </script>
 	</body>
 </html>

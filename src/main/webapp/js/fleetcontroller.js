@@ -46,8 +46,49 @@ angular.module("abbot").controller("fleetDialogInstanceController",function($sco
                 $scope.boatClasses = response.data
             });
     
+    $scope.alreadyAdded = function(boatClassToAdd,divisionToAdd)
+    {
+    	if ( object.fleetClasses == undefined || object.fleetClasses.length==0 )
+    	{
+    		return false;
+    	}
+    	
+    	foundMatch=false;
+    	for(i=0;i<object.fleetClasses.length;i++)
+    	{
+    		if ( 	object.fleetClasses[i].boatClass.id == boatClassToAdd.id
+    				&&
+    				( 	divisionToAdd == undefined && object.fleetClasses[i].boatDivision == undefined
+    					||
+    					divisionToAdd.id == object.fleetClasses[i].boatDivision.id ) )
+    		{
+    			foundMatch=true;
+    			break;
+    		}
+    	}
+    	
+    	return foundMatch;
+    }
+
+    $scope.nothingSelected = function(boatClassToAdd,divisionToAdd)
+    {
+       	return ( boatClassToAdd == undefined
+       			||
+       			(	divisionToAdd == undefined 
+       				&&
+       				boatClassToAdd.divisions.length != 0 ) )
+    }
+    
     $scope.addToFleet = function(boatClassToAdd,divisionToAdd)
     {
+ 
+    	if ( 	$scope.nothingSelected(boatClassToAdd,divisionToAdd)
+    			||
+    			$scope.alreadyAdded(boatClassToAdd,divisionToAdd) )
+    	{
+    		return;
+    	}
+    	
         var newFleetSelector = {};
         newFleetSelector.boatClass = boatClassToAdd;
         newFleetSelector.boatDivision = divisionToAdd;
