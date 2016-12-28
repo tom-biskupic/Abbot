@@ -1,4 +1,4 @@
-abbotModule.controller("raceController",function($scope,$http,$controller)
+angular.module("abbot").controller("raceController",function($scope,$http,$controller)
 {
     angular.extend(this,$controller('listController', {$scope: $scope})); 
     
@@ -38,11 +38,11 @@ abbotModule.controller("raceController",function($scope,$http,$controller)
                 $scope.itemResource,
                 "editRaceResults",
                 id,
-                "raceDialogInstanceController").then(
+                "raceResultDialogInstanceController").then(
                         function() 
                         { 
                             $scope.loadPage($scope.page.number) 
-                        });;
+                        });
     }
 
 });
@@ -55,13 +55,15 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
                     'dialogInstanceController', 
                     {$scope: $scope, $http: $http, $uibModalInstance: $uibModalInstance, object: object, context: context,resource: resource}));
 
-    $http.get(context+'/raceseries/'+${raceSeries.id}+'/fleetlist.json/all').then(
+    $scope.raceSeriesId = "${raceSeries.id}";
+    
+    $http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleetlist.json/all').then(
             function(response) 
             { 
-                $scope.fleets = response.data
+                $scope.fleets = response.data;
             });
 
-    $http.get(context+'/raceseries/'+${raceSeries.id}+'/competitionlist.json/all').then(
+    $http.get(context+'/raceseries/'+$scope.raceSeriesId+'/competitionlist.json/all').then(
             function(response) 
             { 
                 $scope.competitions = response.data
@@ -116,7 +118,7 @@ angular.module("abbot").filter("competitionForFleet",function()
 {
 	return function (competitions,fleet)
 	{
-		if (fleet)
+		if (fleet != undefined && competitions != undefined)
 		{
 			filteredComps = [];
 			for(i=0;i<competitions.length;i++)
@@ -135,3 +137,79 @@ angular.module("abbot").filter("competitionForFleet",function()
 		}
 	}
 });
+
+angular.module("abbot").controller("raceResultDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )
+{
+    angular.extend(
+            this,
+            $controller(    
+                    'dialogInstanceController', 
+                    {$scope: $scope, $http: $http, $uibModalInstance: $uibModalInstance, object: object, context: context,resource: resource}));
+
+    $scope.finishStatusValues =
+    [
+     {
+    	 id: 'Completed',  
+    	 label: 'Finished'
+     },
+     {
+    	 id: 'DNC',
+    	 label : "Did not Compete (DNC)"
+     },
+     {
+    	 id: 'DNS',
+    	 label: "Did not start (DNS)"
+     },
+     {
+    	 id: 'OCS',
+    	 label: "On course side - failed to start"
+     },
+     {
+    	 id: 'ZFP',
+    	 label: '20% Penalty under rule 30.2 (ZFP)'
+     },
+     {
+    	 id: 'BFD',
+    	 label: 'Black flag disqualification (BFD)'
+     },
+     {
+    	 id: 'SCP',
+    	 label: 'Scoring penalty under rule 44.3 (SCP)'
+     },
+     {
+    	 id: 'DNF',
+         label: "Did not finish (DNF)"
+     },
+     {
+    	 id: 'RAF',
+    	 label: 'Retired after finishing (RAF)'
+     },
+     {
+    	 id: 'DSQ',
+    	 label: 'Disqualified (DSQ)'
+     },
+     {
+    	 id: 'DNE',
+         label: 'Disqualification other than DGM under 89.3(b) (DNE)'
+     },
+     {
+    	 id: 'DGM',
+         label: 'Disqualification under rule 69.1(b)(2) (DGM)'
+     },
+     {
+    	 id: 'RDG',
+         label: 'Redress given (RDG)'
+     }
+    ];
+    
+    $scope.raceSeriesId = "${raceSeries.id}";
+    
+    $http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleet/'+object.fleet.id+'/boatlist.json/all').then(
+            function(response) 
+            { 
+                $scope.boats = response.data;
+            });
+
+});
+
+

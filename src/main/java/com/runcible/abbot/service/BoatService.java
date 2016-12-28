@@ -1,11 +1,14 @@
 package com.runcible.abbot.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -54,9 +57,21 @@ public interface BoatService
     /**
      * Removes the boat with ID specified
      * @param boatId
-     * @throws NoSuchBoat
+     * @throws NoSuchBoat No Boat matching the ID provided was found,
      * @throws UserNotPermitted The logged on user is not permitted to manage this race series
-     * @throws NoSuchUser 
+     * @throws NoSuchUser The logged on user is invalid
      */
-    public abstract void removeBoat(Integer competitionId) throws NoSuchCompetition, NoSuchUser, UserNotPermitted;
+    public abstract void removeBoat(Integer competitionId) throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchBoat;
+
+    /**
+     * Returns the list of boats that are in the fleet with ID specified and in the series with ID
+     * specified.
+     * @param raceSeriesId The ID of the race series
+     * @param fleetId The ID of the fleet.
+     * @return
+     * @throws UserNotPermitted 
+     * @throws NoSuchUser 
+     * @throws NoSuchFleet 
+     */
+	public abstract List<Boat> getAllBoatsInFleetForSeries(Integer raceSeriesId, Integer fleetId) throws NoSuchUser, UserNotPermitted, NoSuchFleet;
 }

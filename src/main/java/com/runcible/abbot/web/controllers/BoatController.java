@@ -3,6 +3,8 @@ package com.runcible.abbot.web.controllers;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import com.runcible.abbot.service.BoatService;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -45,6 +48,15 @@ public class BoatController
             Pageable                    p) throws NoSuchUser, UserNotPermitted
     {
         return boatService.getAllBoatsForSeries(raceSeriesId, p);
+    }
+
+    @RequestMapping(value="/raceseries/{id}/fleet/{fleetId}/boatlist.json/all",method=GET)
+    public @ResponseBody List<Boat> getBoatsInFleet(
+            @PathVariable("id") Integer raceSeriesId,
+            @PathVariable("fleetId") Integer fleetId,
+            Pageable                    p) throws NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        return boatService.getAllBoatsInFleetForSeries(raceSeriesId, fleetId);
     }
 
     @RequestMapping(value="/raceseries/{id}/boat.json",method=POST)
@@ -85,7 +97,7 @@ public class BoatController
     @RequestMapping(value="/raceseries/{raceSeriesId}/boat.json/{boatId}",method={RequestMethod.DELETE})
     public @ResponseBody ValidationResponse removeBoatClass(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
-                @PathVariable("boatId") Integer         boatId) throws NoSuchUser, UserNotPermitted, NoSuchCompetition
+                @PathVariable("boatId") Integer         boatId) throws NoSuchUser, UserNotPermitted, NoSuchCompetition, NoSuchBoat
     {
         ValidationResponse response = new ValidationResponse();
         boatService.removeBoat(boatId);

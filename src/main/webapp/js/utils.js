@@ -3,7 +3,7 @@ angular.module("abbot").filter("notAlreadySelected",function()
 {
 	return function (objects,selectedObjects)
 	{
-		if (selectedObjects)
+		if (selectedObjects!= undefined && objects != undefined)
 		{
 			filteredObjects = [];
 			for(i=0;i<objects.length;i++)
@@ -28,7 +28,14 @@ angular.module("abbot").filter("notAlreadySelected",function()
 		}
 		else
 		{
-			return objects;
+			if ( objects != undefined )
+			{
+				return objects;
+			}
+			else
+			{
+				return [];
+			}
 		}
 	}
 });

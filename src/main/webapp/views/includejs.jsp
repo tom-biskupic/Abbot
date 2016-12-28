@@ -6,5 +6,5 @@
  <script src="${pageContext.request.contextPath}/js/angular.js"></script>
  <script src="${pageContext.request.contextPath}/js/angular-animate.js"></script>
  <script src="${pageContext.request.contextPath}/js/angular-touch.js"></script>
- <script src="${pageContext.request.contextPath}/js/ui-bootstrap-tpls-1.3.3.min.js"></script>    
+ <script src="${pageContext.request.contextPath}/js/ui-bootstrap-tpls-2.3.1.min.js"></script>    
  

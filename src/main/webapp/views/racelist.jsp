@@ -1,59 +1,61 @@
-<%@include file="/views/tagincludes.jsp" %>
+<%@include file="/views/tagincludes.jsp"%>
 
-<core:set var="activePage" scope="session" value="races"/>
+<core:set var="activePage" scope="session" value="races" />
 
 <!DOCTYPE html>
 <html lang="en">
-	<%@include file="/views/header.jsp" %>
+<%@include file="/views/header.jsp"%>
 
-  	<body
-		ng-app="abbot" 
-		ng-controller="raceController" 
-		ng-init="init('${pageContext.request.contextPath}','/raceseries/'+${raceSeries.id}+'/racelist.json','/raceseries/'+${raceSeries.id}+'/race.json','editRaceModal')">
-  	
-	 	<%@include file="/views/navbar.jsp" %>
-	
+<body ng-app="abbot" ng-controller="raceController"
+	ng-init="init('${pageContext.request.contextPath}','/raceseries/'+${raceSeries.id}+'/racelist.json','/raceseries/'+${raceSeries.id}+'/race.json','editRaceModal')">
+
+	<%@include file="/views/navbar.jsp"%>
+
+	<div class="container">
+		<%@include file="/views/raceseriestabs.jsp"%>
+
 		<div class="container">
-			<%@include file="/views/raceseriestabs.jsp" %>
-			
-        <div class="container">     
-            <h1>Races</h1>
-    
-            <div class="btn-group pull-right" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" ng-click="newObject()">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                </button>
-                <button type="button" class="btn btn-default" ng-click="loadPage(page.number)">
-                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-                </button>
-            </div>
-            
- 			<table class="table table-striped" >
-                <thead>
-                    <tr>
-                        <th sort-header column-name="raceDate" column-heading="Race Date"></th>
-                        <th sort-header column-name="name" column-heading="Race Name"></th>
-                        <th sort-header column-name="fleet.fleetName" column-heading="Fleet"></th>
-                        <th sort-header column-name="raceStatus" column-heading="Status"></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tr ng-repeat="race in page.content">
-                    	<td>
-                    		<button type="button" class="btn" ng-click="deleteObject(race.id)" >
-                            	<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                            </button>
-                            <a ng-click="editObject(race.id)">{{race.raceDate | date:'medium'}}</a>
-                        </td>
-                        <td>{{race.name}}</td>
-                        <td>{{race.fleet.fleetName}}</td>
-                        <td>{{race.raceStatus}}</td>
-                        <td><button type="button" class="btn btn-default" ng-click="editResults(race.id)">Edit Results</button></td>
-                    </tr>
-                </tbody>                 
+			<h1>Races</h1>
+
+			<div class="btn-group pull-right" role="group" aria-label="...">
+				<button type="button" class="btn btn-default" ng-click="newObject()">
+					<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+				</button>
+				<button type="button" class="btn btn-default"
+					ng-click="loadPage(page.number)">
+					<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+				</button>
+			</div>
+
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th sort-header column-name="raceDate" column-heading="Race Date"></th>
+						<th sort-header column-name="name" column-heading="Race Name"></th>
+						<th sort-header column-name="fleet.fleetName"
+							column-heading="Fleet"></th>
+						<th sort-header column-name="raceStatus" column-heading="Status"></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tr ng-repeat="race in page.content">
+					<td>
+						<button type="button" class="btn" ng-click="deleteObject(race.id)">
+							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						</button> <a ng-click="editObject(race.id)">{{race.raceDate |
+							date:'medium'}}</a>
+					</td>
+					<td>{{race.name}}</td>
+					<td>{{race.fleet.fleetName}}</td>
+					<td>{{race.raceStatus}}</td>
+					<td><button type="button" class="btn btn-default"
+							ng-click="editResults(race.id)">Edit Results</button></td>
+				</tr>
+				</tbody>
 			</table>
-			<table-list-nav />			
-	    </div> <!-- /container -->
+			<table-list-nav />
+		</div>
+		<!-- /container -->
 
 		<script type="text/ng-template" id="editRaceModal">
 	      	<div class="modal-header">
@@ -183,7 +185,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="result in object.results">
+                                    <tr ng-repeat="result in results">
                                         <td>
                                             <button type="button" class="btn" ng-click="removeResult(result)" >
                                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -195,7 +197,32 @@
                                     </tr>
                                 </tbody>                 
                             </table>
-                            <p class="help-block" ng-show="(object.competitions === undefined || object.competitions.length == 0)">No Results</p>
+                            <p class="help-block" ng-show="(results === undefined || results.length == 0)">No Results</p>
+                        </div>
+                        <div class="panel-heading">Result to Add</div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="boatToAdd">Boat<span class="required">*</span></label>
+                                <select name="boatToAdd" 
+                                        class="form-control" 
+                                        ng-model="boatToAdd" 
+                                        ng-options="boat.name for boat in boats track by boat.id"
+                                        required>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="resultStatus">Result<span class="required">*</span></label>
+                                <select name="resultStatus" 
+                                        class="form-control" 
+                                        ng-model="resultStatus" 
+                                        ng-options="item.id as item.label for item in finishStatusValues"
+                                        required>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-2 bottom-column">
+                                    <button class="btn" type="button" ng-click="addResult()">Add</button>
+                            </div>
                         </div>
 					</div>
 				</div>
@@ -206,13 +233,13 @@
 	        </div>
 		</script>
 
-        <%@include file="/views/includejs.jsp" %>
-        <script>
+		<%@include file="/views/includejs.jsp"%>
+		<script>
             <%@include file="/js/abbot.js" %>
             <%@include file="/js/dialog.js" %>
             <%@include file="/js/listcontroller.js" %>
             <%@include file="/js/racecontroller.js" %>
             <%@include file="/js/utils.js" %>
         </script>
-	</body>
+</body>
 </html>
