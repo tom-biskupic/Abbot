@@ -15,17 +15,20 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/main/webapp/js/angular.js',
-      'src/main/webapp/js/jquery*.js',
-      'src/main/webapp/js/boostrap.js',
-      'src/main/webapp/js/ui-bootstrap-tpls-0.14.3.js',
-      'src/test/js/angular-mocks.js',
-      'src/main/webapp/js/abbot.js',
-      'src/main/webapp/js/dialog.js',
-      'src/main/webapp/js/listcontroller.js',
-      'src/test/js/listcontrollertest.js',
-      'src/test/js/dialogtest.js',
-      'src/test/js/boatclasscontroler.js'
+		'src/main/webapp/js/angular.js',
+        'src/main/webapp/js/ui-bootstrap-tpls-2.3.1.min.js',
+		'src/main/webapp/js/jquery*.js',
+		'src/main/webapp/js/bootstrap.js',
+		'src/test/js/angular-mocks.js',
+		'src/main/webapp/js/abbot.js',
+		'src/main/webapp/js/dialog.js',
+		'src/main/webapp/js/listcontroller.js',
+		'src/main/webapp/js/racecontroller.js',
+		'src/main/webapp/js/utils.js',
+		'src/test/js/listcontrollertest.js',
+		'src/test/js/dialogtest.js',
+		'src/test/js/racecontrollertest.js',
+		'src/test/js/utilstest.js'
     ],
 
 

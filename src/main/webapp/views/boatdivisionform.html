@@ -1,0 +1,22 @@
+ <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">
+         <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+     </button>
+     <h4 class="modal-title" id="myModalLabel">Boat Class Division</h4>
+ </div>
+ <div class="modal-body" >
+     <div class="form-group">
+         <label for="name">Name<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.name" name="name" autofocus/>
+         <span class="help-inline" ng-show="hasError('name')">{{getError("name")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="yardStick">Yardstick<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.yardStick" name="yardStick" />
+         <span class="help-inline" ng-show="hasError('yardStick')">{{getError("yardStick")}}</span>
+     </div>
+ </div>
+ <div class="modal-footer">
+     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+ </div>

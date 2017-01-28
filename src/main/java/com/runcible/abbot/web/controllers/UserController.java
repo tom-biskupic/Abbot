@@ -3,6 +3,8 @@ package com.runcible.abbot.web.controllers;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.runcible.abbot.model.User;
@@ -26,8 +29,15 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.web.model.ValidationResponse;
 
 @Controller
+@RestController
 public class UserController
 {
+	@RequestMapping(value="/user",method=GET)
+	public Principal user(Principal user) 
+	{
+	    return user;
+	}
+	
     @RequestMapping(value="/userlist",method=GET)
     public ModelAndView showPage()
     {
@@ -102,26 +112,23 @@ public class UserController
     }
         
     @RequestMapping(value="/register",method=POST)
-    public ModelAndView registerUser(
-            @ModelAttribute("User") @Valid User user,
-            BindingResult                       result )
+    public @ResponseBody ValidationResponse registerUser(
+            @Valid @RequestBody User 	user,
+            BindingResult           	result )
     {
-        ModelAndView mav = null;
-        
+        ValidationResponse response = new ValidationResponse();
+
         if ( result.hasErrors() )
         {
-            mav = new ModelAndView("registerform");
-            mav.addObject("User",user);
+            response.setErrorMessageList(result.getAllErrors());
+            response.setStatus("FAIL");
         }
         else
         {
             try
             {
                 userService.addUser(user);
-                
-                mav = new ModelAndView("registersuccessful");
-                mav.addObject("User",user);
-
+                response.setStatus("SUCCESS");
             }
             catch (DuplicateUserException e)
             {
@@ -133,12 +140,12 @@ public class UserController
                         null,
                         null,
                         "The email address specified is already registered"));
-                mav = new ModelAndView("registerform");
-                mav.addObject("User",user);
+                response.setErrorMessageList(result.getAllErrors());
+                response.setStatus("FAIL");
             }
         }
         
-        return mav;
+        return response;
     }
     
     @Autowired

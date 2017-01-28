@@ -1,0 +1,22 @@
+
+<h1>{{raceSeries.name}}</h1>
+
+<uib-tabset>
+    <uib-tab index="0" heading="Races">
+        <div ng-include="'views/racelist.html'" ng-controller="raceController"/>
+    </uib-tab>
+    <uib-tab index="1" heading="Registered Boats">
+        <div ng-include="'views/boatlist.html'" ng-controller="boatController"/>
+    </uib-tab>
+    <uib-tab index="2" heading="Settings">
+        <div ng-include="'views/raceseriessettings.html'" />
+    </uib-tab>
+    
+</uib-tabset>
+    
+<!--  <ul class="nav nav-tabs">
+    <li role="presentation" <core:if test="${activePage.equals('races')}">class="active"</core:if> > <a href="${pageContext.request.contextPath}/raceseries/${raceSeries.id}/racelist">Races</a></li>
+    <li role="presentation" <core:if test="${activePage.equals('boats')}">class="active"</core:if> ><a href="${pageContext.request.contextPath}/raceseries/${raceSeries.id}/boats">Boats</a></li>
+    <li role="presentation" <core:if test="${activePage.equals('results')}">class="active"</core:if> ><a href="${pageContext.request.contextPath}/rresultslist.jsp">Results</a></li>
+    <li role="presentation" <core:if test="${activePage.equals('settings')}">class="active"</core:if> ><a href="${pageContext.request.contextPath}/raceseries/${raceSeries.id}/settings">Settings</a></li>
+</ul> -->

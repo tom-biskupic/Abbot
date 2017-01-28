@@ -1,7 +1,10 @@
-abbotModule.controller("fleetController",function($scope,$http,$controller)
+abbotModule.controller("fleetController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
 
+	$scope.raceSeriesID = $rootScope.seriesID;
+    $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/fleetlist.json','/raceseries/'+$scope.raceSeriesID+'/fleet.json','views/fleetform.html');
+    
     $scope.newObject = function()
     {
         object = {};
@@ -31,7 +34,7 @@ abbotModule.controller("fleetController",function($scope,$http,$controller)
     }
 });
 
-angular.module("abbot").controller("fleetDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )
+angular.module("abbot").controller("fleetDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )
 {
     angular.extend(
             this,
@@ -39,8 +42,9 @@ angular.module("abbot").controller("fleetDialogInstanceController",function($sco
                     'dialogInstanceController', 
                     {$scope: $scope, $http: $http, $uibModalInstance: $uibModalInstance, object: object, context: context,resource: resource}));
 
-    
-    $http.get(context+'/raceseries/'+${raceSeries.id}+'/boatclasslist.json/all').then(
+	$scope.raceSeriesID = $rootScope.seriesID;
+
+    $http.get(context+'/raceseries/'+$scope.raceSeriesID+'/boatclasslist.json/all').then(
             function(response) 
             { 
                 $scope.boatClasses = response.data

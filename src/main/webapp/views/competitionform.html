@@ -1,0 +1,57 @@
+ <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">
+         <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+     </button>
+     <h4 class="modal-title" id="myModalLabel">Competition</h4>
+ </div>
+ <div class="modal-body" >
+     <div class="form-group">
+         <label for="name">Name<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.name" name="name" autofocus/>
+         <span class="help-inline" ng-show="hasError('name')">{{getError("name")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="fleet">Fleet<span class="required">*</span></label>
+         <select name="fleet" 
+             class="form-control" 
+             ng-model="object.fleet" 
+             ng-options="fleet.fleetName for fleet in fleets track by fleet.id"
+             required>
+         </select>
+     </div>
+     <div class="form-group">
+         <label for="pointsSystem">Points system<span class="required">*</span></label>
+         <select name="pointsSystem" 
+                 class="form-control" 
+                 ng-model="object.pointsSystem" 
+                 ng-options="item.id as item.label for item in pointsSystemValues"
+                 required>
+         </select>
+         <span class="help-inline" ng-show="hasError('pointsSystem')">{{getError("pointsSystem")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="resultType">Result type to use<span class="required">*</span></label>
+         <select name="resultType" 
+                 class="form-control" 
+                 ng-model="object.resultType" 
+                 ng-options="item.id as item.label for item in resultTypeValues"
+                 required>
+         </select>
+         <span class="help-inline" ng-show="hasError('resultType')">{{getError("resultType")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="fleetSize">Fleet Size<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.fleetSize" name="fleetSize" autofocus/>
+         <span class="help-inline" ng-show="hasError('fleetSize')">{{getError("fleetSize")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="drops">Number of drops<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.drops" name="drops" autofocus/>
+         <span class="help-inline" ng-show="hasError('drops')">{{getError("drops")}}</span>
+     </div>
+     
+ </div>
+ <div class="modal-footer">
+     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+ </div>

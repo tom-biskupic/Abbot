@@ -27,9 +27,9 @@ angular.module("abbot").controller("dialogController",function ($scope, $uibModa
             controller = 'dialogInstanceController';
         }
         
-        $http.get(context + resource + "/"+ id).success(function(response)
+        $http.get(context + resource + "/"+ id).then(function(response)
         {
-            $scope.openDialog(context,resource,template,response,controller).then(
+            $scope.openDialog(context,resource,template,response.data,controller).then(
                     function() 
                     { 
                         deferred.resolve() 
@@ -66,56 +66,13 @@ angular.module("abbot").controller("dialogController",function ($scope, $uibModa
     }
 });
 
-angular.module("abbot").controller("dialogInstanceController",function($scope, $http, $uibModalInstance,object,context,resource )
+angular.module("abbot").controller("dialogInstanceController",function($scope, $http, $uibModalInstance,$controller,object,context,resource )
 {
-    $scope.formErrors = {};
-    $scope.context = context;
-    $scope.resource = resource;
-    $scope.object = object;
-    
-    $scope.hasError = function(fieldName)
-    {
-        if (typeof ($scope.formErrors) != 'undefined')
-        {
-            return fieldName in $scope.formErrors;
-        } 
-        else
-        {
-            return false;
-        }
-    }
-
-    $scope.getError = function(fieldName)
-    {
-        if (typeof ($scope.formErrors) != "undefined" && fieldName in $scope.formErrors)
-        {
-            return $scope.formErrors[fieldName];
-        } 
-        else
-        {
-            return "";
-        }
-    }
+    angular.extend(this,$controller('formController', {$scope: $scope,object : object, context: context, resource: resource }));
 
     $scope.ok = function () 
     {
-        $scope.formErrors = [];
-
-        $http.post($scope.context + $scope.resource,$scope.object).success(
-            function(response)
-            {
-                if (response.status == "SUCCESS")
-                {
-                    $uibModalInstance.close();
-                } 
-                else
-                {
-                    for (i = 0; i < response.errorMessageList.length; i++)
-                    {
-                        $scope.formErrors[response.errorMessageList[i].field] = response.errorMessageList[i].defaultMessage;
-                    }
-                }
-            });
+    	$scope.postUpdate().then(function() { $uibModalInstance.close();});
     };
 
     $scope.cancel = function () 

@@ -1,40 +1,24 @@
 
-abbotModule.controller("raceSeriesController",function($scope,$http,$controller)
+angular.module('abbot.raceSeriesController', ['ngRoute']).config(function($routeProvider) 
 {
-    angular.extend(this,$controller('listController', {$scope: $scope}));
-    
-    $scope.newObject = function()
-    {
-        object = {};
-        $scope.editNew(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,object,
-                "raceSeriesDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
+	$routeProvider.when(
+			'/raceseries/:seriesID', 
+			{
+				templateUrl: 'views/raceseries.html',
+				controller: 'raceSeriesController' 
+			});
 });
 
-angular.module("abbot").controller("raceSeriesDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )
+angular.module("abbot").controller("raceSeriesController",function($scope,$http,$controller,$routeParams,$rootScope)
 {
-    angular.extend(
-            this,
-            $controller(    
-                    'dialogInstanceController', 
-                    {$scope: $scope, $http: $http, $uibModalInstance: $uibModalInstance, object: object, context: context,resource: resource}));
-
-    $scope.seasonTypeValues = 
-        [   {
-              id: 'SEASON',
-              label: 'Season',
-            }, 
-            {
-              id: 'REGATTA',
-              label: 'Regatta'
-            }
-        ];
+	//
+	//	This is ugly but its too hard to pass around amongst
+	//	all the controllers that need it
+	//
+	$rootScope.seriesID = $routeParams.seriesID;
+	
+    $http.get('/Abbot3/raceseries.json/'+$routeParams.seriesID).then(function(response)
+    {
+    	$scope.raceSeries = response.data;
+    });
 });

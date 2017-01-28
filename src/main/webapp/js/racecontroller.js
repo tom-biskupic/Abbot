@@ -1,7 +1,10 @@
-angular.module("abbot").controller("raceController",function($scope,$http,$controller)
+angular.module("abbot").controller("raceController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope})); 
-    
+
+	$scope.raceSeriesID = $rootScope.seriesID;
+	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/racelist.json','/raceseries/'+$scope.raceSeriesID+'/race.json','views/raceform.html')
+
     $scope.newObject = function()
     {
         object = {};
@@ -47,7 +50,7 @@ angular.module("abbot").controller("raceController",function($scope,$http,$contr
 
 });
 
-angular.module("abbot").controller("raceDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )
+angular.module("abbot").controller("raceDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )
 {
     angular.extend(
             this,
@@ -55,7 +58,7 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
                     'dialogInstanceController', 
                     {$scope: $scope, $http: $http, $uibModalInstance: $uibModalInstance, object: object, context: context,resource: resource}));
 
-    $scope.raceSeriesId = "${raceSeries.id}";
+    $scope.raceSeriesId = $rootScope.seriesID;
     
     $http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleetlist.json/all').then(
             function(response) 
@@ -138,7 +141,7 @@ angular.module("abbot").filter("competitionForFleet",function()
 	}
 });
 
-angular.module("abbot").controller("raceResultDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )
+angular.module("abbot").controller("raceResultDialogInstanceController",function($scope, $http, $controller, $uibModalInstance, uibDateParser, $rootScope, object,context,resource )
 {
     angular.extend(
             this,
@@ -202,7 +205,14 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
      }
     ];
     
-    $scope.raceSeriesId = "${raceSeries.id}";
+    $scope.reset = function()
+    {
+    	$scope.resultStatus = 'Completed';
+    	$scope.finishTime = '00:00:00';
+    	$scope.boatToAdd = null;
+    }
+    
+    $scope.raceSeriesId = $rootScope.seriesID;
     
     $http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleet/'+object.fleet.id+'/boatlist.json/all').then(
             function(response) 
@@ -210,6 +220,34 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
                 $scope.boats = response.data;
             });
 
+    $scope.timeFormat = 'HH::mm::ss';
+    $scope.startTime = object.raceDate == null ? new Date() : object.raceDate;
+    $scope.results = [];
+    
+    $scope.reset();
+    
+    $scope.statusIsFinished = function() 
+    {
+    	switch($scope.resultStatus)
+    	{
+    		case 'DNF':
+    		case 'DNS':
+    		case 'DNC':
+    			return false;
+    		default:
+    			return true;
+    	}
+    }
+    
+    $scope.addResult = function()
+    {
+    	newResult = {};
+    	newResult.status = $scope.resultStatus;
+    	newResult.boat = $scope.boatToAdd
+    	newResult.finishTime = $scope.finishTime;
+    	$scope.results.push(newResult);
+    	$scope.reset();
+    }
 });
 
 

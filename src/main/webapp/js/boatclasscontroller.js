@@ -1,15 +1,19 @@
 
-abbotModule.controller("boatClassController",function($scope,$http,$controller)
+abbotModule.controller("boatClassController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
+	$scope.raceSeriesID = $rootScope.seriesID;
+	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/boatclasslist.json','/raceseries/'+$scope.raceSeriesID+'/boatclass.json','views/boatclassform.html')
+
     $scope.newBoatDivision = function(boatClassId)
     {
         $scope.object = {};
         $scope.editNew(
                 $scope.contextPath,
-                "/raceseries/${raceSeries.id}/boatclass.json/"+boatClassId+"/division.json",
-                "editBoatClassDivisionModal",$scope.object).then(
+                "/raceseries/"+$scope.raceSeriesID+"/boatclass.json/"+boatClassId+"/division.json",
+                "views/boatdivisionform.html",
+                $scope.object).then(
                         function() { $scope.loadPage($scope.page.number) });
     }
     
@@ -17,8 +21,8 @@ abbotModule.controller("boatClassController",function($scope,$http,$controller)
     {
         $scope.edit(
                 $scope.contextPath,
-                "/raceseries/${raceSeries.id}/boatclass.json/"+boatClassId+"/division.json",
-                "editBoatClassDivisionModal",
+                "/raceseries/"+$scope.raceSeriesID+"/boatclass.json/"+boatClassId+"/division.json",
+                "views/boatdivisionform.html",
                 divisionId).then(
                         function() { $scope.loadPage($scope.page.number) });
 
@@ -26,7 +30,7 @@ abbotModule.controller("boatClassController",function($scope,$http,$controller)
 
     $scope.deleteBoatDivision = function(boatClassId,divisionId)
     {
-        $http.delete($scope.contextPath + "/raceseries/${raceSeries.id}/boatclass.json/"+boatClassId+"/division.json/"+divisionId).then(
+        $http.delete($scope.contextPath + "/raceseries/"+$scope.raceSeriesID+"/boatclass.json/"+boatClassId+"/division.json/"+divisionId).then(
                 function(response)
                 {
                     $scope.loadPage($scope.page.number);

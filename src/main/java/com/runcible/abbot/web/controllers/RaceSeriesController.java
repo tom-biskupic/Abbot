@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,7 +47,13 @@ public class RaceSeriesController
         Page<RaceSeries> raceSerieses = raceSeriesService.findAll(p,user); 
         return raceSerieses;
     }
-    
+
+    @RequestMapping(value="/raceseries.json/{id}",method=GET)
+    public @ResponseBody RaceSeries getRaceSeries(@PathVariable("id") Integer id) throws NoSuchUser, UserNotPermitted
+    {
+        return raceSeriesService.findByID(id);
+    }
+
     @RequestMapping(value="/raceseries.json",method=POST)
     public @ResponseBody ValidationResponse save(
                 @RequestBody @Valid RaceSeries  series,

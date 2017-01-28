@@ -1,0 +1,34 @@
+<h1>Register</h1>
+
+<div ng-controller='registerController'>
+     <div class="form-group">
+         <label for="userFirstName">First name<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.firstName" name="firstName" />
+         <span class="help-inline" ng-show="hasError('firstName')">{{getError("firstName")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="lastName">Second name<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.lastName" />
+         <span class="help-inline" ng-show="hasError('lastName')">{{getError("lastName")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="email">Email address<span class="required">*</span></label>
+         <input class="form-control" ng-model="object.email" />
+         <span class="help-inline" ng-show="hasError('email')">{{getError("email")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="organisation">Organisation/Club</label>
+         <input path="organisation" class="form-control" ng-model="object.organisation" />
+     </div>
+     <div class="form-group">
+         <label for=password">Password<span class="required">*</span></label>
+         <input type="password" class="form-control" ng-model="object.password" />
+         <span class="help-inline" ng-show="hasError('password')">{{getError("password")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="passwordConfirm">Password confirm<span class="required">*</span></label>
+         <input type="password" class="form-control" ng-model="passwordConfirm" />
+         <span class="help-inline" ng-show="hasError('passwordConfirm')">{{getError("passwordConfirm")}}</span>
+     </div>            
+    <button type="submit" class="btn btn-primary" ng-click="submit()">Register</button>
+</div>

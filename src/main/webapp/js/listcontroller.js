@@ -121,13 +121,6 @@ var abbotModule = angular.module("abbot").controller("listController",function($
         return ( $scope.sortColumn != undefined && $scope.sortColumn != "");
     }
     
-}).config(function($httpProvider)
-{
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-
-    $httpProvider.defaults.headers.common[header] = token;
-    
 }).directive("tableListNav", function () 
 {
     return  {

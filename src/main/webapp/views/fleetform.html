@@ -1,0 +1,67 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">
+        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">Fleet</h4>
+</div>
+<div class="modal-body" >
+    <div class="form-group">
+        <label for="name">Name<span class="required">*</span></label>
+        <input class="form-control" ng-model="object.fleetName" name="name" autofocus/>
+        <span class="help-inline" ng-show="hasError('fleetName')">{{getError("fleetName")}}</span>
+    </div>
+    <div class="form-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">Classes in this Fleet</div>
+            <div class="panel-body">
+                <table class="table table-striped" >
+                    <thead>
+                        <tr>
+                            <th>Boat Class</th>
+                            <th>Division</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="fleetSelector in object.fleetClasses">
+                            <td>
+                                <button type="button" class="btn" ng-click="removeFleetSelector(fleetSelector)" >
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </button>
+                                {{fleetSelector.boatClass.name}}</a>
+                            </td>
+                            <td>
+                                {{fleetSelector.boatDivision.name}}</a>
+                            </td>
+                        </tr>
+                    </tbody>                 
+                </table>
+                <p class="help-block" ng-show="(object.fleetClasses === undefined || object.fleetClasses.length == 0)">No Boat classes selected</p>
+                <div class="container-fluid">
+                    <div class="col-sm-4">
+                        <select name="boatClassToAdd" 
+                            class="form-control" 
+                            ng-model="boatClassToAdd" 
+                            ng-options="boatClass.name for boatClass in boatClasses track by boatClass.id"
+                            required>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <select name="divisionToAdd" 
+                            class="form-control" 
+                            ng-model="divisionToAdd" 
+                            ng-options="division.name for division in boatClassToAdd.divisions"
+                            required>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 bottom-column">
+                        <button class="btn" type="button" ng-click="addToFleet(boatClassToAdd,divisionToAdd)">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

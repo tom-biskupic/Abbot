@@ -1,8 +1,20 @@
 
-abbotModule.controller("userListController",function($scope,$controller,$http)
+angular.module('abbot.ManageUsersController', ['ngRoute']).config(function($routeProvider) 
+{
+	$routeProvider.when(
+			'/manageusers', 
+			{
+				templateUrl: 'views/manageusers.html',
+				controller: 'ManageUsersController' 
+			});
+});
+
+angular.module("abbot").controller("ManageUsersController",function($scope,$controller,$http)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
 	
+    $scope.init('/Abbot3','/userlist.json','/user.json','views/editusermodal.html');
+    
     $scope.passwordConfirm = "";
     
     $scope.editObject = function(id)
