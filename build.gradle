@@ -72,6 +72,8 @@ dependencies
 	
 	compile 'org.hibernate:hibernate-validator:5.0.1.Final'
 	
+	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.3.0-rc1'
+	
 	runtime 'commons-dbcp:commons-dbcp'
 	runtime 'com.fasterxml.jackson.core:jackson-core'
 	runtime 'com.fasterxml.jackson.core:jackson-databind'
