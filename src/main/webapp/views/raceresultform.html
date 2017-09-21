@@ -1,0 +1,47 @@
+ <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">
+         <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+     </button>
+     <h4 class="modal-title" id="myModalLabel">Race Result</h4>
+ </div>
+ <div class="modal-body" >
+     <div class="form-group">
+        <label for="status">Boat<span class="required">*</span></label>
+		<select name="boat" 
+                class="form-control" 
+                ng-model="object.boat" 
+                ng-options="boat.name for boat in boats track by boat.id"
+                required>
+		</select>
+		<span class="help-inline" ng-show="hasError('boat')">{{getError("boat")}}</span>
+	</div>
+	<div class="form-group">
+         <label for="status">Status<span class="required">*</span></label>
+         <select name="status" 
+                 class="form-control" 
+                 ng-model="object.status" 
+                 ng-options="item.id as item.label for item in statusValues"
+                 required>
+         </select>
+         <span class="help-inline" ng-show="hasError('status')">{{getError("status")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="startTime">Start Time<span class="required">*</span></label>
+         <input type="time" class="form-control" placeholder="HH:mm:ss" step="1" ng-model="object.startTime" />
+         <span class="help-inline" ng-show="hasError('startTime')">{{getError("startTime")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="finishTime">Finish Time<span class="required">*</span></label>
+         <input type="time" class="form-control" placeholder="HH:mm:ss" step="1" ng-model="object.finishTime" />
+         <span class="help-inline" ng-show="hasError('finishTime')">{{getError("finishTime")}}</span>
+     </div>
+     <div class="form-group">
+         <label for="handicap">Handicap<span class="required">*</span></label>
+         <input type="number" class="form-control" ng-model="object.handicap" min="1" max="99" />
+         <span class="help-inline" ng-show="hasError('handicap')">{{getError("handicap")}}</span>
+     </div>
+</div>	
+<div class="modal-footer">
+     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

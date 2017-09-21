@@ -15,7 +15,6 @@ import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.model.RaceSeriesUser;
 import com.runcible.abbot.model.User;
 import com.runcible.abbot.model.UserSummary;
-import com.runcible.abbot.repository.RaceSeriesRepository;
 import com.runcible.abbot.repository.RaceSeriesUserRepository;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;

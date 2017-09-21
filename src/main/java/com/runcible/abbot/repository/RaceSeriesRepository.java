@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.runcible.abbot.model.RaceSeries;
-import com.runcible.abbot.model.User;
 
 @Repository
 public interface RaceSeriesRepository extends CrudRepository<RaceSeries, Integer>

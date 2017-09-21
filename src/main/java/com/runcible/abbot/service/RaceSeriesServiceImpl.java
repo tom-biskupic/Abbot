@@ -9,13 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.model.User;
-import com.runcible.abbot.repository.CompetitionRepository;
 import com.runcible.abbot.repository.RaceSeriesRepository;
-import com.runcible.abbot.service.exceptions.NoSuchCompetition;
-import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 

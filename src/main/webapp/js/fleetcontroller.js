@@ -5,33 +5,7 @@ abbotModule.controller("fleetController",function($scope,$http,$controller,$root
 	$scope.raceSeriesID = $rootScope.seriesID;
     $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/fleetlist.json','/raceseries/'+$scope.raceSeriesID+'/fleet.json','views/fleetform.html');
     
-    $scope.newObject = function()
-    {
-        object = {};
-        $scope.editNew(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,
-                object,
-                "fleetDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
-    $scope.editObject = function(id)
-    {
-        $scope.edit(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,id,
-                "fleetDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
+    $scope.setDialogController('fleetDialogInstanceController');
 });
 
 angular.module("abbot").controller("fleetDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )

@@ -3,6 +3,10 @@ package com.runcible.abbot.web.controllers;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.runcible.abbot.model.Race;
+import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.RaceService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
@@ -89,6 +94,14 @@ public class RaceController
         raceService.removeRace(raceId);
         response.setStatus("SUCCESS");
         return response;
+    }
+
+    @RequestMapping(value="/raceseries/{raceSeriesId}/racedays.json",method={RequestMethod.GET})
+    public @ResponseBody List<RaceDay> getRaceDays(
+                @PathVariable("raceSeriesId") Integer raceSeriesId) throws NoSuchUser, UserNotPermitted
+    {
+    	List<RaceDay> raceDays = raceService.getRaceDays(raceSeriesId);
+    	return raceDays;
     }
 
     @Autowired

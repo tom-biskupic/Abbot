@@ -16,5 +16,5 @@ public enum ResultStatus
 	DSQ,	// 	Disqualification
 	DNE,	// 	Disqualification that is not excludable
 	RDG,	// 	Redress given
-	DPI 	//	Discretionary penalty im
+	DPI 	//	Discretionary penalty imposed
 }

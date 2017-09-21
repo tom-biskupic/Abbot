@@ -1,0 +1,62 @@
+
+<div class="col-sm-3 col-md-3" id="race-select">
+	<uib-accordion close-others="true" ng-repeat="raceDay in raceDays">
+		<div uib-accordion-group class="panel-default" heading="{{raceDay.day | date:'dd/MM/yyyy'}}" is-open="raceDay.isOpen">
+			<div class="list-group" ng-repeat="race in raceDay.races" >
+				<a ng-click="selectRace(race.id)" class="list-group-item list-group-item-action" ng-class="{active: selectedRace.id == race.id}">
+					{{race.fleet.fleetName}} - {{race.name}}
+				</a>
+			</div>
+		</div>
+	</uib-accordion>
+</div>
+
+<div class="col-sm-9 col-md-9">
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">{{selectedRace.fleet.fleetName}} -{{selectedRace.name}}</h3>
+	  </div>
+	  <div class="panel-body">
+	  	<div class="btn-group pull-right" role="group" aria-label="...">
+	    	<button type="button" class="btn btn-default" ng-click="newObject()">
+	        	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+	    	</button>
+	    	<button type="button" class="btn btn-default"
+	        		ng-click="loadPage(page.number)">
+	        	<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+	    	</button>
+		</div>
+	  
+	  	<table class="table table-striped">
+		    <thead>
+		        <tr>
+		            <th sort-header column-name="sailNumber" column-heading="Sail Number"></th>
+		            <th sort-header column-name="boatName" column-heading="Boat Name"></th>
+		            <th sort-header column-name="handicap" column-heading="Handicap"></th>
+		            <th sort-header column-name="status" column-heading="Result"></th>
+		            <th sort-header column-name="start" column-heading="Start Time"></th>
+		            <th sort-header column-name="finish" column-heading="Finish Time"></th>
+		            <th sort-header column-name="corrected" column-heading="Corrected Time"></th>
+		            <th></th>
+		        </tr>
+		    </thead>
+		    <tbody>
+			    <tr ng-repeat="raceResult in page.content">
+			        <td>
+			            <button type="button" class="btn" ng-click="deleteResult(raceResult.id)">
+			                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+			            </button> <a ng-click="editObject(raceResult.id)">{{raceResult.boat.sailNumber}}</a>
+			        </td>
+			        <td>{{raceResult.boat.name}}</td>
+			        <td>{{raceResult.handicap}}</td>
+			        <td>{{raceResult.status}}</td>
+			        <td>{{raceResult.start}}</td>
+			        <td>{{raceResult.finish}}</td>
+			        <td>{{raceResult.corrected}}</td>
+			    </tr>
+		    </tbody>
+		</table>
+		<table-list-nav />
+	  </div>
+	</div>
+</div>

@@ -17,29 +17,20 @@
 	            <th sort-header column-name="fleet.fleetName"
 	                column-heading="Fleet"></th>
 	            <th sort-header column-name="raceStatus" column-heading="Status"></th>
-	            <th></th>
 	        </tr>
 	    </thead>
-	    <tr ng-repeat="race in page.content">
-	        <td>
-	            <button type="button" class="btn" ng-click="deleteObject(race.id)">
-	                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-	            </button> <a ng-click="editObject(race.id)">{{race.raceDate |
-	                date:'medium'}}</a>
-	        </td>
-	        <td>{{race.name}}</td>
-	        <td>{{race.fleet.fleetName}}</td>
-	        <td>{{race.raceStatus}}</td>
-	<!--                        <td><button type="button" class="btn btn-default"
-	                                ng-click="editResults(race.id)">Edit Results</button></td> -->
-	            <td>
-	             <a  type="button" 
-	                 class="btn btn-success" 
-	                 href="${pageContext.request.contextPath}/raceseries/${raceSeries.id}/race/{{race.id}}/resultlist">
-	                 Edit Results
-	             </a>
-	            </td>
-	    </tr>
+	    <tbody>
+		    <tr ng-repeat="race in page.content">
+		        <td>
+		            <button type="button" class="btn" ng-click="deleteObject(race.id)">
+		                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+		            </button> <a ng-click="editObject(race.id)">{{race.raceDate |
+		                date:'medium'}}</a>
+		        </td>
+		        <td>{{race.name}}</td>
+		        <td>{{race.fleet.fleetName}}</td>
+		        <td>{{race.raceStatus}}</td>
+		    </tr>
 	    </tbody>
 	</table>
 	<table-list-nav />

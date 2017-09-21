@@ -1,7 +1,5 @@
 package com.runcible.abbot.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -9,9 +7,9 @@ import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.model.User;
 import com.runcible.abbot.model.UserSummary;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
+import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
-import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 
 public interface RaceSeriesAuthorizationService
 {

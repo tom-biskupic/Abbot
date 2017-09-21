@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.runcible.abbot.model.Boat;
-import com.runcible.abbot.model.Fleet;
 
 @Repository
 public interface BoatRepository extends CrudRepository<Boat, Integer> 

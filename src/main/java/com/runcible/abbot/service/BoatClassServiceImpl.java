@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.runcible.abbot.model.BoatClass;
 import com.runcible.abbot.model.BoatDivision;
-import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.repository.BoatClassRepository;
 import com.runcible.abbot.service.exceptions.DuplicateDivision;
 import com.runcible.abbot.service.exceptions.NoSuchBoatClass;

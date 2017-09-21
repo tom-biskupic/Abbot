@@ -6,33 +6,7 @@ abbotModule.controller("competitionController",function($scope,$http,$controller
 	$scope.raceSeriesID = $rootScope.seriesID;
     $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/competitionlist.json','/raceseries/'+$scope.raceSeriesID+'/competition.json','views/competitionform.html')
     
-    $scope.editObject = function(id)
-    {
-        $scope.edit(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,id,
-                "competitionDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
-    $scope.newObject = function()
-    {
-        object = {};
-        $scope.editNew(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,object,
-                "competitionDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
+    $scope.setDialogController('competitionDialogInstanceController');
 });
 
 angular.module("abbot").controller("competitionDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )

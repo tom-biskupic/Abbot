@@ -1,29 +1,79 @@
 package com.runcible.abbot.web.controllers;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;
+import com.runcible.abbot.service.exceptions.NoSuchBoat;
+import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.web.model.ValidationResponse;
 
 @Controller
 public class RaceResultController 
 {
-    @RequestMapping(value="/raceseries/{raceSeriesID}/race/{raceID}/resultlist",method=GET)
-    public ModelAndView showPage(
-    		@PathVariable("raceSeriesID") Integer raceSeriesId,
-    		@PathVariable("raceID") Integer raceID) throws NoSuchUser, UserNotPermitted
+    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/resultlist.json",method=GET)
+    public @ResponseBody Page<RaceResult> getResultsForRace(
+            @PathVariable("raceseriesid")  Integer raceSeriesId,
+            @PathVariable("raceid")        Integer raceId,
+            Pageable                    		p) throws NoSuchUser, UserNotPermitted
     {
-    	ModelAndView mav = new ModelAndView("raceresults");
-    	mav.addObject("raceSeries",raceSeriesService.findByID(raceSeriesId));
-        return mav;
+        return raceResultService.findAll(raceId,p);
     }
 
-    @Autowired RaceSeriesService raceSeriesService;
+    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}",method=GET)
+    public @ResponseBody RaceResult getResult(
+            @PathVariable("raceseriesid")  Integer raceSeriesId,
+            @PathVariable("raceid")        Integer raceId,
+            @PathVariable("raceresultid")  Integer resultId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
+    {
+        return raceResultService.getResultByID(resultId);
+    }
+
+    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json",method=POST)
+    public @ResponseBody ValidationResponse save(
+                @Valid @RequestBody RaceResult	raceResult,
+                BindingResult                   bindingResult,
+                @PathVariable("raceseriesid") Integer raceSeriesId,
+                @PathVariable("raceid") Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, NoSuchBoat
+    {
+        ValidationResponse response = new ValidationResponse();
+        if ( bindingResult.hasErrors() )
+        {
+            response.setErrorMessageList(bindingResult.getAllErrors());
+            response.setStatus("FAIL");
+        }
+        else
+        {
+            if ( raceResult.getId() != null && raceResult.getId() != 0 )
+            {
+            	raceResultService.updateResult(raceResult);
+            }
+            else
+            {
+            	raceResultService.addResult(raceId,raceResult);    
+            }
+            
+            response.setStatus("SUCCESS");
+        }
+        return response;
+    }
+
+    @Autowired RaceResultService	raceResultService;
+    @Autowired RaceSeriesService 	raceSeriesService;
 }

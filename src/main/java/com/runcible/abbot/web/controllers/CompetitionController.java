@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.runcible.abbot.model.Competition;
-import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.service.CompetitionService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;

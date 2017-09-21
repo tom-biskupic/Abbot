@@ -6,33 +6,7 @@ abbotModule.controller("boatController",function($scope,$http,$controller,$rootS
 
     $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/boatlist.json','/raceseries/'+$scope.raceSeriesID+'/boat.json','views/boatform.html');
     
-    $scope.newObject = function()
-    {
-        object = {};
-        $scope.editNew(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,
-                object,
-                "boatDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
-    $scope.editObject = function(id)
-    {
-        $scope.edit(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,id,
-                "boatDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
+    $scope.setDialogController('boatDialogInstanceController');
 });
 
 angular.module("abbot").controller("boatDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope, object,context,resource )

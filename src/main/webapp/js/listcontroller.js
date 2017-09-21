@@ -27,13 +27,18 @@ var abbotModule = angular.module("abbot").controller("listController",function($
         else
         {
             page = 0;
-            size = 3;
+            size = 20;
         }
 
         $scope.loadPage(0);
         $scope.object = {};
     }
 
+    $scope.setDialogController = function(dialogController)
+    {
+    	$scope.dialogController = dialogController;
+    }
+    
     $scope.loadPage = function(pageNum)
     {
         if (pageNum >= 0 && ($scope.page == undefined || pageNum < $scope.page.totalPages || pageNum == 0))
@@ -62,15 +67,28 @@ var abbotModule = angular.module("abbot").controller("listController",function($
 
     $scope.editObject = function(id)
     {
-        $scope.edit($scope.contextPath,$scope.itemResource,$scope.editDialogId,id).then(
-                function() { $scope.loadPage($scope.page.number) });
+        $scope.edit(
+        		$scope.contextPath,
+        		$scope.itemResource,
+        		$scope.editDialogId,id,
+        		$scope.dialogController).then( function() 
+        				{ 
+        					$scope.loadPage($scope.page.number) 
+        				});
     }
 
     $scope.newObject = function()
     {
         $scope.object = {};
-        $scope.editNew($scope.contextPath,$scope.itemResource,$scope.editDialogId,$scope.object).then(
-                function() { $scope.loadPage($scope.page.number) });
+        $scope.editNew(
+        		$scope.contextPath,
+        		$scope.itemResource,
+        		$scope.editDialogId,
+        		$scope.object,
+        		$scope.dialogController).then(function() 
+        				{ 
+        					$scope.loadPage($scope.page.number) 
+        				});
     }
 
     $scope.deleteObject = function(id)

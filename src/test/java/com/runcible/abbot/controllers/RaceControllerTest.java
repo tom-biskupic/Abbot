@@ -32,7 +32,7 @@ public class RaceControllerTest extends MvcTestWithJSON
     }
 
     @Test
-    public void testGetBoat() throws Exception
+    public void testGetRace() throws Exception
     {
         when(raceService.getRaceByID(TEST_RACE_ID)).thenReturn(testRace);
         
@@ -42,7 +42,18 @@ public class RaceControllerTest extends MvcTestWithJSON
             .andExpect(jsonPath("$.name",is(TEST_RACE_NAME)))
             .andExpect(jsonPath("$.id",is(TEST_RACE_ID)));
     }
-    
+
+    @Test
+    public void testGetRaceDates() throws Exception
+    {
+        when(raceService.getRaceDays(TEST_RACE_SERIES_ID)).thenReturn(testRaceDayList);
+        
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/racedays.json"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(contentType))
+            .andExpect(jsonPath("$[0].day",is(testRaceDayList.get(0).getDay().getTime())));
+    }
+
     @Autowired
     private RaceService raceService;
 }

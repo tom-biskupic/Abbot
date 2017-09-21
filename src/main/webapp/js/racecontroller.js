@@ -5,49 +5,7 @@ angular.module("abbot").controller("raceController",function($scope,$http,$contr
 	$scope.raceSeriesID = $rootScope.seriesID;
 	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/racelist.json','/raceseries/'+$scope.raceSeriesID+'/race.json','views/raceform.html')
 
-    $scope.newObject = function()
-    {
-        object = {};
-        $scope.editNew(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,
-                object,
-                "raceDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
-    $scope.editObject = function(id)
-    {
-        $scope.edit(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,
-                id,
-                "raceDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
-    $scope.editResults = function(id)
-    {
-        $scope.edit(
-                $scope.contextPath,
-                $scope.itemResource,
-                "editRaceResults",
-                id,
-                "raceResultDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });
-    }
-
+	$scope.setDialogController('raceDialogInstanceController');
 });
 
 angular.module("abbot").controller("raceDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )

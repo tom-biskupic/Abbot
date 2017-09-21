@@ -21,7 +21,6 @@ import com.runcible.abbot.model.UserSummary;
 import com.runcible.abbot.service.LoggedOnUserService;
 import com.runcible.abbot.service.RaceSeriesAuthorizationService;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
-import com.runcible.abbot.service.exceptions.NoSuchBoatClass;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;

@@ -17,32 +17,7 @@ angular.module("abbot").controller("ManageUsersController",function($scope,$cont
     
     $scope.passwordConfirm = "";
     
-    $scope.editObject = function(id)
-    {
-        $scope.edit(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,id,
-                "userDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
-
-    $scope.newObject = function()
-    {
-        object = {};
-        $scope.editNew(
-                $scope.contextPath,
-                $scope.itemResource,
-                $scope.editDialogId,object,
-                "userDialogInstanceController").then(
-                        function() 
-                        { 
-                            $scope.loadPage($scope.page.number) 
-                        });;
-    }
+    $scope.setDialogController('userDialogInstanceController');
 });
 
 angular.module("abbot").controller("userDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,object,context,resource )

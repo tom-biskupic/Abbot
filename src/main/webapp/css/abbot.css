@@ -1,7 +1,28 @@
 
+/* 60px to make the container go all the way to the bottom of the topbar */
+body {padding-top: 60px;}
+
 .bottom-column
 {
     float: none;
     display: table-cell;
     vertical-align: bottom;
 }
+
+/* All this stuff is for the race selection box on the race results page */
+
+/*
+.panel-collapse .panel-body .list-group .list-group-item:first-child {border-top-right-radius: 0;border-top-left-radius: 0;}
+.panel-collapse>.panel-body .list-group .list-group-item {border-width: 1px 0;}
+.panel-collapse>.panel-body .list-group {margin-bottom: 0;}
+.panel-collapse .panel-body .list-group-item {border-radius:0;}
+
+.panel-collapse .panel-body .list-group .list-group {margin: 0;margin-top: 10px;}
+.panel-collapse .panel-body .list-group-item li.list-group-item {margin: 0 -15px;border-top: 1px solid #ddd !important;border-bottom: 0;padding-left: 30px;}
+.panel-collapse .panel-body .list-group-item li.list-group-item:last-child {padding-bottom: 0;}
+
+.panel-collapse .panel-body div .list-group div.list-group{margin: 0;}
+.panel-collapse .panel-bodydiv .list-group .list-group a.list-group-item {border-top: 1px solid #ddd !important;border-bottom: 0;padding-left: 30px;}
+.panel-collapse .panel-body .list-group-item li.list-group-item {border-top: 1px solid #DDD !important;}
+
+*/

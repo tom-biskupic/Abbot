@@ -2,9 +2,12 @@ package com.runcible.abbot.controllers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -23,6 +26,7 @@ import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.FleetSelector;
 import com.runcible.abbot.model.PointsSystem;
 import com.runcible.abbot.model.Race;
+import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.model.RaceSeriesType;
 import com.runcible.abbot.model.ResultType;
@@ -36,13 +40,16 @@ public class MvcTestWithJSON
         super();
         
         competitionSet.add(testCompetition);
-        testRace = new Race(
+        Date testRaceTime = Calendar.getInstance().getTime();
+		testRace = new Race(
                 TEST_RACE_ID,
                 TEST_RACE_SERIES_ID,
-                Calendar.getInstance().getTime(),
+                testRaceTime,
                 TEST_RACE_NAME,
                 testFleet,
                 competitionSet);
+        
+		testRaceDayList.add(new RaceDay(testRaceTime));
     }
 
     public byte[] convertObjectToJsonBytes(Object object) throws IOException
@@ -139,6 +146,8 @@ public class MvcTestWithJSON
     protected Set<Competition> competitionSet = new HashSet<Competition>();
     
     protected Race testRace;
+
+    protected List<RaceDay> testRaceDayList = new ArrayList<RaceDay>();
     
     @Autowired
     protected WebApplicationContext wac;

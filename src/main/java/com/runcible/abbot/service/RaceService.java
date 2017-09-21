@@ -1,9 +1,13 @@
 package com.runcible.abbot.service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Race;
+import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -51,4 +55,14 @@ public interface RaceService
      * @throws NoSuchUser 
      */
     public void removeRace(Integer raceID) throws NoSuchUser, UserNotPermitted;
+
+    /**
+     * Returns a list of RaceDays which are days on which races occur within the series
+     * Each day includes a list of races that occur on that day
+     * @return  A list of race days
+     * @throws 	NoSuchUser If the logged on user is not valid
+     * @throws 	UserNotPermitted If the logged on user is not 
+     * 			permitted to perform this operation
+     */
+	public List<RaceDay> getRaceDays(Integer raceSeriesId) throws NoSuchUser, UserNotPermitted;
 }
