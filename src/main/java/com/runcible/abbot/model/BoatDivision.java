@@ -72,7 +72,7 @@ public class BoatDivision implements Cloneable, ModelWithId
         this.yardStick = yardStick;
     }
     
-    private Integer id=null;
+    private Integer id=0;
     private String  name="";
     private Float   yardStick=0.0f;
 }
