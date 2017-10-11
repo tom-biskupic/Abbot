@@ -5,7 +5,7 @@ angular.module('abbot.registerSuccessfulController', ['ngRoute']).config(functio
 			'/registersuccessful', 
 			{
 				templateUrl: 'views/registersuccessful.html',
-				controller: 'raceSeriesListController' 
+				controller: 'registerSuccessfulController' 
 			});
 });
 

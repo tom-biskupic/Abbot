@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 /**
  * The BoatDivisionModel object represents a sub-division of a class. Classes can 
@@ -73,6 +74,8 @@ public class BoatDivision implements Cloneable, ModelWithId
     }
     
     private Integer id=0;
+    
+    @Size(min=1, message="Division name must be provided.")
     private String  name="";
     private Float   yardStick=0.0f;
 }

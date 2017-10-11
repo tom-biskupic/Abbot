@@ -14,7 +14,7 @@
 <div class="col-sm-9 col-md-9">
 	<div class="panel panel-default">
 	  <div class="panel-heading">
-	    <h3 class="panel-title">{{selectedRace.fleet.fleetName}} -{{selectedRace.name}}</h3>
+	    <h3 class="panel-title">{{selectedRace.fleet.fleetName}} - {{selectedRace.name}}</h3>
 	  </div>
 	  <div class="panel-body">
 	  	<div class="btn-group pull-right" role="group" aria-label="...">
@@ -30,14 +30,14 @@
 	  	<table class="table table-striped">
 		    <thead>
 		        <tr>
-		            <th sort-header column-name="sailNumber" column-heading="Sail Number"></th>
-		            <th sort-header column-name="boatName" column-heading="Boat Name"></th>
+		            <th sort-header column-name="boat.sailNumber" column-heading="Sail Number"></th>
+		            <th sort-header column-name="boat.name" column-heading="Boat Name"></th>
 		            <th sort-header column-name="handicap" column-heading="Handicap"></th>
 		            <th sort-header column-name="status" column-heading="Result"></th>
-		            <th sort-header column-name="start" column-heading="Start Time"></th>
-		            <th sort-header column-name="finish" column-heading="Finish Time"></th>
-		            <th sort-header column-name="corrected" column-heading="Corrected Time"></th>
-		            <th></th>
+		            <th sort-header column-name="startTime" column-heading="Start Time"></th>
+		            <th sort-header column-name="finishTime" column-heading="Finish Time"></th>
+		            <th sort-header column-name="sailingTime" column-heading="Sailing Time"></th>
+		            <th sort-header column-name="correctedTime" column-heading="Corrected Time"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -50,9 +50,10 @@
 			        <td>{{raceResult.boat.name}}</td>
 			        <td>{{raceResult.handicap}}</td>
 			        <td>{{raceResult.status}}</td>
-			        <td>{{raceResult.start}}</td>
-			        <td>{{raceResult.finish}}</td>
-			        <td>{{raceResult.corrected}}</td>
+			        <td>{{raceResult.startTime | date:'hh:mm:ss'}}</td>
+			        <td>{{raceResult.finishTime | date:'hh:mm:ss'}}</td>
+			        <td>{{raceResult.sailingTime | durationToHHMMSS}}</td>
+			        <td>{{raceResult.correctedTime | durationToHHMMSS}}</td>
 			    </tr>
 		    </tbody>
 		</table>

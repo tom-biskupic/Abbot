@@ -84,6 +84,20 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
 angular.module("abbot").controller("raceResultDialogInstanceController",function(
 		$scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource,fleet )
 {
+	$scope.toDate = function(timeString)
+	{
+		return new Date('1970-01-01T'+timeString+"Z");
+	}
+	
+	//
+	//	Need to fix the start/end time as they don't parse correctly as dates
+	//
+	//object.startTime = $scope.toDate(object.startTime);
+	//object.finishTime = $scope.toDate(object.finishTime);
+
+	object.startTime = new Date(object.startTime);
+	object.finishTime = new Date(object.finishTime);
+
 	angular.extend(
 		this,
 		$controller(    
@@ -183,3 +197,23 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
         ];
 });
 
+function str_pad_left(string,pad,length) 
+{
+    return (new Array(length+1).join(pad)+string).slice(-length);
+}
+
+angular.module("abbot").filter('durationToHHMMSS',function() 
+{
+	
+	return function(duration)
+	{
+		var hours = Math.floor(duration/3600);
+		duration = duration - (hours * 3600);
+		
+		var minutes = Math.floor(duration/60);
+		duration = duration - (minutes * 60);
+		
+		var seconds = duration;
+		return str_pad_left(hours,'0',2)+':'+str_pad_left(minutes,'0',2)+':'+str_pad_left(seconds,'0',2);
+	}
+});

@@ -1,6 +1,7 @@
 package com.runcible.abbot.model;
 
-import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,11 +11,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -34,8 +39,8 @@ public class RaceResult
 			Integer      raceId, 
 			Boat         boat, 
 			Integer      handicap, 
-			LocalTime    startTime, 
-			LocalTime    finishTime,
+			Date         startTime, 
+			Date                 finishTime,
 			ResultStatus status)
 	{
 		this(null,raceId,boat,handicap,startTime,finishTime,status);
@@ -46,8 +51,8 @@ public class RaceResult
 			Integer      raceId, 
 			Boat         boat, 
 			Integer      handicap, 
-			LocalTime    startTime, 
-			LocalTime 	 finishTime,
+			Date         startTime, 
+			Date 	       finishTime,
 			ResultStatus status) 
 	{
 		super();
@@ -144,7 +149,10 @@ public class RaceResult
 	 * @return The start time
 	 */
 	@Column(name="START_TIME")
-	public LocalTime getStartTime() 
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ")
+	//@DateTimeFormat(iso = ISO.TIME)
+	//@Temporal(TemporalType.TIME)
+	public Date getStartTime() 
 	{
 		return startTime;
 	}
@@ -153,7 +161,7 @@ public class RaceResult
 	 * Sets time/date when this race was started
 	 * @param startTime The start time
 	 */
-	public void setStartTime(LocalTime startTime) 
+	public void setStartTime(Date startTime) 
 	{
 		this.startTime = startTime;
 	}
@@ -163,7 +171,7 @@ public class RaceResult
 	 * @return the time/date when the competitor finished. Can be null
 	 */
 	@Column(name="FINISH_TIME")
-	public LocalTime getFinishTime() 
+	public Date getFinishTime() 
 	{
 		return finishTime;
 	}
@@ -172,7 +180,7 @@ public class RaceResult
 	 * Sets the time/date when the competitor finished. Can be null
 	 * @param finishTime the time/date when the competitor finished. Can be null
 	 */
-	public void setFinishTime(LocalTime finishTime) 
+	public void setFinishTime(Date finishTime) 
 	{
 		this.finishTime = finishTime;
 	}
@@ -181,6 +189,7 @@ public class RaceResult
 	 * The result status (i.e. finished, DNF etc).
 	 * @return the finish status
 	 */
+	@Column(name="STATUS")
 	public ResultStatus getStatus() 
 	{
 		return status;
@@ -195,15 +204,64 @@ public class RaceResult
 		this.status = status;
 	}
 	
+	/**
+	 * Returns the sailing time (in seconds) which is calculated by subtracting the
+	 * start time from the finish time
+	 * @return the sailing time
+	 */
+    @Column(name="SAILING_TIME")
+	public Integer getSailingTime()
+    {
+        return sailingTime;
+    }
+
+	/**
+	 * Sets the sailing time (in seconds) which is calculated by subtracting the
+     * start time from the finish time
+	 * @param sailingTime The sailing time
+	 */
+    public void setSailingTime(Integer sailingTime)
+    {
+        this.sailingTime = sailingTime;
+    }
+
+    /**
+     * Returns the corrected time (in seconds) which is calculated by subtracting the
+     * handicap time from the sailing time
+     * @return the corrected time
+     */
+    @Column(name="CORRECTED_TIME")
+    public Integer getCorrectedTime()
+    {
+        return correctedTime;
+    }
+
+    /**
+     * Sets the corrected time (in seconds) which is calculated by subtracting the
+     * handicap time from the sailing time
+     * @param correctedTime The corrected time
+     */
+    public void setCorrectedTime(Integer correctedTime)
+    {
+        this.correctedTime = correctedTime;
+    }
+
 	private Integer            id=null;
 	private Integer            raceId=null;
+	
+	@NotNull(message="A boat must be selected")
 	private Boat               boat=null;
 	private Integer            handicap=0;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	private	LocalTime          startTime=null;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	private LocalTime          finishTime=null;
+
+	@NotNull(message="A start time must be provided")
+	private	Date               startTime=null;
+
+	@NotNull(message="A finish time must be provided")
+	private Date               finishTime=null;
+
+	private Integer            sailingTime=null;
+	private Integer            correctedTime=null;
+
+    @NotNull(message="A result status must be provided")
 	private ResultStatus       status = ResultStatus.FINISHED;
 }

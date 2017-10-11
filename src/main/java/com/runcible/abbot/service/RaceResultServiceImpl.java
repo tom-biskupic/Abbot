@@ -43,6 +43,8 @@ public class RaceResultServiceImpl implements RaceResultService
 		checkAuthorized(raceId);
 		result.setRaceId(raceId);
 		
+        updateCalculatedDurations(result);
+		
 		//
 		//    Not sure why we need to do this - something to do with it being
 		//    a ManyToOne relationship
@@ -60,9 +62,19 @@ public class RaceResultServiceImpl implements RaceResultService
 			throw new NoSuchRaceResult();
 		}
 
+		updateCalculatedDurations(result);
+
 		checkAuthorized(result.getRaceId());
 		raceResultRepo.save(result);
 	}
+
+    private void updateCalculatedDurations(RaceResult result)
+    {
+        int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
+        result.setSailingTime(sailingTime);
+	        
+	    result.setCorrectedTime(sailingTime - result.getHandicap()*60);
+    }
 
 	private void checkAuthorized(Integer raceId) throws NoSuchUser, UserNotPermitted 
 	{
@@ -72,7 +84,8 @@ public class RaceResultServiceImpl implements RaceResultService
 		raceService.getRaceByID(raceId);
 	}
 
-	@Autowired	RaceService				raceService;
-	@Autowired  BoatService             boatService;
-	@Autowired 	RaceResultRepository	raceResultRepo;
+	@Autowired	RaceService            raceService;
+	@Autowired  BoatService            boatService;
+	@Autowired 	RaceResultRepository   raceResultRepo;
+	@Autowired  TimeService            timeService;
 }

@@ -76,5 +76,5 @@ angular.module("abbot").controller("loggedOnUserController",function($scope,$con
 			$rootScope.isAdmin=false;
 		    $location.path("/");
 		});
-	s}
+	}
 });
