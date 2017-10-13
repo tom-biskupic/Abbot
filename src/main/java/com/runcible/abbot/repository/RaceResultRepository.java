@@ -15,5 +15,9 @@ import com.runcible.abbot.model.RaceResult;
 public interface RaceResultRepository extends PagingAndSortingRepository<RaceResult, Integer>
 {
 	@Query("select r from RaceResult r where r.raceId = :raceid")
-	public Page<RaceResult> findRacesResults(@Param("raceid") Integer raceid,Pageable p);
+	public Page<RaceResult> findRaceResults(@Param("raceid") Integer raceid,Pageable p);
+	
+	@Query("select r from RaceResult r where r.raceId = :raceid")
+	public List<RaceResult> findRaceResults(@Param("raceid") Integer raceid);
+
 }

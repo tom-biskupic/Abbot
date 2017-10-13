@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
+import com.runcible.abbot.model.RaceStatus;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.RaceService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
@@ -104,6 +105,21 @@ public class RaceController
     	return raceDays;
     }
 
+    @RequestMapping(value="/raceseries/{raceSeriesId}/racestatus.json/{raceId}",method= {RequestMethod.POST})
+    public @ResponseBody ValidationResponse updateRaceStatus(
+            @RequestBody                    String  raceStatusString,
+            @PathVariable("raceSeriesId")   Integer raceSeriesID,
+            @PathVariable("raceId")         Integer raceID ) throws NoSuchUser, UserNotPermitted
+    {
+        ValidationResponse response = new ValidationResponse();
+        Race race = raceService.getRaceByID(raceID);
+        RaceStatus raceStatus = RaceStatus.valueOf(raceStatusString);
+        race.setRaceStatus(raceStatus);
+        raceService.updateRace(race);
+        response.setStatus("SUCCESS");
+        return response;
+    }
+    
     @Autowired
     private RaceService raceService;
     

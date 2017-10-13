@@ -3,6 +3,8 @@ package com.runcible.abbot.web.controllers;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.util.Collection;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +15,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
+import com.runcible.abbot.service.exceptions.NoSuchCompetition;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -74,6 +80,28 @@ public class RaceResultController
         return response;
     }
 
+    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}",method={RequestMethod.DELETE})
+    public @ResponseBody ValidationResponse removeRace(
+                @PathVariable("raceseriesid") Integer   raceSeriesId,
+                @PathVariable("raceid") Integer         raceId,
+                @PathVariable("raceresultid") Integer   raceResultId) 
+                        throws NoSuchUser, UserNotPermitted, NoSuchCompetition, NoSuchRaceResult
+    {
+        ValidationResponse response = new ValidationResponse();
+        raceResultService.removeResult(raceResultId);
+        response.setStatus("SUCCESS");
+        return response;
+    }
+
+    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/boatsnotselected.json",method={RequestMethod.GET})
+    public @ResponseBody Collection<Boat> getUnaddedBoats(
+                @PathVariable("raceseriesid") Integer   raceSeriesId,
+                @PathVariable("raceid") Integer         raceId) 
+                        throws NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        return raceResultService.findBoatsNotInRace(raceId);
+    }   
+    
     @Autowired RaceResultService	raceResultService;
     @Autowired RaceSeriesService 	raceSeriesService;
 }

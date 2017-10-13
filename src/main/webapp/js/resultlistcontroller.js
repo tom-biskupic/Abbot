@@ -8,17 +8,23 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
     
     $scope.setDialogController('raceResultDialogInstanceController');
     
-    $http.get('/Abbot3'+'/raceseries/'+$scope.raceSeriesID+'/racedays.json').then(
-            function(response)
-            {
-                $scope.raceDays = response.data;
-                if ( $scope.raceDays.length > 0 )
-                {
-                	lastDay = $scope.raceDays[$scope.raceDays.length-1];
-                	$scope.selectRace(lastDay.races[0].id);
-                	lastDay.isOpen=true;
-                }
-            });
+    $scope.loadRaces = function()
+    {
+	    $http.get('/Abbot3'+'/raceseries/'+$scope.raceSeriesID+'/racedays.json').then(
+	            function(response)
+	            {
+	                $scope.raceDays = response.data;
+	                if ( $scope.raceDays.length > 0 )
+	                {
+	                	if ( $scope.selectedRace == undefined )
+	                	{
+		                	lastDay = $scope.raceDays[$scope.raceDays.length-1];
+		                	$scope.selectRace(lastDay.races[0].id);
+		                	lastDay.isOpen=true;
+	                	}
+	                }
+	            });
+    }
     
     $scope.selectRace = function(id)
     {
@@ -70,19 +76,52 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
                       {
                         return resource;
                       },
-                      fleet: function ()
+                      race: function ()
                       {
-                    	return $scope.selectedRace.fleet;
+                    	return $scope.selectedRace;
                       }
                     }
                 });
         
         return modalInstance.result;
     }
+    
+    $scope.loadRaces();
+    
+    $scope.$on('raceupdated',function(even,data)
+    {
+    	$scope.loadRaces();
+    });
+
+    $scope.updateRaceStatus = function(race)
+    {
+        var modalInstance = $uibModal.open(
+                {
+                    animation:      true,
+                    templateUrl:    'views/racestatusform.html',
+                    controller:     'raceStatusDialogInstanceController',
+                    resolve: {
+                      object: function () 
+                      {
+                        return race;
+                      },
+                      context: function () 
+                      {
+                        return $scope.contextPath;
+                      },
+                    }
+                });
+        
+//        modalInstance.result.then( function()
+//        		{
+//    					$scope.loadRaces(); 
+//        		});
+    }
+
 });
 
 angular.module("abbot").controller("raceResultDialogInstanceController",function(
-		$scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource,fleet )
+		$scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource,race )
 {
 	$scope.toDate = function(timeString)
 	{
@@ -111,12 +150,24 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 
 	$scope.raceSeriesId = $rootScope.seriesID;
 
-	$scope.fleet = fleet;
+	// $scope.fleet = fleet;
 	
-	$http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleet/'+$scope.fleet.id+'/boatlist.json/all').then(
+	// /raceseries/{raceseriesid}/race/{raceid}/boatsnotselected.json
+	
+	//$http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleet/'+$scope.fleet.id+'/boatlist.json/all').then(
+	$http.get(context+'/raceseries/'+race.raceSeriesId+'/race/'+race.id+'/boatsnotselected.json').then(
 		function(response) 
 		{ 
 			$scope.boats = response.data;
+			
+			//
+			//	If we are editing an existing entry then add the boat
+			//	in that entry
+			//
+			if ( object.boat != undefined )
+			{
+				$scope.boats.push(object.boat);
+			}
 		});
 
 	$scope.dateOptions = 
@@ -216,4 +267,47 @@ angular.module("abbot").filter('durationToHHMMSS',function()
 		var seconds = duration;
 		return str_pad_left(hours,'0',2)+':'+str_pad_left(minutes,'0',2)+':'+str_pad_left(seconds,'0',2);
 	}
+});
+
+angular.module("abbot").controller("raceStatusDialogInstanceController",function(
+		$scope, $http, $controller, $uibModalInstance, $rootScope, object, context )
+{
+	$scope.race = object;
+	$scope.raceStatus = object.raceStatus;
+	$scope.raceId = object.id;
+	$scope.raceSeriesId = object.raceSeriesId;
+	
+	$scope.context = context;
+	
+    $scope.raceStatusValues = 
+    	[	{
+            	id: 'NOT_RUN',
+            	label: 'Not run',
+          	}, 
+    		{
+              id: 'COMPLETED',
+              label: 'Completed',
+            }, 
+            {
+                id: 'ABANDONED',
+                label: 'Abandoned',
+            }];
+
+    $scope.ok = function () 
+    {
+    	var url = $scope.context + '/raceseries/'+$scope.raceSeriesId+'/racestatus.json/'+$scope.raceId;
+    	
+        $http.post(url,$scope.raceStatus).then(
+                function(response)
+                {
+                	$scope.race.raceStatus = $scope.raceStatus;
+                	$uibModalInstance.close();
+                });
+    };
+
+    $scope.cancel = function () 
+    {
+        $uibModalInstance.dismiss('cancel');
+    };
+
 });

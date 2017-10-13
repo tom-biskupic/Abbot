@@ -28,7 +28,7 @@ public class RaceResultServiceTest
     @Test
     public void testFindAll() throws NoSuchUser, UserNotPermitted
     {
-        when(mockRaceResultRepo.findRacesResults(testRaceID, mockPageable))
+        when(mockRaceResultRepo.findRaceResults(testRaceID, mockPageable))
             .thenReturn(mockRaceResultsPage);
         
         Page<RaceResult> result = fixture.findAll(testRaceID, mockPageable);
@@ -75,6 +75,17 @@ public class RaceResultServiceTest
         fixture.updateResult(mockRaceResult);
         verifyCalculations();
         verify(mockRaceResultRepo).save(mockRaceResult);
+        verify(mockRaceService).getRaceByID(testRaceID);
+    }
+    
+    @Test
+    public void testRemoveResult() throws NoSuchRaceResult, NoSuchUser, UserNotPermitted
+    {
+        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        
+        fixture.removeResult(testRaceResultID);
+        verify(mockRaceResultRepo).delete(mockRaceResult);
         verify(mockRaceService).getRaceByID(testRaceID);
     }
     

@@ -24,6 +24,7 @@ public class RaceResultTest extends ValidationTest
         assertEquals(1,validate(result).size());    
     }
 
+    
     @Test
     public void testStartTimeRequired()
     {

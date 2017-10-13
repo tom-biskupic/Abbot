@@ -1,14 +1,20 @@
 package com.runcible.abbot.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.Boat;
+import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.repository.RaceResultRepository;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -20,7 +26,7 @@ public class RaceResultServiceImpl implements RaceResultService
 	public Page<RaceResult> findAll(Integer raceId,Pageable p) throws NoSuchUser, UserNotPermitted 
 	{
 		checkAuthorized(raceId);
-		return raceResultRepo.findRacesResults(raceId,p);
+		return raceResultRepo.findRaceResults(raceId,p);
 	}
 
 	@Override
@@ -68,6 +74,58 @@ public class RaceResultServiceImpl implements RaceResultService
 		raceResultRepo.save(result);
 	}
 
+	public void removeResult(Integer resultId) throws NoSuchRaceResult, NoSuchUser, UserNotPermitted
+	{
+        RaceResult found = raceResultRepo.findOne(resultId);
+        if ( found == null )
+        {
+            throw new NoSuchRaceResult();
+        }
+	    checkAuthorized(found.getRaceId());
+	    raceResultRepo.delete(found);
+	}
+	
+	//
+	// This is very slow. Would be much better to do this in the DB. 
+	// The problem is that the query for finding all boats in a fleet
+	// is a merge of a series of queries.
+	//
+	public List<Boat> findBoatsNotInRace(Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchFleet
+	{
+	    List<Boat> boatsNotInRace=new ArrayList<Boat>();
+	    
+	    //
+	    // This will throw if we are not permitted to manage this race
+	    //
+	    Race race = raceService.getRaceByID(raceId);
+	    
+	    List<Boat> allBoats = boatService.getAllBoatsInFleetForSeries(race.getRaceSeriesId(), race.getFleet().getId());
+	    List<RaceResult> raceResults = raceResultRepo.findRaceResults(race.getId());
+
+        for (Boat nextBoat : allBoats )
+        {
+            if ( ! haveResultForBoat(raceResults, nextBoat) )
+            {
+                boatsNotInRace.add(nextBoat);
+            }
+        }
+	    
+	    return boatsNotInRace;
+	}
+
+    private boolean haveResultForBoat(List<RaceResult> raceResults, Boat nextBoat)
+    {
+        for(RaceResult nextResult : raceResults)
+        {
+            if ( nextBoat.getId().equals(nextResult.getBoat().getId()) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+	
     private void updateCalculatedDurations(RaceResult result)
     {
         int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
@@ -76,6 +134,7 @@ public class RaceResultServiceImpl implements RaceResultService
 	    result.setCorrectedTime(sailingTime - result.getHandicap()*60);
     }
 
+   
 	private void checkAuthorized(Integer raceId) throws NoSuchUser, UserNotPermitted 
 	{
 		//

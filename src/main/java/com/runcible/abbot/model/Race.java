@@ -13,6 +13,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * A RaceModel represent a boat race on a given day for a single class. 
@@ -115,18 +117,6 @@ public class Race implements ModelWithId
         this.fleet = fleet;
     }
 
-//    @ManyToMany(cascade={CascadeType.ALL})
-//    @JoinColumn(name="RACE_RESULTS_ID")
-//    public Collection<RaceResultModel> getRaceResults()
-//    {
-//        return raceResults;
-//    }
-//
-//    public void setRaceResults(Collection<RaceResultModel> raceResults)
-//    {
-//        this.raceResults = raceResults;
-//    }
-
     public RaceStatus getRaceStatus()
     {
         return raceStatus;
@@ -186,10 +176,17 @@ public class Race implements ModelWithId
 
     private   Integer                       raceId;
     private   Integer                       raceSeriesId;
+    
+    @NotNull(message="A race date is required")
     private   Date                          raceDate;
+    
     private   String                        name;
+    
+    @NotNull(message="A fleet must be selected")
     private   Fleet                         fleet;
-    //private   Collection<RaceResultModel>   raceResults;
+
     private   RaceStatus                    raceStatus = RaceStatus.NOT_RUN;
+    
+    @Size(min=1,message="At least one competition must be selected")
     private   Set<Competition>              competitions;
 }

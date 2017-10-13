@@ -6,6 +6,30 @@ angular.module("abbot").controller("raceController",function($scope,$http,$contr
 	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/racelist.json','/raceseries/'+$scope.raceSeriesID+'/race.json','views/raceform.html')
 
 	$scope.setDialogController('raceDialogInstanceController');
+	
+	$scope.originalEditObject = $scope.editObject;
+	
+    $scope.editObject = function(id)
+    {
+    	$scope.originalEditObject(id);
+    	$rootScope.$broadcast('raceupdated','');
+    }
+
+	$scope.originalNewObject = $scope.newObject;
+
+    $scope.newObject = function()
+    {
+    	$scope.originalNewObject();
+    	$rootScope.$broadcast('raceupdated','');
+    }
+
+    $scope.originalDeleteObject = $scope.deleteObject;
+    
+    $scope.deleteObject = function(id)
+    {
+    	$scope.originalDeleteObject(id);
+    	$rootScope.$broadcast('raceupdated','');
+    }
 });
 
 angular.module("abbot").controller("raceDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )

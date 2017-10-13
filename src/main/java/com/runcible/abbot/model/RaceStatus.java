@@ -3,14 +3,14 @@ package com.runcible.abbot.model;
 public enum RaceStatus
 {
     NOT_RUN,
-    CANCELLED,
-    COMPLETED;
+    COMPLETED,
+    ABANDONED;
     
     private static final String[] DISPLAY_STRINGS =
     {
         "Not run",
-        "Cancelled",
-        "Completed"
+        "Completed",
+        "Abandoned"
     };
     
     public String toDisplayString()

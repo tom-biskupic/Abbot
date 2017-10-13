@@ -1,10 +1,14 @@
 package com.runcible.abbot.service;
 
+import java.util.Collection;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -66,4 +70,24 @@ public interface RaceResultService
      */
     public void updateResult(RaceResult result)
             throws NoSuchUser, UserNotPermitted, NoSuchRaceResult;
+    
+    /**
+     * Removes the specified result from the race.
+     * @param resultId The ID of the result to remove
+     * @throws NoSuchRaceResult The specified race result was not found
+     * @throws UserNotPermitted The logged on user is not permitted to manage this race
+     * @throws NoSuchUser The logged on user cannot be found
+     */
+    public void removeResult(Integer resultId) throws NoSuchRaceResult, NoSuchUser, UserNotPermitted;
+
+    /**
+     * Returns a collection of boats in the fleet for the race selected but where there
+     * is no result yet for that boat. 
+     * @param raceId The ID of the race we are adding a result to
+     * @return The list of boats not yet added to this race
+     * @throws UserNotPermitted If the logged on user is not permitted to manage this race
+     * @throws NoSuchUser If the logged on user is invalid 
+     * @throws NoSuchFleet 
+     */
+    public Collection<Boat> findBoatsNotInRace(Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchFleet;
 }
