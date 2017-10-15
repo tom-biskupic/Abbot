@@ -111,13 +111,12 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
                       },
                     }
                 });
-        
-//        modalInstance.result.then( function()
-//        		{
-//    					$scope.loadRaces(); 
-//        		});
     }
 
+    $scope.addNonStarters = function(race)
+    {
+    	
+    }
 });
 
 angular.module("abbot").controller("raceResultDialogInstanceController",function(

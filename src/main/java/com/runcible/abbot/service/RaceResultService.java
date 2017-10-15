@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.ResultStatus;
+import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
@@ -90,4 +92,15 @@ public interface RaceResultService
      * @throws NoSuchFleet 
      */
     public Collection<Boat> findBoatsNotInRace(Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchFleet;
+    
+    /**
+     * Add all the other registered boats to the race as non-starters
+     * @param raceId The ID of the race to update.
+     * @param the result to use (usually DNS or DNC)
+     * @throws UserNotPermitted 
+     * @throws NoSuchUser 
+     * @throws NoSuchFleet 
+     * @throws NoSuchBoat 
+     */
+    public void addNonStartersToRace(Integer raceId, ResultStatus result) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat;
 }

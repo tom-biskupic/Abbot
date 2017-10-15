@@ -2,6 +2,7 @@ package com.runcible.abbot.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.ResultStatus;
+import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.repository.RaceResultRepository;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
@@ -92,13 +95,19 @@ public class RaceResultServiceImpl implements RaceResultService
 	//
 	public List<Boat> findBoatsNotInRace(Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchFleet
 	{
-	    List<Boat> boatsNotInRace=new ArrayList<Boat>();
-	    
 	    //
 	    // This will throw if we are not permitted to manage this race
 	    //
 	    Race race = raceService.getRaceByID(raceId);
-	    
+
+	    return findBoatsNotInRace(race);
+	}
+
+    private List<Boat> findBoatsNotInRace(Race race)
+            throws NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        List<Boat> boatsNotInRace=new ArrayList<Boat>();
+
 	    List<Boat> allBoats = boatService.getAllBoatsInFleetForSeries(race.getRaceSeriesId(), race.getFleet().getId());
 	    List<RaceResult> raceResults = raceResultRepo.findRaceResults(race.getId());
 
@@ -111,7 +120,28 @@ public class RaceResultServiceImpl implements RaceResultService
         }
 	    
 	    return boatsNotInRace;
-	}
+    }
+
+    @Override
+    public void addNonStartersToRace(Integer raceID, ResultStatus resultStatus) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat
+    {
+        //
+        // This will throw if we are not permitted to manage this race
+        //
+        Race race = raceService.getRaceByID(raceID);
+
+        List<Boat> boats = findBoatsNotInRace(race);
+        for(Boat boat : boats)
+        {
+            addResult(race.getId(), makeResult(boat,raceID,resultStatus));
+        }
+        
+    }
+    
+    private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus)
+    {
+        return new RaceResult(raceID,boat,0,new Date(),null,resultStatus);
+    }
 
     private boolean haveResultForBoat(List<RaceResult> raceResults, Boat nextBoat)
     {

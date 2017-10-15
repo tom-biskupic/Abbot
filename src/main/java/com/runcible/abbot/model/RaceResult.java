@@ -40,7 +40,7 @@ public class RaceResult
 			Boat         boat, 
 			Integer      handicap, 
 			Date         startTime, 
-			Date                 finishTime,
+			Date         finishTime,
 			ResultStatus status)
 	{
 		this(null,raceId,boat,handicap,startTime,finishTime,status);

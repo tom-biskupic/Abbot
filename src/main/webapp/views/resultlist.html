@@ -19,10 +19,13 @@
 	  <div class="panel-body">
 	  	<form class="navbar-form navbar-left">
         	<div class="form-group">
-        	<input type="text" class="form-control" placeholder="Status" ng-model="selectedRace.raceStatus" disabled>
+        	<label for="status">Status</label>
+        	<input type="text" class="form-control" name="status" placeholder="Status" ng-model="selectedRace.raceStatus" disabled>
         	</div>
 			<button type="button" class="btn btn-default"
 	        		ng-click="updateRaceStatus(selectedRace)">Update Race Status </button>
+			<button type="button" class="btn btn-default"
+	        		ng-click="addNonStarters(selectedRace)">Add Non-starters</button>
       	</form>
 	  	<div class="btn-group pull-right" role="group" aria-label="...">
 	    	<button type="button" class="btn btn-default" ng-click="newObject()">
