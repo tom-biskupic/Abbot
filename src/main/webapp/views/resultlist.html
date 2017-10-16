@@ -40,8 +40,8 @@
 	  	<table class="table table-striped">
 		    <thead>
 		        <tr>
-		            <th sort-header column-name="boat.sailNumber" column-heading="Sail Number"></th>
 		            <th sort-header column-name="boat.name" column-heading="Boat Name"></th>
+		            <th sort-header column-name="boat.sailNumber" column-heading="Sail Number"></th>
 		            <th sort-header column-name="handicap" column-heading="Handicap"></th>
 		            <th sort-header column-name="status" column-heading="Result"></th>
 		            <th sort-header column-name="startTime" column-heading="Start Time"></th>
@@ -55,9 +55,10 @@
 			        <td>
 			            <button type="button" class="btn" ng-click="deleteObject(raceResult.id)">
 			                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-			            </button> <a ng-click="editObject(raceResult.id)">{{raceResult.boat.sailNumber}}</a>
+			            </button>
+			            <a ng-click="editObject(raceResult.id)">{{raceResult.boat.name}}</a>
 			        </td>
-			        <td>{{raceResult.boat.name}}</td>
+			        <td>{{raceResult.boat.sailNumber}}</td>
 			        <td>{{raceResult.handicap}}</td>
 			        <td>{{raceResult.status}}</td>
 			        <td>{{raceResult.startTime | date:'hh:mm:ss'}}</td>

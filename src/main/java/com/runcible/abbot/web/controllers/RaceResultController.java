@@ -4,6 +4,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.validation.Valid;
 
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.runcible.abbot.model.Boat;
+import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.RaceStatus;
+import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
@@ -66,6 +71,41 @@ public class RaceResultController
         }
         else
         {
+            //
+            //  Now do some more complex validation
+            //
+            if ( competitorStarted(raceResult) )
+            {
+                if ( raceResult.getStartTime() == null )
+                {
+                    addValidationFailure(
+                            bindingResult, 
+                            response, 
+                            bindingResult.getObjectName(),
+                            "startTime", 
+                            raceResult.getStartTime(),
+                            "The start time must be provided if the competitor finished");
+                    
+                    return response;
+                }
+            }
+            
+            if ( competitorFinished(raceResult) )
+            {
+                if ( raceResult.getFinishTime() == null )
+                {
+                    addValidationFailure(
+                            bindingResult, 
+                            response, 
+                            bindingResult.getObjectName(),
+                            "finishTimeTime", 
+                            raceResult.getFinishTime(),
+                            "The finish time must be provided if the competitor finished");
+                    
+                    return response;
+                }
+            }
+            
             if ( raceResult.getId() != null && raceResult.getId() != 0 )
             {
             	raceResultService.updateResult(raceResult);
@@ -78,6 +118,40 @@ public class RaceResultController
             response.setStatus("SUCCESS");
         }
         return response;
+    }
+
+    private boolean competitorFinished(RaceResult raceResult)
+    {
+        return  competitorStarted(raceResult)
+                &&
+                raceResult.getStatus() != ResultStatus.DNF;
+    }
+
+    private boolean competitorStarted(RaceResult raceResult)
+    {
+        return raceResult.getStatus() != ResultStatus.DNC 
+                &&
+                raceResult.getStatus() != ResultStatus.DNS;
+    }
+
+    private void addValidationFailure(
+            BindingResult       bindingResult,
+            ValidationResponse  response, 
+            String              objectName, 
+            String              fieldName,
+            Object              field,
+            String              message)
+    {
+        bindingResult.addError(new FieldError(
+                objectName,
+                fieldName,
+                field,
+                false,
+                null,
+                null,
+                message));
+        response.setErrorMessageList(bindingResult.getAllErrors());
+        response.setStatus("FAIL");
     }
 
     @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}",method={RequestMethod.DELETE})
@@ -102,6 +176,19 @@ public class RaceResultController
         return raceResultService.findBoatsNotInRace(raceId);
     }   
     
+    @RequestMapping(value="/raceseries/{raceSeriesId}/race/{raceid}/addnonstarters.json",method= {RequestMethod.POST})
+    public @ResponseBody ValidationResponse updateRaceStatus(
+            @RequestBody                    String  resultStatusString,
+            @PathVariable("raceSeriesId")   Integer raceSeriesID,
+            @PathVariable("raceid")         Integer raceID ) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat
+    {
+        ValidationResponse response = new ValidationResponse();
+        ResultStatus resultStatus = ResultStatus.valueOf(resultStatusString);
+        raceResultService.addNonStartersToRace(raceID, resultStatus);
+        response.setStatus("SUCCESS");
+        return response;
+    }
+
     @Autowired RaceResultService	raceResultService;
     @Autowired RaceSeriesService 	raceSeriesService;
 }

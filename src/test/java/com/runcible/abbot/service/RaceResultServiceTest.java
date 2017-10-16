@@ -25,6 +25,8 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 @RunWith(MockitoJUnitRunner.class)
 public class RaceResultServiceTest
 {
+    enum TimeValues { NO_START_TIME, NO_FINISH_TIME, NO_EITHER_TIME, BOTH_TIMES };
+    
     @Test
     public void testFindAll() throws NoSuchUser, UserNotPermitted
     {
@@ -55,12 +57,12 @@ public class RaceResultServiceTest
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockBoatService.getBoatByID(testBoatID)).thenReturn(mockBoat);
         
-        setupCalculationMocks();
+        setupCalculationMocks(true, true);
         
         fixture.addResult(testRaceID, mockRaceResult);
         verify(mockRaceResult).setRaceId(testRaceID);
         verify(mockRaceResult).setBoat(mockBoat);
-        verifyCalculations();
+        verifyCalculations(true);
     }
 
     @Test
@@ -70,14 +72,44 @@ public class RaceResultServiceTest
         when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         
-        setupCalculationMocks();
+        setupCalculationMocks(true, true);
         
         fixture.updateResult(mockRaceResult);
-        verifyCalculations();
+        verifyCalculations(true);
         verify(mockRaceResultRepo).save(mockRaceResult);
         verify(mockRaceService).getRaceByID(testRaceID);
     }
-    
+
+    @Test
+    public void testUpdateResultDNS() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
+    {
+        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
+        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        
+        setupCalculationMocks(false, false);
+        
+        fixture.updateResult(mockRaceResult);
+        verifyCalculations(false);
+        verify(mockRaceResultRepo).save(mockRaceResult);
+        verify(mockRaceService).getRaceByID(testRaceID);
+    }
+
+    @Test
+    public void testUpdateResultDNF() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
+    {
+        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
+        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        
+        setupCalculationMocks(true, false);
+        
+        fixture.updateResult(mockRaceResult);
+        verifyCalculations(false);
+        verify(mockRaceResultRepo).save(mockRaceResult);
+        verify(mockRaceService).getRaceByID(testRaceID);
+    }
+
     @Test
     public void testRemoveResult() throws NoSuchRaceResult, NoSuchUser, UserNotPermitted
     {
@@ -89,18 +121,23 @@ public class RaceResultServiceTest
         verify(mockRaceService).getRaceByID(testRaceID);
     }
     
-    private void verifyCalculations()
+    private void verifyCalculations(boolean calculationsExpected)
     {
-        verify(mockRaceResult).setSailingTime(testSailingDuration);
-        verify(mockRaceResult).setCorrectedTime(testSailingDuration-(60*testHandicap));
+        verify(mockRaceResult).setSailingTime(calculationsExpected ? testSailingDuration : null);
+        verify(mockRaceResult).setCorrectedTime(
+                calculationsExpected ? (testSailingDuration-(60*testHandicap)) : null);
     }
 
-    private void setupCalculationMocks()
+    private void setupCalculationMocks(boolean hasStartTime, boolean hasFinishTime)
     {
-        when(mockRaceResult.getStartTime()).thenReturn(mockStartTime);
-        when(mockRaceResult.getFinishTime()).thenReturn(mockFinishTime);
-        when(mockRaceResult.getHandicap()).thenReturn(testHandicap);
-        when(mockTimeService.subtractTime(mockStartTime, mockFinishTime)).thenReturn(testSailingDuration);
+        when(mockRaceResult.getStartTime()).thenReturn(hasStartTime ? mockStartTime : null);
+        when(mockRaceResult.getFinishTime()).thenReturn(hasFinishTime ? mockFinishTime : null);
+        
+        if ( hasStartTime && hasFinishTime )
+        {
+            when(mockRaceResult.getHandicap()).thenReturn(testHandicap);
+            when(mockTimeService.subtractTime(mockStartTime, mockFinishTime)).thenReturn(testSailingDuration);
+        }
     }
     
     @Test(expected=NoSuchRaceResult.class)

@@ -4,7 +4,7 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
     
     $scope.raceSeriesID = $rootScope.seriesID;
     $scope.raceDays = [];
-    $scope.selectedRace = 0;
+    $scope.selectedRace = null;
     
     $scope.setDialogController('raceResultDialogInstanceController');
     
@@ -16,7 +16,7 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
 	                $scope.raceDays = response.data;
 	                if ( $scope.raceDays.length > 0 )
 	                {
-	                	if ( $scope.selectedRace == undefined )
+	                	if ( $scope.selectedRace == undefined || $scope.selectedRace == null)
 	                	{
 		                	lastDay = $scope.raceDays[$scope.raceDays.length-1];
 		                	$scope.selectRace(lastDay.races[0].id);
@@ -115,27 +115,53 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
 
     $scope.addNonStarters = function(race)
     {
-    	
+        var modalInstance = $uibModal.open(
+                {
+                    animation:      true,
+                    templateUrl:    'views/addnonstartersform.html',
+                    controller:     'addNotStartersDialogInstanceController',
+                    resolve: {
+                      object: function () 
+                      {
+                        return race;
+                      },
+                      context: function () 
+                      {
+                        return $scope.contextPath;
+                      },
+                    }
+                });
+        
+        modalInstance.result.then( function()
+        		{
+        			$scope.loadPage($scope.page.number);
+        		});
     }
 });
+
+lastStartTime = null;
 
 angular.module("abbot").controller("raceResultDialogInstanceController",function(
 		$scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource,race )
 {
-	$scope.toDate = function(timeString)
+	if ( object.startTime != undefined )
 	{
-		return new Date('1970-01-01T'+timeString+"Z");
+		object.startTime = new Date(object.startTime);
+	}
+
+	if ( object.finishTime != undefined )
+	{
+		object.finishTime = new Date(object.finishTime);
+	}
+
+	if ( object.startTime == null || object.startTime == undefined )
+	{
+		if ( lastStartTime != null )
+		{
+			object.startTime = lastStartTime;
+		}
 	}
 	
-	//
-	//	Need to fix the start/end time as they don't parse correctly as dates
-	//
-	//object.startTime = $scope.toDate(object.startTime);
-	//object.finishTime = $scope.toDate(object.finishTime);
-
-	object.startTime = new Date(object.startTime);
-	object.finishTime = new Date(object.finishTime);
-
 	angular.extend(
 		this,
 		$controller(    
@@ -149,11 +175,6 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 
 	$scope.raceSeriesId = $rootScope.seriesID;
 
-	// $scope.fleet = fleet;
-	
-	// /raceseries/{raceseriesid}/race/{raceid}/boatsnotselected.json
-	
-	//$http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleet/'+$scope.fleet.id+'/boatlist.json/all').then(
 	$http.get(context+'/raceseries/'+race.raceSeriesId+'/race/'+race.id+'/boatsnotselected.json').then(
 		function(response) 
 		{ 
@@ -245,6 +266,21 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
                 label: 'DPI'
             }
         ];
+    
+    //
+    //	Override onOk to save the startTime selected for next time
+    //
+    $scope.parentok = $scope.ok;
+    
+    $scope.ok = function()
+    {
+    	if ( $scope.object.startTime != null && $scope.object.startTime != undefined )
+    	{
+    		lastStartTime = $scope.object.startTime;
+    	}
+    	
+    	return $scope.parentok();
+    }
 });
 
 function str_pad_left(string,pad,length) 
@@ -257,6 +293,11 @@ angular.module("abbot").filter('durationToHHMMSS',function()
 	
 	return function(duration)
 	{
+		if ( duration == undefined || duration == 0 )
+		{
+			return '';
+		}
+		
 		var hours = Math.floor(duration/3600);
 		duration = duration - (hours * 3600);
 		
@@ -300,6 +341,44 @@ angular.module("abbot").controller("raceStatusDialogInstanceController",function
                 function(response)
                 {
                 	$scope.race.raceStatus = $scope.raceStatus;
+                	$uibModalInstance.close();
+                });
+    };
+
+    $scope.cancel = function () 
+    {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+});
+
+angular.module("abbot").controller("addNotStartersDialogInstanceController",function(
+		$scope, $http, $controller, $uibModalInstance, $rootScope, object, context )
+{
+	$scope.race = object;
+	$scope.raceId = object.id;
+	$scope.raceSeriesId = object.raceSeriesId;
+	$scope.resultStatus = "DNS";
+		
+	$scope.context = context;
+	
+    $scope.resultStatusValues = 
+    	[	{
+            	id: 'DNS',
+            	label: 'DNS',
+          	}, 
+    		{
+              id: 'DNC',
+              label: 'DNC',
+            }];
+
+    $scope.ok = function () 
+    {
+    	var url = $scope.context + '/raceseries/'+$scope.raceSeriesId+'/race/'+$scope.race.id+'/addnonstarters.json';
+    	
+        $http.post(url,$scope.resultStatus).then(
+                function(response)
+                {
                 	$uibModalInstance.close();
                 });
     };

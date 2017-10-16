@@ -123,7 +123,8 @@ public class RaceResultServiceImpl implements RaceResultService
     }
 
     @Override
-    public void addNonStartersToRace(Integer raceID, ResultStatus resultStatus) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat
+    public void addNonStartersToRace(Integer raceID, ResultStatus resultStatus) 
+            throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat
     {
         //
         // This will throw if we are not permitted to manage this race
@@ -135,12 +136,11 @@ public class RaceResultServiceImpl implements RaceResultService
         {
             addResult(race.getId(), makeResult(boat,raceID,resultStatus));
         }
-        
     }
     
     private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus)
     {
-        return new RaceResult(raceID,boat,0,new Date(),null,resultStatus);
+        return new RaceResult(raceID,boat,0,null,null,resultStatus);
     }
 
     private boolean haveResultForBoat(List<RaceResult> raceResults, Boat nextBoat)
@@ -158,10 +158,18 @@ public class RaceResultServiceImpl implements RaceResultService
 	
     private void updateCalculatedDurations(RaceResult result)
     {
-        int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
-        result.setSailingTime(sailingTime);
-	        
-	    result.setCorrectedTime(sailingTime - result.getHandicap()*60);
+        if ( result.getStartTime() != null && result.getFinishTime() != null )
+        {
+            int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
+            result.setSailingTime(sailingTime);
+    	        
+    	    result.setCorrectedTime(sailingTime - result.getHandicap()*60);
+        }
+        else
+        {
+            result.setSailingTime(null);
+            result.setCorrectedTime(null);
+        }
     }
 
    

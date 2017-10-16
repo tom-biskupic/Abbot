@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -102,5 +103,7 @@ public interface RaceResultService
      * @throws NoSuchFleet 
      * @throws NoSuchBoat 
      */
-    public void addNonStartersToRace(Integer raceId, ResultStatus result) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat;
+    public void addNonStartersToRace(
+            Integer         raceId, 
+            ResultStatus    result) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat;
 }

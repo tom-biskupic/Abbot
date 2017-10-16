@@ -253,15 +253,12 @@ public class RaceResult
 	private Boat               boat=null;
 	private Integer            handicap=0;
 
-	@NotNull(message="A start time must be provided")
 	private	Date               startTime=null;
-
-	@NotNull(message="A finish time must be provided")
 	private Date               finishTime=null;
 
 	private Integer            sailingTime=null;
 	private Integer            correctedTime=null;
 
     @NotNull(message="A result status must be provided")
-	private ResultStatus       status = ResultStatus.FINISHED;
+	private ResultStatus       status = null;
 }

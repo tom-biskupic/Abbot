@@ -1,0 +1,20 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"
+		ng-click="cancel()">
+		<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+	</button>
+	<h4 class="modal-title" id="myModalLabel">Add results for non-starting boats</h4>
+</div>
+<div class="modal-body">
+	<div class="form-group">
+		<label for="resultStatus">Choose the result status to use for non-starting boats</label> 
+		<select
+			name="resultStatus" class="form-control" ng-model="resultStatus"
+			ng-options="status.id as status.label for status in resultStatusValues" >
+		</select>
+	</div>
+</div>
+<div class="modal-footer">
+     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>
