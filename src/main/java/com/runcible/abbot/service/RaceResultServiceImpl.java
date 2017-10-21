@@ -33,6 +33,13 @@ public class RaceResultServiceImpl implements RaceResultService
 	}
 
 	@Override
+    public List<RaceResult> findAll(Integer raceId) throws NoSuchUser, UserNotPermitted
+    {
+	    checkAuthorized(raceId);
+	    return raceResultRepo.findRaceResults(raceId);
+    }
+
+	@Override
 	public RaceResult getResultByID(Integer resultId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
 	{
 		RaceResult result = raceResultRepo.findOne(resultId);

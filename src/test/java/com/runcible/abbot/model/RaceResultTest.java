@@ -24,24 +24,6 @@ public class RaceResultTest extends ValidationTest
         assertEquals(1,validate(result).size());    
     }
 
-    
-    @Test
-    public void testStartTimeRequired()
-    {
-        RaceResult result = makeResult();
-        result.setStartTime(null);
-        
-        assertEquals(1,validate(result).size());    
-    }
-
-    @Test
-    public void testFinishTimeRequired()
-    {
-        RaceResult result = makeResult();
-        result.setFinishTime(null);
-        
-        assertEquals(1,validate(result).size());
-    }
 
     @Test
     public void testValidationOk()

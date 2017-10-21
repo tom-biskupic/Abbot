@@ -9,6 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.Race;
 
 @Repository
@@ -19,4 +20,10 @@ public interface RaceRespository extends PagingAndSortingRepository<Race, Intege
     
     @Query("select r from Race r where r.raceSeriesId = :seriesid order by r.raceDate")
     public List<Race> findRacesOrderByDate(@Param("seriesid") Integer seriesid);
+    
+    @Query("select r from Race r join r.competitions c where c.id = :competitionid and r.raceSeriesId = :seriesid")
+    public List<Race> findRacesInCompetition(
+            @Param("seriesid") Integer seriesid,
+            @Param("competitionid") Integer competitionid);
+
 }

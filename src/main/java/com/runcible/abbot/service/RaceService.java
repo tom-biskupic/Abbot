@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -65,4 +66,11 @@ public interface RaceService
      * 			permitted to perform this operation
      */
 	public List<RaceDay> getRaceDays(Integer raceSeriesId) throws NoSuchUser, UserNotPermitted;
+	
+	/**
+	 * Returns the races in the selected competition;
+	 * @param competition the competition of interest
+	 * @return The races in the selected competition
+	 */
+	public List<Race> getRacesInCompetition(Competition competition);
 }

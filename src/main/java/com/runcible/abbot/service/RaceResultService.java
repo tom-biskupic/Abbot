@@ -2,6 +2,7 @@ package com.runcible.abbot.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,20 @@ public interface RaceResultService
      */
     public Page<RaceResult> findAll(Integer raceId, Pageable p)
             throws NoSuchUser, UserNotPermitted;
+
+    /**
+     * Returns all of the results for a given race
+     * 
+     * @param raceId    The ID of the race these results are associated with
+     * 
+     * @return          The list of results
+     * 
+     * @throws          UserNotPermitted
+     *                  User not permitted to manage this race
+     * @throws          NoSuchUser
+     *                  Logged on user doesn't exist
+     */
+    public List<RaceResult> findAll(Integer raceId) throws NoSuchUser, UserNotPermitted;
 
     /**
      * Finds the result with the ID provided

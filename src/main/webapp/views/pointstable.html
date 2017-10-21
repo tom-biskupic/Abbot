@@ -1,0 +1,12 @@
+<div>
+	<form class="navbar-form navbar-left">
+		<label for="competition">Choose a competition</label>
+		<select name="competition" 
+	            class="form-control" 
+	            ng-model="competition" 
+	            ng-options="competition.name for competition in competitions track by competition.id">
+		</select>
+		<button type="button" class="btn btn-default"
+				ng-click="displayPointsTable(competition)">Display</button>
+	</form>
+</div>

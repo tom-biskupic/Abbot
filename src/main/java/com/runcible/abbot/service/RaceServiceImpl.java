@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.repository.RaceRespository;
@@ -88,6 +89,13 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
 		return raceDays;
 	}
 	
+    @Override
+    public List<Race> getRacesInCompetition(Competition competition)
+    {
+        List<Race> result = raceRepo.findRacesInCompetition(competition.getRaceSeriesId(), competition.getId());
+        
+        return result;
+    }
     
     private boolean sameDay(Date raceDate, Date day) 
     {
