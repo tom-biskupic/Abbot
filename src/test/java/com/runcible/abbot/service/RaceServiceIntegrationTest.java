@@ -5,8 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+//import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.runcible.abbot.model.BoatClass;
@@ -18,7 +18,7 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
 @Ignore
 @RunWith(SpringRunner.class)
-@DataJpaTest
+//@DataJpaTest
 public class RaceServiceIntegrationTest
 {
     @Before
@@ -46,10 +46,10 @@ public class RaceServiceIntegrationTest
     
     private static final String testBoatClassName = "Laser";
     
-    @MockBean
+    //@MockBean
     private RaceSeriesAuthorizationService mockAuthService;
 
-    @MockBean
+    //@MockBean
     private LoggedOnUserService mockLoggedOnUser;
     
     @Autowired

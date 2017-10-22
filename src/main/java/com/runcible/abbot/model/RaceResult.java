@@ -43,7 +43,20 @@ public class RaceResult
 			Date         finishTime,
 			ResultStatus status)
 	{
-		this(null,raceId,boat,handicap,startTime,finishTime,status);
+		this(null,raceId,boat,handicap,startTime,finishTime,status,null,null);
+	}
+
+	public RaceResult( 
+			Integer      raceId, 
+			Boat         boat, 
+			Integer      handicap, 
+			Date         startTime, 
+			Date         finishTime,
+			ResultStatus status,
+			Integer		 sailingTime,
+			Integer		 correctedTime)
+	{
+		this(null,raceId,boat,handicap,startTime,finishTime,status,sailingTime,correctedTime);
 	}
 
 	public RaceResult(
@@ -52,8 +65,10 @@ public class RaceResult
 			Boat         boat, 
 			Integer      handicap, 
 			Date         startTime, 
-			Date 	       finishTime,
-			ResultStatus status) 
+			Date 	     finishTime,
+			ResultStatus status,
+			Integer		 sailingTime,
+			Integer		 correctedTime) 
 	{
 		super();
 		this.id = id;
@@ -63,6 +78,8 @@ public class RaceResult
 		this.startTime = startTime;
 		this.finishTime = finishTime;
 		this.status = status;
+		this.sailingTime = sailingTime;
+		this.correctedTime = correctedTime;
 	}
 
 	/**

@@ -1,13 +1,10 @@
 package com.runcible.abbot.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.print.attribute.standard.Finishings;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,6 +48,7 @@ public class PointsServiceImpl implements PointsService
             addPointsForRace(boatPoints,race,competition);
         }
         
+        points.getPointsForBoat().addAll(boatPoints.values());
         return points;
     }
     
@@ -68,7 +66,7 @@ public class PointsServiceImpl implements PointsService
         //  Sort the results by either handicap place or scratch place depending
         //  on the competition settings
         //
-        sortResults(competition, results);
+        Collections.sort(results,new RaceResultComparator(competition.getResultType()));
         
         int numberOfStarters = countNumberOfStarters(results);
         
@@ -96,20 +94,6 @@ public class PointsServiceImpl implements PointsService
     private Float calcPoints(PointsSystem pointsSystem, Integer fleetSize)
     {
         return null;
-    }
-
-    private int countNumberOfFinishers(List<RaceResult> results)
-    {
-        int count = 0;
-        for (RaceResult result : results)
-        {
-            if (isFinished(result))
-            {
-                count++;
-            }
-        }
-        
-        return count;
     }
 
     private boolean isFinished(RaceResult result)
@@ -142,45 +126,9 @@ public class PointsServiceImpl implements PointsService
 
     private void sortResults(Competition competition, List<RaceResult> results)
     {
-        if ( competition.getResultType() == ResultType.HANDICAP_RESULT )
-        {
-            Collections.sort(
-                    results,
-                    new Comparator<RaceResult>() 
-                    {
-                        @Override
-                        public int compare(RaceResult left, RaceResult right)
-                        {
-                            return differenceToInt(right.getCorrectedTime() - left.getCorrectedTime());
-                        }
-                    });
-        }
-        else
-        {
-            Collections.sort(
-                    results,
-                    new Comparator<RaceResult>() 
-                    {
-                        @Override
-                        public int compare(RaceResult left, RaceResult right)
-                        {
-                            return differenceToInt(right.getSailingTime() - left.getSailingTime());
-                        }
-                    });
-        }
-    }
-
-    protected int differenceToInt(int difference)
-    {
-        if ( difference > 0 )
-        {
-            return 1;
-        }
-        else if ( difference < 0 )
-        {
-            return -1;
-        }
-        return 0;
+        Collections.sort(
+                results,
+                new RaceResultComparator(competition.getResultType()));
     }
 
     private Map<Boat, PointsForBoat> makeBointPoints(List<Boat> boats)
