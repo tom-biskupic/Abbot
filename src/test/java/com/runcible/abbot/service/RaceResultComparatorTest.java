@@ -15,8 +15,8 @@ public class RaceResultComparatorTest
 	public void testHandicapComparison()
 	{
 		RaceResultComparator fixture = new RaceResultComparator(ResultType.HANDICAP_RESULT);
-		assertEquals(1,fixture.compare(testFinishedResult2, testFinishedResult1));
-		assertEquals(-1,fixture.compare(testFinishedResult1, testFinishedResult2));
+		assertEquals(-1,fixture.compare(testFinishedResult2, testFinishedResult1));
+		assertEquals(1,fixture.compare(testFinishedResult1, testFinishedResult2));
 		assertEquals(0,fixture.compare(testFinishedResult1, testFinishedResult1));
 	}
 
@@ -24,8 +24,8 @@ public class RaceResultComparatorTest
 	public void testScratchComparison()
 	{
 		RaceResultComparator fixture = new RaceResultComparator(ResultType.SCRATCH_RESULT);
-		assertEquals(-1,fixture.compare(testFinishedResult2, testFinishedResult1));
-		assertEquals(1,fixture.compare(testFinishedResult1, testFinishedResult2));
+		assertEquals(1,fixture.compare(testFinishedResult2, testFinishedResult1));
+		assertEquals(-1,fixture.compare(testFinishedResult1, testFinishedResult2));
 		assertEquals(0,fixture.compare(testFinishedResult1, testFinishedResult1));
 	}
 
@@ -33,10 +33,10 @@ public class RaceResultComparatorTest
 	public void testDifferentStatus()
 	{
 		RaceResultComparator fixture = new RaceResultComparator(ResultType.HANDICAP_RESULT);
-		assertEquals(-1,fixture.compare(testDNFResult, testFinishedResult1));
-		assertEquals(1,fixture.compare(testFinishedResult1,testDNFResult));
-		assertEquals(1,fixture.compare(testDNFResult,testDNSResult));
-		assertEquals(-1,fixture.compare(testDNSResult,testDNFResult));
+		assertEquals(1,fixture.compare(testDNFResult, testFinishedResult1));
+		assertEquals(-1,fixture.compare(testFinishedResult1,testDNFResult));
+		assertEquals(-1,fixture.compare(testDNFResult,testDNSResult));
+		assertEquals(1,fixture.compare(testDNSResult,testDNFResult));
 		assertEquals(0,fixture.compare(testDNFResult, testDNFResult));
 	}
 

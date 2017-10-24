@@ -28,11 +28,11 @@ public enum ResultStatus
 		}
 		else if ( leftOrdinal > rightOrdinal )
 		{
-			return -1;
+			return 1;
 		}
 		else
 		{
-			return 1;
+			return -1;
 		}
 	}
 }
