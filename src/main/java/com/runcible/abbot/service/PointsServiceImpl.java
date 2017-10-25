@@ -1,7 +1,6 @@
 package com.runcible.abbot.service;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +11,9 @@ import org.springframework.stereotype.Component;
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.PointsForBoat;
-import com.runcible.abbot.model.PointsSystem;
 import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
-import com.runcible.abbot.model.ResultStatus;
-import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -73,82 +69,29 @@ public class PointsServiceImpl implements PointsService
         int place=1;
         for ( RaceResult result : results )
         {
-            if ( ! isStarted(result) )
+        	boatPoints.get(result.getBoat()).getPoints().add(
+        			pointsCalculator.calculatePoints(competition, numberOfStarters, place, result));
+
+			if ( result.isFinished() )
             {
-                boatPoints.get(result.getBoat()).getPoints().add(
-                        calcPoints(competition.getPointsSystem(),competition.getFleetSize()+1));
-            }
-            else if ( !isFinished(result) )
-            {
-                boatPoints.get(result.getBoat()).getPoints().add(
-                        calcPoints(competition.getPointsSystem(),numberOfStarters+1));
-            }
-            else
-            {
-                boatPoints.get(result.getBoat()).getPoints().add(
-                        calcPoints(competition.getPointsSystem(),place++));
+            	place++;
             }
         }
     }
 
-    private Float calcPoints(PointsSystem pointsSystem, Integer place)
-    {
-        if ( pointsSystem == PointsSystem.LOW_POINTS )
-        {
-            return new Float(place);
-        }
-        else
-        {
-            if ( place <= 7 )
-            {
-                //
-                //  Table is zero index based but place is one based
-                //
-                return BonusPointsTable[place-1];
-            }
-            else
-            {
-                //
-                //  So seventh place is 13, 8th is 14 an so on
-                //
-                return new Float(place+6); 
-            }
-        }
-    }
-
-    private boolean isFinished(RaceResult result)
-    {
-        return isStarted(result)
-                &&
-                result.getStatus() != ResultStatus.DNF;
-    }
 
     private int countNumberOfStarters(List<RaceResult> results)
     {
         int count = 0;
         for (RaceResult result : results)
         {
-            if ( isStarted(result) )
+            if ( result.isStarted() )
             {
                 count++;
             }
         }
         
         return count;
-    }
-
-    private boolean isStarted(RaceResult result)
-    {
-        return result.getStatus() != ResultStatus.DNS 
-                &&
-                result.getStatus() != ResultStatus.DNC;
-    }
-
-    private void sortResults(Competition competition, List<RaceResult> results)
-    {
-        Collections.sort(
-                results,
-                new RaceResultComparator(competition.getResultType()));
     }
 
     private Map<Boat, PointsForBoat> makeBointPoints(List<Boat> boats)
@@ -163,8 +106,6 @@ public class PointsServiceImpl implements PointsService
         return boatPoints;
     }
 
-    private static final Float BonusPointsTable[] = {0.0f,3.0f,5.7f,8.0f,10.0f,11.7f,13.0f};
-    
     @Autowired
     private CompetitionService competitionService;
     
@@ -177,4 +118,6 @@ public class PointsServiceImpl implements PointsService
     @Autowired
     private RaceResultService raceResultService;
 
+    @Autowired
+    private PointsCalculator pointsCalculator;
 }

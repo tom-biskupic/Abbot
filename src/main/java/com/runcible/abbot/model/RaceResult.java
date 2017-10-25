@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -262,6 +263,31 @@ public class RaceResult
     {
         this.correctedTime = correctedTime;
     }
+
+    /**
+     * Returns true if this result indicates the boat finished
+     * @return true if the boat finished.
+     */
+    @Transient
+    public boolean isFinished()
+    {
+        return isStarted()
+                &&
+                this.status != ResultStatus.DNF;
+    }
+
+    /**
+     * Returns true if this boat started the rac
+     * @return true if the boat started
+     */
+    @Transient
+    public boolean isStarted()
+    {
+        return 	this.status != ResultStatus.DNS 
+                &&
+                this.status != ResultStatus.DNC;
+    }
+
 
 	private Integer            id=null;
 	private Integer            raceId=null;
