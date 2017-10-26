@@ -62,7 +62,7 @@ public class PointsServiceImpl implements PointsService
         //  Sort the results by either handicap place or scratch place depending
         //  on the competition settings
         //
-        Collections.sort(results,new RaceResultComparator(competition.getResultType()));
+        results = resultSorter.sortResults(results,competition);
         
         int numberOfStarters = countNumberOfStarters(results);
         
@@ -70,12 +70,8 @@ public class PointsServiceImpl implements PointsService
         for ( RaceResult result : results )
         {
         	boatPoints.get(result.getBoat()).getPoints().add(
-        			pointsCalculator.calculatePoints(competition, numberOfStarters, place, result));
-
-			if ( result.isFinished() )
-            {
-            	place++;
-            }
+        			pointsCalculator.calculatePoints(
+        			        competition, numberOfStarters, place++, result));
         }
     }
 
@@ -120,4 +116,7 @@ public class PointsServiceImpl implements PointsService
 
     @Autowired
     private PointsCalculator pointsCalculator;
+    
+    @Autowired
+    private RaceResultSorter resultSorter;
 }

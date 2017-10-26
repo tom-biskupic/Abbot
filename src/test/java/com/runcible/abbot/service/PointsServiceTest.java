@@ -67,6 +67,9 @@ public class PointsServiceTest
 		when(mockRaceService.getRacesInCompetition(mockCompetition)).thenReturn(races);
 		when(mockRace.getId()).thenReturn(testRaceID);
 		when(mockResultService.findAll(testRaceID)).thenReturn(raceResults);
+		when(mockRaceResultSorter.sortResults(raceResults, mockCompetition)).thenReturn(raceResults);
+		
+		when(mockPointsCalculator.calculatePoints(mockCompetition, 5, 1, resultBoat1)).thenReturn(1.0f);
 		
 		PointsTable pointsTable = fixture.generatePointsTable(testRaceSeriesID, testCompetitionID);
 		assertEquals(mockCompetition,pointsTable.getCompetition());
@@ -127,7 +130,9 @@ public class PointsServiceTest
 	@Mock private CompetitionService mockCompetitionService;
 	@Mock private BoatService mockBoatService;
 	@Mock private RaceResultService mockResultService;
-
+	@Mock private PointsCalculator mockPointsCalculator;
+	@Mock private RaceResultSorter mockRaceResultSorter;
+	
 	@InjectMocks
 	private PointsService fixture = new PointsServiceImpl();
 }

@@ -1,4 +1,4 @@
-package com.runcible.application;
+package com.runcible.abbot.application;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

@@ -271,9 +271,7 @@ public class RaceResult
     @Transient
     public boolean isFinished()
     {
-        return isStarted()
-                &&
-                this.status != ResultStatus.DNF;
+        return this.status == ResultStatus.FINISHED;
     }
 
     /**

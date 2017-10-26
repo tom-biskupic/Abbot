@@ -1,4 +1,4 @@
-package com.runcible.application;
+package com.runcible.abbot.application;
 
 import java.util.Properties;
 

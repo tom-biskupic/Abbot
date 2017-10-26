@@ -1,4 +1,4 @@
-package com.runcible.application;
+package com.runcible.abbot.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
