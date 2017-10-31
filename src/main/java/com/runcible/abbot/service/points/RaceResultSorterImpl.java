@@ -1,4 +1,4 @@
-package com.runcible.abbot.service;
+package com.runcible.abbot.service.points;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.runcible.abbot.service;
+package com.runcible.abbot.service.points;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -19,6 +19,8 @@ import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
+import com.runcible.abbot.service.points.RaceResultSorter;
+import com.runcible.abbot.service.points.RaceResultSorterImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ResultSorterTest
@@ -63,13 +65,13 @@ public class ResultSorterTest
     {
         assertTrue(startedButNotFinished(sortedResults.get(3)));
         assertTrue(startedButNotFinished(sortedResults.get(4)));
-        assertTrue(!sortedResults.get(5).isStarted());
-        assertTrue(!sortedResults.get(6).isStarted());
+        assertTrue(!sortedResults.get(5).getStatus().isStarted());
+        assertTrue(!sortedResults.get(6).getStatus().isStarted());
     }
 
     private boolean startedButNotFinished(RaceResult raceResult)
     {
-        return !raceResult.isFinished() && raceResult.isStarted();
+        return !raceResult.getStatus().isFinished() && raceResult.getStatus().isStarted();
     }
     
     private List<RaceResult> raceResults = new ArrayList<RaceResult>();

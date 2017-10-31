@@ -1,4 +1,4 @@
-package com.runcible.abbot.service;
+package com.runcible.abbot.service.points;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,7 @@ import org.junit.Test;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
+import com.runcible.abbot.service.points.RaceResultComparator;
 
 public class RaceResultComparatorTest
 {

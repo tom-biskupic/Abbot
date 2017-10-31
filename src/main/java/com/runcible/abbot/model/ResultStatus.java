@@ -1,5 +1,7 @@
 package com.runcible.abbot.model;
 
+import javax.persistence.Transient;
+
 public enum ResultStatus 
 {
 	FINISHED,
@@ -35,4 +37,24 @@ public enum ResultStatus
 			return -1;
 		}
 	}
+	
+    /**
+     * Returns true if this boat started the rac
+     * @return true if the boat started
+     */
+    public boolean isStarted()
+    {
+        return  this != ResultStatus.DNS 
+                &&
+                this != ResultStatus.DNC;
+    }
+
+    /**
+     * Returns true if this result indicates the boat finished
+     * @return true if the boat finished.
+     */
+    public boolean isFinished()
+    {
+        return this == ResultStatus.FINISHED;
+    }
 }

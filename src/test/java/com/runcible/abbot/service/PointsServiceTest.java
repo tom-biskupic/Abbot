@@ -29,6 +29,10 @@ import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.service.points.PointsCalculator;
+import com.runcible.abbot.service.points.PointsSorter;
+import com.runcible.abbot.service.points.PointsTotalCalculator;
+import com.runcible.abbot.service.points.RaceResultSorter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PointsServiceTest
@@ -39,46 +43,88 @@ public class PointsServiceTest
 		raceResults.add(resultBoat1);
 		raceResults.add(resultBoat2);
 		raceResults.add(resultBoat3);
-		raceResults.add(resultNonStarter1);
-		raceResults.add(resultNonStarter2);
-		raceResults.add(resultNonFinisher1);
-		raceResults.add(resultNonFinisher2);
 		races.add(mockRace);
 		
 		boats.add(testBoat1);
 		boats.add(testBoat2);
 		boats.add(testBoat3);
-		boats.add(testNonFinisher1);
-		boats.add(testNonFinisher2);
-		boats.add(testNonStarter1);
-		boats.add(testNonStarter2);
 	}
 
 	@Test
-	public void testHandicapLowPoints() throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+	public void testSimple() throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
 	{
-		when(mockCompetitionService.getCompetitionByID(testCompetitionID)).thenReturn(mockCompetition);
-		when(mockCompetition.getFleet()).thenReturn(mockFleet);
-		when(mockCompetition.getResultType()).thenReturn(ResultType.SCRATCH_RESULT);
-		when(mockCompetition.getPointsSystem()).thenReturn(PointsSystem.LOW_POINTS);
-		when(mockFleet.getId()).thenReturn(testFleetID);
-		
-		when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesID, testFleetID)).thenReturn(boats);
-		when(mockRaceService.getRacesInCompetition(mockCompetition)).thenReturn(races);
-		when(mockRace.getId()).thenReturn(testRaceID);
-		when(mockResultService.findAll(testRaceID)).thenReturn(raceResults);
+		setupCompetition();
+
+		setupDataFetchingMocks(raceResults);
+
 		when(mockRaceResultSorter.sortResults(raceResults, mockCompetition)).thenReturn(raceResults);
 		
-		when(mockPointsCalculator.calculatePoints(mockCompetition, 5, 1, resultBoat1)).thenReturn(1.0f);
+		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
+		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
+		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 3, ResultStatus.FINISHED)).thenReturn(3.0f);
 		
 		PointsTable pointsTable = fixture.generatePointsTable(testRaceSeriesID, testCompetitionID);
 		assertEquals(mockCompetition,pointsTable.getCompetition());
 		assertEquals(races,pointsTable.getRaces());
+		verify(mockPointsSorter).sortPoints(pointsTable);
 		
-		PointsForBoat testBoat1Points = findBoatPoints(testBoat1,pointsTable);
-		assertEquals(1,testBoat1Points.getPoints().size());
-		assertEquals(new Float(1.0f),testBoat1Points.getPoints().get(0));
+		checkPoints(pointsTable, testBoat1, 1.0f);
+		checkPoints(pointsTable, testBoat2, 2.0f);
+		checkPoints(pointsTable, testBoat3, 3.0f);
 	}
+
+	@Test
+	public void testResultMissing() throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+	{
+	    setupCompetition();
+
+	    List<RaceResult> resultsWithMissingEntry = new ArrayList<RaceResult>();
+	    resultsWithMissingEntry.add(resultBoat1);
+	    resultsWithMissingEntry.add(resultBoat2);
+	    
+	    setupDataFetchingMocks(resultsWithMissingEntry);
+
+	    when(mockRaceResultSorter.sortResults(resultsWithMissingEntry, mockCompetition)).thenReturn(resultsWithMissingEntry);
+	        
+	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
+	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
+	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 3, ResultStatus.DNS)).thenReturn(3.0f);
+	        
+	    PointsTable pointsTable = fixture.generatePointsTable(testRaceSeriesID, testCompetitionID);
+	    assertEquals(mockCompetition,pointsTable.getCompetition());
+	    assertEquals(races,pointsTable.getRaces());
+	    verify(mockPointsSorter).sortPoints(pointsTable);
+	    
+	    checkPoints(pointsTable, testBoat1, 1.0f);
+	    checkPoints(pointsTable, testBoat2, 2.0f);
+	    checkPoints(pointsTable, testBoat3, 3.0f);
+	}
+
+    private void setupDataFetchingMocks(List<RaceResult> results)
+            throws NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        when(mockFleet.getId()).thenReturn(testFleetID);
+		when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesID, testFleetID)).thenReturn(boats);
+		when(mockRaceService.getRacesInCompetition(mockCompetition)).thenReturn(races);
+		when(mockRace.getId()).thenReturn(testRaceID);
+		when(mockResultService.findAll(testRaceID)).thenReturn(results);
+    }
+
+    private void setupCompetition()
+            throws NoSuchCompetition, NoSuchUser, UserNotPermitted
+    {
+        when(mockCompetitionService.getCompetitionByID(testCompetitionID)).thenReturn(mockCompetition);
+		when(mockCompetition.getFleet()).thenReturn(mockFleet);
+		when(mockCompetition.getResultType()).thenReturn(ResultType.SCRATCH_RESULT);
+		when(mockCompetition.getPointsSystem()).thenReturn(PointsSystem.LOW_POINTS);
+    }
+
+    private void checkPoints(PointsTable pointsTable, Boat boat, float points)
+    {
+        PointsForBoat boatPoints = findBoatPoints(boat,pointsTable);
+		assertEquals(1,boatPoints.getPoints().size());
+		assertEquals(new Float(points),boatPoints.getPoints().get(0));
+    }
 
 	private PointsForBoat findBoatPoints(Boat boat, PointsTable pointsTable)
     {
@@ -111,20 +157,13 @@ public class PointsServiceTest
 	private Boat testBoat1 = new Boat(null, "FredTheWinner", "1234", testClass, null, false, "", "");
 	private Boat testBoat2 = new Boat(null, "CloseBehind", "1234", testClass, null, false, "", "");
 	private Boat testBoat3 = new Boat(null, "IkeepTheTail", "1234", testClass, null, false, "", "");
-	private Boat testNonStarter1 = new Boat(null, "NotHere", "1234", testClass, null, false, "", "");
-	private Boat testNonStarter2 = new Boat(null, "Couldn't Be Bothered", "1234", testClass, null, false, "", "");
-	private Boat testNonFinisher1 = new Boat(null, "NotFinished", "1234", testClass, null, false, "", "");
-	private Boat testNonFinisher2 = new Boat(null, "NotFinishedEither", "1234", testClass, null, false, "", "");
 
-	private RaceResult resultBoat1 = new RaceResult(null, testBoat1, 1, new Date(), new Date(), ResultStatus.FINISHED,90,90);
-	private RaceResult resultBoat2 = new RaceResult(null, testBoat2, 1, new Date(), new Date(), ResultStatus.FINISHED,100,85);
-	private RaceResult resultBoat3 = new RaceResult(null, testBoat3, 1, new Date(), new Date(), ResultStatus.FINISHED,95,94);
-	private RaceResult resultNonStarter1 = new RaceResult(null, testNonStarter1, 1, new Date(), new Date(), ResultStatus.DNS);
-	private RaceResult resultNonStarter2 = new RaceResult(null, testNonStarter2, 1, new Date(), new Date(), ResultStatus.DNC);
-	private RaceResult resultNonFinisher1 = new RaceResult(
-				null, testNonFinisher1, 1, new Date(), new Date(),ResultStatus.DNF);
-	private RaceResult resultNonFinisher2 = new RaceResult(
-			null, testNonFinisher2, 1, new Date(), new Date(),ResultStatus.OCS);
+	private RaceResult resultBoat1 = new RaceResult(
+	        null, testBoat1, 1, new Date(), new Date(), ResultStatus.FINISHED);
+	private RaceResult resultBoat2 = new RaceResult(
+	        null, testBoat2, 1, new Date(), new Date(), ResultStatus.FINISHED);
+	private RaceResult resultBoat3 = new RaceResult(
+	        null, testBoat3, 1, new Date(), new Date(), ResultStatus.FINISHED);
 
 	@Mock private RaceService mockRaceService;
 	@Mock private CompetitionService mockCompetitionService;
@@ -132,6 +171,8 @@ public class PointsServiceTest
 	@Mock private RaceResultService mockResultService;
 	@Mock private PointsCalculator mockPointsCalculator;
 	@Mock private RaceResultSorter mockRaceResultSorter;
+	@Mock private PointsTotalCalculator mockPointsTotalCalculator;
+	@Mock private PointsSorter mockPointsSorter;
 	
 	@InjectMocks
 	private PointsService fixture = new PointsServiceImpl();

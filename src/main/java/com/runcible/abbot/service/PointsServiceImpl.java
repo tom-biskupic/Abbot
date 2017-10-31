@@ -1,9 +1,10 @@
 package com.runcible.abbot.service;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,15 @@ import com.runcible.abbot.model.PointsForBoat;
 import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.service.points.PointsCalculator;
+import com.runcible.abbot.service.points.PointsSorter;
+import com.runcible.abbot.service.points.PointsTotalCalculator;
+import com.runcible.abbot.service.points.RaceResultSorter;
 
 @Component
 public class PointsServiceImpl implements PointsService
@@ -44,7 +50,18 @@ public class PointsServiceImpl implements PointsService
             addPointsForRace(boatPoints,race,competition);
         }
         
+        for( PointsForBoat pointsForBoat : boatPoints.values() )
+        {
+            pointsTotalCalculator.updateTotals(competition, pointsForBoat);
+        }
+        
         points.getPointsForBoat().addAll(boatPoints.values());
+        
+        //
+        //  Finally sort the points by their total with drops (reverse)
+        //
+        pointsSorter.sortPoints(points);
+
         return points;
     }
     
@@ -66,12 +83,30 @@ public class PointsServiceImpl implements PointsService
         
         int numberOfStarters = countNumberOfStarters(results);
         
+        Set<Boat> boatsDone = new HashSet<Boat>();
+        
         int place=1;
         for ( RaceResult result : results )
         {
-        	boatPoints.get(result.getBoat()).getPoints().add(
+        	Boat boat = result.getBoat();
+            boatPoints.get(boat).getPoints().add(
         			pointsCalculator.calculatePoints(
-        			        competition, numberOfStarters, place++, result));
+        			        competition, numberOfStarters, place++, result.getStatus()));
+            boatsDone.add(boat);
+        }
+        
+        //
+        //  Now find any boats we don't have results for and add
+        //  DNS entries for them
+        //
+        for(Boat boat : boatPoints.keySet() )
+        {
+            if ( ! boatsDone.contains(boat) )
+            {
+                boatPoints.get(boat).getPoints().add(
+                        pointsCalculator.calculatePoints(
+                                competition, numberOfStarters, place++, ResultStatus.DNS));
+            }
         }
     }
 
@@ -81,7 +116,7 @@ public class PointsServiceImpl implements PointsService
         int count = 0;
         for (RaceResult result : results)
         {
-            if ( result.isStarted() )
+            if ( result.getStatus().isStarted() )
             {
                 count++;
             }
@@ -119,4 +154,10 @@ public class PointsServiceImpl implements PointsService
     
     @Autowired
     private RaceResultSorter resultSorter;
+    
+    @Autowired
+    private PointsTotalCalculator pointsTotalCalculator;
+    
+    @Autowired
+    private PointsSorter pointsSorter;
 }

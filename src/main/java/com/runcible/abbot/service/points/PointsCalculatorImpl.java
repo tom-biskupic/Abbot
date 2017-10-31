@@ -1,24 +1,25 @@
-package com.runcible.abbot.service;
+package com.runcible.abbot.service.points;
 
 import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.PointsSystem;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.ResultStatus;
 
 @Component
 public class PointsCalculatorImpl implements PointsCalculator
 {
 
 	@Override
-	public Float calculatePoints(Competition competition, int numberOfStarters, int place, RaceResult result)
+	public Float calculatePoints(Competition competition, int numberOfStarters, int place, ResultStatus status)
 	{
 		Float points;
-		if ( ! result.isStarted())
+		if ( ! status.isStarted())
 		{
 		    points = calcPoints(competition.getPointsSystem(),competition.getFleetSize()+1);
 		}
-		else if ( !result.isFinished() )
+		else if ( !status.isFinished() )
 		{
 			points = calcPoints(competition.getPointsSystem(),numberOfStarters+1);
 		}
