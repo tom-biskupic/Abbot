@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.PointsSystem;
-import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 
 @Component

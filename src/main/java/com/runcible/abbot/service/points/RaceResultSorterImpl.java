@@ -3,9 +3,12 @@ package com.runcible.abbot.service.points;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.RaceResult;
 
+@Component
 public class RaceResultSorterImpl implements RaceResultSorter
 {
     @Override

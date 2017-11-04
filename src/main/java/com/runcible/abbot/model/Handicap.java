@@ -1,59 +1,84 @@
 package com.runcible.abbot.model;
 
-import javax.persistence.ManyToMany;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.springframework.stereotype.Component;
 
 /**
  * Models the current handicap of a boat in a competition.
  */
+@Entity
+@Table(name="HANDICAP")
+@Component
 public class Handicap
 {
     
-    public Handicap(Boat boat, Competition competition, Float handicap)
+    public Handicap(Integer id, Integer boatID, Float value)
     {
         super();
-        this.boat = boat;
-        this.competition = competition;
-        this.handicap = handicap;
+        this.id = id;
+        this.boatID = boatID;
+        this.value = value;
     }
 
+    @Id
+    @GeneratedValue
+    @Column(name="ID")
+    public Integer getId()
+    {
+        return this.id;
+    }
+    
+    public void setId(Integer id)
+    {
+        this.id = id;
+    }
+    
     /**
-     * Returns the boat this handicap applies to
+     * Returns the ID of the boat this handicap applies to
      * @return The boat this handicap applies to
      */
-    @ManyToMany
-    public Boat getBoat()
+    @Column(name="BOAT_ID")
+    public Integer getBoatID()
     {
-        return boat;
+        return boatID;
     }
     
     /**
      * Sets the boat this handicap applies to
-     * @param boat the boat this handicap applies to
+     * @param boat the boat ID this handicap applies to
      */
-    public void setBoat(Boat boat)
+    public void setBoatID(Integer boatID)
     {
-        this.boat = boat;
+        this.boatID = boatID;
     }
     
     /**
-     * Returns the competition this handicap applies to
-     * @return the competition this handicap applies to
+     * Returns the current handicap value. This could be minutes or
+     * could be a proportion depending on the handicap system in use
+     * @return the current handicap
      */
-    public Competition getCompetition()
+    @Column(name="VALUE")
+    public Float getValue()
     {
-        return competition;
+        return value;
     }
-    
+
     /**
-     * Sets the competition this handicap applies to
-     * @param competition the competition this handicap applies to
+     * Sets the current handicap value. This could be minutes or
+     * could be a proportion depending on the handicap system in use
+     * @param value the current handicap value
      */
-    public void setCompetition(Competition competition)
+    public void setValue(Float value)
     {
-        this.competition = competition;
+        this.value = value;
     }
-    
-    private Boat        boat;
-    private Competition competition;
-    private Float       handicap;
+
+    private Integer     id;
+    private Integer     boatID;
+    private Float       value;
 }

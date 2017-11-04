@@ -1,7 +1,6 @@
 package com.runcible.abbot.service.points;
 
 import com.runcible.abbot.model.Competition;
-import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 
 public interface PointsCalculator

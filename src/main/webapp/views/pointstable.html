@@ -10,3 +10,31 @@
 				ng-click="displayPointsTable(competition)">Display</button>
 	</form>
 </div>
+<br />
+<div>
+	<h1>{{pointsTable.competition.name}}</h1>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Boat Name</th>
+				<th>Place</th>
+				<th ng-repeat="race in pointsTable.races">
+					{{race.raceDate | date:'shortDate'}} 
+				</th>
+				<th>Total</th>
+				<th>Total With Drops</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="boatPoints in pointsTable.pointsForBoat">
+				<td>{{boatPoints.boat.name}}</td>
+				<td>{{boatPoints.place}}</td>
+				<td ng-repeat="points in boatPoints.points">
+					{{points}}
+				</td>
+				<td>{{boatPoints.total}}</td>
+				<td>{{boatPoints.totalWithDrops}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
