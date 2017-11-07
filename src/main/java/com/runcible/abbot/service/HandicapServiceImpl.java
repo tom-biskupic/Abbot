@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Handicap;
-import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.repository.HandicapRepository;
@@ -16,8 +15,6 @@ import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.service.points.RaceResultComparator;
-import com.runcible.abbot.service.points.RaceResultSorter;
-import com.runcible.abbot.service.points.RaceResultSorterImpl;
 
 public class HandicapServiceImpl implements HandicapService
 {
@@ -83,15 +80,31 @@ public class HandicapServiceImpl implements HandicapService
             if ( result.getStatus().isStarted() )
             {
                 adjustedHandicap += pushOut;
+                
+                updateHandicap(result.getBoat(),adjustedHandicap);
             }
         }
+    }
+
+    private void updateHandicap(Boat boat, int adjustedHandicap)
+    {
+        Handicap handicap = handicapRepo.findByBoatID(boat.getId());
+        if ( handicap == null )
+        {
+            handicap = new Handicap(null,boat.getId(),new Float(adjustedHandicap));
+        }
+        else
+        {
+            handicap.setValue(new Float(adjustedHandicap));
+        }
+        handicapRepo.save(handicap);
     }
 
     private int findPushOut(List<RaceResult> raceResults)
     {
         int maxPushOut = 0;
         
-        for(int i=0;i<3;i++)
+        for(int i=0;(i<3) && (i<raceResults.size());i++)
         {
             RaceResult nextResult = raceResults.get(i);
 
@@ -141,9 +154,6 @@ public class HandicapServiceImpl implements HandicapService
     
     @Autowired
     private BoatService boatService;
-
-    @Autowired
-    private RaceService raceService;
 
     @Autowired
     private RaceResultService raceResultService;
