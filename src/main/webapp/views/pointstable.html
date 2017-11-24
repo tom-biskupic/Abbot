@@ -29,7 +29,7 @@
 			<tr ng-repeat="boatPoints in pointsTable.pointsForBoat">
 				<td>{{boatPoints.boat.name}}</td>
 				<td>{{boatPoints.place}}</td>
-				<td ng-repeat="points in boatPoints.points">
+				<td ng-repeat="points in boatPoints.points track by $index">
 					{{points}}
 				</td>
 				<td>{{boatPoints.total}}</td>

@@ -13,6 +13,31 @@
 			ng-options="status.id as status.label for status in raceStatusValues" >
 		</select>
 	</div>
+	<div class="panel panel-default" ng-show="(raceStatus == 'COMPLETED')">
+		<div class="panel-heading">Update Race</div>
+        <div class="panel-body">
+			<div class="checkbox">
+		         <label>
+		             <input type="checkbox" ng-model="addDNSBoats">
+		             Add results for boats that did not start?
+		         </label>
+		     </div>
+			<div class="form-group">
+				<label for="resultStatus">Choose the result status to use for non-starting boats</label> 
+				<select
+					ng-disabled="!addDNSBoats"
+					name="resultStatus" class="form-control" ng-model="resultStatusForNonStarters"
+					ng-options="status.id as status.label for status in resultStatusValues" >
+				</select>
+			</div>
+			<div class="checkbox">
+		         <label>
+		             <input type="checkbox" ng-model="updateHandicaps">
+		             Update handicaps from results?
+		         </label>
+		     </div>
+		</div>
+	</div>
 </div>
 <div class="modal-footer">
      <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>

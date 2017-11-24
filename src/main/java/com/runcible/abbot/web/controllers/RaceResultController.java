@@ -4,7 +4,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.Collection;
-import java.util.Date;
 
 import javax.validation.Valid;
 
@@ -21,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.runcible.abbot.model.Boat;
-import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
-import com.runcible.abbot.model.RaceStatus;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;

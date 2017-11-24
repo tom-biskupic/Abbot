@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class Handicap
 {
+    public Handicap()
+    {
+    }
     
     public Handicap(Integer id, Integer boatID, Float value)
     {

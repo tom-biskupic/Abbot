@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Handicap;
@@ -16,6 +17,7 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.service.points.RaceResultComparator;
 
+@Component
 public class HandicapServiceImpl implements HandicapService
 {
 

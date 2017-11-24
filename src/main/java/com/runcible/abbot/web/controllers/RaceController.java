@@ -3,10 +3,12 @@ package com.runcible.abbot.web.controllers;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,17 @@ import org.springframework.web.servlet.ModelAndView;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.model.RaceStatus;
+import com.runcible.abbot.service.HandicapService;
+import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.RaceService;
+import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.web.model.RaceStatusUpdate;
 import com.runcible.abbot.web.model.ValidationResponse;
 
 @Controller
@@ -107,15 +114,30 @@ public class RaceController
 
     @RequestMapping(value="/raceseries/{raceSeriesId}/racestatus.json/{raceId}",method= {RequestMethod.POST})
     public @ResponseBody ValidationResponse updateRaceStatus(
-            @RequestBody                    String  raceStatusString,
-            @PathVariable("raceSeriesId")   Integer raceSeriesID,
-            @PathVariable("raceId")         Integer raceID ) throws NoSuchUser, UserNotPermitted
+            @RequestBody                    RaceStatusUpdate    statusUpdate,
+            @PathVariable("raceSeriesId")   Integer             raceSeriesID,
+            @PathVariable("raceId")         Integer             raceID ) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat
     {
         ValidationResponse response = new ValidationResponse();
+        
         Race race = raceService.getRaceByID(raceID);
-        RaceStatus raceStatus = RaceStatus.valueOf(raceStatusString);
-        race.setRaceStatus(raceStatus);
+        race.setRaceStatus(statusUpdate.getRaceStatus());
         raceService.updateRace(race);
+        
+        if ( statusUpdate.getRaceStatus() == RaceStatus.COMPLETED )
+        {
+            if ( statusUpdate.getAddDNSBoats() )
+            {
+                raceResultService.addNonStartersToRace(
+                        raceID, 
+                        statusUpdate.getResultStatusForNonStarters());
+            }
+            
+            if ( statusUpdate.getUpdateHandicaps() )
+            {
+                handicapService.updateHandicapsFromResults(raceID);
+            }
+        }
         response.setStatus("SUCCESS");
         return response;
     }
@@ -125,4 +147,10 @@ public class RaceController
     
     @Autowired
     private RaceSeriesService raceSeriesService;
+    
+    @Autowired
+    private RaceResultService raceResultService;
+    
+    @Autowired
+    private HandicapService handicapService;
 }

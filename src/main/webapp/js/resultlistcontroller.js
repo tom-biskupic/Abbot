@@ -111,6 +111,11 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
                       },
                     }
                 });
+        
+        modalInstance.result.then( function()
+        		{
+        			$scope.loadPage($scope.page.number);
+        		});
     }
 
     $scope.addNonStarters = function(race)
@@ -190,6 +195,26 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 			}
 		});
 
+	$scope.handicaps = [];
+	
+	$http.get(context+'/raceseries/'+race.raceSeriesId+'/fleet/'+race.fleet.id+'/handicaplist.json').then(
+			function(response) 
+			{
+				$scope.handicaps=response.data;
+			});
+	
+	$scope.onBoatChanged = function()
+	{
+		for (var i=0;i<$scope.handicaps.length;i++)
+		{
+			if ( $scope.handicaps[i].boatID == $scope.object.boat.id )
+			{
+				$scope.object.handicap = $scope.handicaps[i].value;
+				break;
+			}
+		}
+	}
+	
 	$scope.dateOptions = 
 	{
 		formatYear: 'yy',
@@ -314,8 +339,10 @@ angular.module("abbot").controller("raceStatusDialogInstanceController",function
 {
 	$scope.race = object;
 	$scope.raceStatus = object.raceStatus;
+	$scope.addDNSBoats = true;
 	$scope.raceId = object.id;
 	$scope.raceSeriesId = object.raceSeriesId;
+	$scope.updateHandicaps = true;
 	
 	$scope.context = context;
 	
@@ -333,11 +360,29 @@ angular.module("abbot").controller("raceStatusDialogInstanceController",function
                 label: 'Abandoned',
             }];
 
+    $scope.resultStatusForNonStarters = "DNS";
+    
+    $scope.resultStatusValues = 
+    	[	{
+            	id: 'DNS',
+            	label: 'DNS',
+          	}, 
+    		{
+              id: 'DNC',
+              label: 'DNC',
+            }];
+
     $scope.ok = function () 
     {
     	var url = $scope.context + '/raceseries/'+$scope.raceSeriesId+'/racestatus.json/'+$scope.raceId;
+
+    	var statusUpdate = {
+    			raceStatus:$scope.raceStatus,
+    			addDNSBoats:$scope.addDNSBoats,
+    			resultStatusForNonStarters:$scope.resultStatusForNonStarters,
+    			updateHandicaps:$scope.updateHandicaps};
     	
-        $http.post(url,$scope.raceStatus).then(
+        $http.post(url,statusUpdate).then(
                 function(response)
                 {
                 	$scope.race.raceStatus = $scope.raceStatus;
