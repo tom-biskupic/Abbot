@@ -19,15 +19,12 @@ public class HandicapLimit
         
     }
     
-    public HandicapLimit(Fleet fleet, Float limit)
+    public HandicapLimit(Integer raceSeriesID, Fleet fleet, Float limit)
     {
-        super();
-        this.id = null;
-        this.fleet = fleet;
-        this.limit = limit;
+        this(null,raceSeriesID,fleet,limit);
     }
 
-    public HandicapLimit(Integer id, Fleet fleet, Float limit)
+    public HandicapLimit(Integer id, Integer raceSeriesID, Fleet fleet, Float limit)
     {
         super();
         this.id = id;
@@ -47,6 +44,7 @@ public class HandicapLimit
     {
         this.id = id;
     }
+
     
     @ManyToOne
     public Fleet getFleet()
@@ -59,6 +57,17 @@ public class HandicapLimit
         this.fleet = fleet;
     }
     
+    @Column(name="RACE_SERIES_ID")
+    public Integer getRaceSeriesID()
+    {
+        return raceSeriesID;
+    }
+
+    public void setRaceSeriesID(Integer raceSeriesID)
+    {
+        this.raceSeriesID = raceSeriesID;
+    }
+
     @Column(name="LIMIT")
     public Float getLimit()
     {
@@ -71,6 +80,7 @@ public class HandicapLimit
     }
     
     private Integer id;
+    private Integer raceSeriesID;
     private Fleet   fleet;
     private Float   limit;
 }

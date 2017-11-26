@@ -5,12 +5,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Handicap;
+import com.runcible.abbot.model.HandicapLimit;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultType;
+import com.runcible.abbot.repository.HandicapLimitsRepository;
 import com.runcible.abbot.repository.HandicapRepository;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -88,6 +92,36 @@ public class HandicapServiceImpl implements HandicapService
         }
     }
 
+    @Override
+    public HandicapLimit getHandicapLimitForFleet(
+            Integer raceSeriesID,
+            Integer fleetID)
+    {
+        return handicapLimitsRepo.findByFleetID(raceSeriesID, fleetID);
+    }
+
+    @Override
+    public void addHandicapLimit(Integer raceSeriesID, HandicapLimit limit)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void updateHandicapLimit(HandicapLimit limit)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Page<HandicapLimit> getHandicapLimits(Integer raceSeriesID,
+            Pageable p)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     private void updateHandicap(Boat boat, int adjustedHandicap)
     {
         Handicap handicap = handicapRepo.findByBoatID(boat.getId());
@@ -162,4 +196,8 @@ public class HandicapServiceImpl implements HandicapService
 
     @Autowired
     private HandicapRepository handicapRepo;
+
+    @Autowired
+    private HandicapLimitsRepository handicapLimitsRepo;
+
 }
