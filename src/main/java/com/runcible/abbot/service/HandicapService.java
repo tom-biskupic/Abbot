@@ -7,9 +7,12 @@ import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Handicap;
 import com.runcible.abbot.model.HandicapLimit;
+import com.runcible.abbot.service.exceptions.InvalidUpdate;
+import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.service.extensions.NoSuchHandicapLimit;
 
 public interface HandicapService
 {
@@ -44,17 +47,32 @@ public interface HandicapService
     public HandicapLimit getHandicapLimitForFleet(Integer raceSeriesID, Integer fleetID);
 
     /**
+     * Returns the handicap limit with the id specified
+     * @param raceSeresID the ID of the race series this limit is within 
+     * @param id The id of the race series
+     * @return the handicap limit
+     * @throws UserNotPermitted 
+     * @throws NoSuchUser 
+     */
+    public HandicapLimit getHandicapLimit(Integer raceSeresID, Integer id) throws NoSuchUser, UserNotPermitted;
+    
+    /**
      * Add the handicap limit to the race series
      * @param raceSeriesID The ID of the race series to be updated
      * @param limit The handicap limit to add
+     * @throws UserNotPermitted If the logged on user is not permitted to manage this series 
+     * @throws NoSuchUser  If the logged on user is invalid
+     * @throws HandicapLimitAlreadyPresent Handicap limit for this fleet already exists
      */
-    public void addHandicapLimit(Integer raceSeriesID, HandicapLimit limit);
-
+    public void addHandicapLimit(Integer raceSeriesID, HandicapLimit limit) throws NoSuchUser, UserNotPermitted, HandicapLimitAlreadyPresent;
     /**
-     * Update the handicap limit to the race series
+     * Update the handicap limit to the race series. You can't alter the handicap
      * @param limit The handicap limit to be updated
+     * @throws UserNotPermitted If the logged on user is not permitted to manage this race series
+     * @throws NoSuchUser If the logged on user is invalid
+     * @throws InvalidUpdate 
      */
-    public void updateHandicapLimit(HandicapLimit limit);
+    public void updateHandicapLimit(HandicapLimit limit) throws NoSuchUser, UserNotPermitted, InvalidUpdate;
 
     /**
      * Returns a page of handicap limits for the race series ID selected.
@@ -62,5 +80,14 @@ public interface HandicapService
      * @return A page of handicap limits
      */
     public Page<HandicapLimit> getHandicapLimits(Integer raceSeriesID,Pageable p);
+
+    /**
+     * Removes the handicap limit with the ID provided
+     * @param id The id of the handicap limit to remove
+     * @throws NoSuchHandicapLimit 
+     * @throws UserNotPermitted 
+     * @throws NoSuchUser 
+     */
+	public void removeHandicapLimit(Integer id) throws NoSuchHandicapLimit, NoSuchUser, UserNotPermitted;
 }
 

@@ -16,13 +16,16 @@ import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.repository.HandicapLimitsRepository;
 import com.runcible.abbot.repository.HandicapRepository;
+import com.runcible.abbot.service.exceptions.InvalidUpdate;
+import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.service.extensions.NoSuchHandicapLimit;
 import com.runcible.abbot.service.points.RaceResultComparator;
 
 @Component
-public class HandicapServiceImpl implements HandicapService
+public class HandicapServiceImpl extends AuthorizedService implements HandicapService
 {
 
     @Override
@@ -101,27 +104,65 @@ public class HandicapServiceImpl implements HandicapService
     }
 
     @Override
-    public void addHandicapLimit(Integer raceSeriesID, HandicapLimit limit)
+    public HandicapLimit getHandicapLimit(Integer raceSeriesID, Integer id) throws NoSuchUser, UserNotPermitted
     {
-        // TODO Auto-generated method stub
-        
+    	HandicapLimit limit = handicapLimitsRepo.findOne(id);
+    	
+    	throwIfUserNotPermitted(limit.getRaceSeriesID());
+    	if ( raceSeriesID != limit.getRaceSeriesID() )
+    	{
+    		throw new UserNotPermitted();
+    	}
+    	
+    	return limit;
     }
 
     @Override
-    public void updateHandicapLimit(HandicapLimit limit)
+    public void addHandicapLimit(Integer raceSeriesID, HandicapLimit limit) throws NoSuchUser, UserNotPermitted, HandicapLimitAlreadyPresent
     {
-        // TODO Auto-generated method stub
+        throwIfUserNotPermitted(raceSeriesID);
+        if ( handicapLimitsRepo.findByFleetID(raceSeriesID, limit.getFleet().getId()) != null )
+        {
+        	throw new HandicapLimitAlreadyPresent("Handicap limit for fleet "+limit.getFleet().getFleetName()+" already present");
+        }
         
+        handicapLimitsRepo.save(limit);
     }
 
     @Override
-    public Page<HandicapLimit> getHandicapLimits(Integer raceSeriesID,
-            Pageable p)
+    public void updateHandicapLimit(HandicapLimit limit) throws NoSuchUser, UserNotPermitted, InvalidUpdate
     {
-        // TODO Auto-generated method stub
-        return null;
+        throwIfUserNotPermitted(limit.getRaceSeriesID());
+        HandicapLimit foundLimit = handicapLimitsRepo.findOne(limit.getId());
+        if ( 	foundLimit.getFleet().getId() != limit.getFleet().getId() 
+        		||
+        		foundLimit.getRaceSeriesID() != limit.getRaceSeriesID() )
+        {
+        	throw new InvalidUpdate();
+        }
+
+        handicapLimitsRepo.save(limit);
     }
 
+    @Override
+    public Page<HandicapLimit> getHandicapLimits(Integer raceSeriesID, Pageable p)
+    {
+    	return handicapLimitsRepo.getHandicapLimits(raceSeriesID, p);
+    }
+
+    @Override
+    public void removeHandicapLimit(Integer id) throws NoSuchHandicapLimit, NoSuchUser, UserNotPermitted
+    {
+        HandicapLimit limit = handicapLimitsRepo.findOne(id);
+        if ( limit == null )
+        {
+        	throw new NoSuchHandicapLimit();
+        }
+        throwIfUserNotPermitted(limit.getRaceSeriesID());
+    	
+    	handicapLimitsRepo.delete(id);
+    }
+    
     private void updateHandicap(Boat boat, int adjustedHandicap)
     {
         Handicap handicap = handicapRepo.findByBoatID(boat.getId());

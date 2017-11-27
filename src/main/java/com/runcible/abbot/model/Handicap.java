@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.Range;
 import org.springframework.stereotype.Component;
 
 /**
@@ -83,5 +84,7 @@ public class Handicap
 
     private Integer     id;
     private Integer     boatID;
+    
+    @Range()
     private Float       value;
 }
