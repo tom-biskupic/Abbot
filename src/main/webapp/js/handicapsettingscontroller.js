@@ -3,12 +3,12 @@ abbotModule.controller("handicapSettingsController",function($scope,$http,$contr
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
 	$scope.raceSeriesID = $rootScope.seriesID;
-    $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/handicaplimitlist.json','/raceseries/'+$scope.raceSeriesID+'/handcaplimit.json','views/handicaplimitform.html')
+    $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/handicaplimitlist.json','/raceseries/'+$scope.raceSeriesID+'/handicaplimit.json','views/handicaplimitform.html')
     
     $scope.setDialogController('handicapSettingsDialogInstanceController');
 });
 
-angular.module("abbot").controller("handicapLimitInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )
+angular.module("abbot").controller("handicapSettingsDialogInstanceController",function($scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource )
 {
     angular.extend(
             this,
@@ -24,7 +24,7 @@ angular.module("abbot").controller("handicapLimitInstanceController",function($s
 
     $scope.raceSeriesID = $rootScope.seriesID;
     
-    $http.get(context+'/raceseries/'+$scope.raceSeriesId+'/fleetlist.json/all').then(
+    $http.get(context+'/raceseries/'+$scope.raceSeriesID+'/fleetlist.json/all').then(
             function(response) 
             { 
                 $scope.fleets = response.data;

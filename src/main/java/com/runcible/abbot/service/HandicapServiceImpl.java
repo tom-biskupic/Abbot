@@ -126,6 +126,8 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         	throw new HandicapLimitAlreadyPresent("Handicap limit for fleet "+limit.getFleet().getFleetName()+" already present");
         }
         
+        limit.setRaceSeriesID(raceSeriesID);
+        
         handicapLimitsRepo.save(limit);
     }
 

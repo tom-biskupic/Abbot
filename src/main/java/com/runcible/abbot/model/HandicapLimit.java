@@ -4,7 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -42,6 +43,7 @@ public class HandicapLimit
     {
         super();
         this.id = id;
+        this.raceSeriesID = raceSeriesID;
         this.fleet = fleet;
         this.limit = limit;
     }
@@ -71,7 +73,8 @@ public class HandicapLimit
      * Returns the fleet this handicap limit applies to
      * @return the fleet this handicap limit applies to
      */
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name="FLEET")
     public Fleet getFleet()
     {
         return fleet;
@@ -133,5 +136,6 @@ public class HandicapLimit
     
     @NotNull(message="A fleet must be selected")
     private Fleet   fleet;
+    
     private Float   limit;
 }

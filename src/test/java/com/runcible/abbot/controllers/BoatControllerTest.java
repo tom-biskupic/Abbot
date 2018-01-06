@@ -10,18 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.service.BoatService;
-import com.runcible.abbot.service.exceptions.NoSuchBoat;
-import com.runcible.abbot.service.exceptions.NoSuchUser;
-import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

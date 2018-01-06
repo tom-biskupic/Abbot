@@ -51,6 +51,14 @@
     <bean id="raceService" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="com.runcible.abbot.service.RaceService"/>
     </bean>
+
+    <bean id="raceResultService" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.runcible.abbot.service.RaceResultService"/>
+    </bean>
+
+    <bean id="handicapService" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.runcible.abbot.service.HandicapService"/>
+    </bean>
     
    <context:component-scan base-package="com.runcible.abbot.web.controllers" use-default-filters="false" >
         <context:include-filter type="regex" expression="com.runcible.abbot.web.controllers.UserAuthorizationController"/>
@@ -61,6 +69,7 @@
         <context:include-filter type="regex" expression="com.runcible.abbot.web.controllers.FleetController"/>
         <context:include-filter type="regex" expression="com.runcible.abbot.web.controllers.RaceListController"/>  -->
         <context:include-filter type="regex" expression="com.runcible.abbot.web.controllers.RaceSeriesController"/>
+        <context:include-filter type="regex" expression="com.runcible.abbot.web.controllers.HandicapController"/>
         <!--  <context:include-filter type="regex" expression="com.runcible.abbot.web.controllers.RaceSettingsController"/> -->
     </context:component-scan>
 

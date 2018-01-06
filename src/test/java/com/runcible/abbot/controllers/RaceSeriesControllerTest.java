@@ -48,14 +48,14 @@ public class RaceSeriesControllerTest extends MvcTestWithJSON
         
         RaceSeries[] raceSeriesArray = new RaceSeries[1];
         raceSeriesArray[0] = raceSeries;
-        testPage = new PageImpl<RaceSeries>(Arrays.asList(raceSeriesArray));
+        testRaceSeriesPage = new PageImpl<RaceSeries>(Arrays.asList(raceSeriesArray));
     }
 
     @Test
     public void testGetPageableList() throws Exception
     {
     	when(loggedOnUserService.getLoggedOnUser()).thenReturn(user);
-    	when(raceSeriesService.findAll(any(Pageable.class),eq(user))).thenReturn(testPage);
+    	when(raceSeriesService.findAll(any(Pageable.class),eq(user))).thenReturn(testRaceSeriesPage);
     	
     	mockMvc.perform(get("/raceserieslist.json?page=1&size=3")
     			.contentType(contentType))
@@ -77,5 +77,5 @@ public class RaceSeriesControllerTest extends MvcTestWithJSON
     private LoggedOnUserService loggedOnUserService;
     
     
-    private Page<RaceSeries> testPage;
+    private Page<RaceSeries> testRaceSeriesPage;
 }

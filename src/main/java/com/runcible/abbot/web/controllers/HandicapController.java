@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,24 +43,24 @@ public class HandicapController
         return handicapService.getHandicapsForFleet(raceSeriesID, fleetID);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicapLimitList.json",method=GET)
-    public @ResponseBody Page<HandicapLimit> getHandicapsLimits(
+    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimitlist.json",method=GET)
+    public @ResponseBody Page<HandicapLimit> getHandicapLimits(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             Pageable p ) 
     {
         return handicapService.getHandicapLimits(raceSeriesID, p);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicapLimit.json/{id}",method=GET)
-    public @ResponseBody HandicapLimit getHandicapsLimit(
+    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimit.json/{id}",method=GET)
+    public @ResponseBody HandicapLimit getHandicapLimit(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             @PathVariable("id") Integer id) throws NoSuchUser, UserNotPermitted 
     {
     	return handicapService.getHandicapLimit(raceSeriesID, id);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicapLimit.json/{id}",method=DELETE)
-    public @ResponseBody ValidationResponse deleteHandicapsLimit(
+    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimit.json/{id}",method=DELETE)
+    public @ResponseBody ValidationResponse deleteHandicapLimit(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             @PathVariable("id") Integer id) throws NoSuchUser, UserNotPermitted, NoSuchHandicapLimit 
     {
@@ -69,7 +70,7 @@ public class HandicapController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicapLimit.json",method=POST)
+    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimit.json",method=POST)
     public @ResponseBody ValidationResponse save(
             @Valid @RequestBody HandicapLimit       limit,
             BindingResult                   		result,
@@ -83,17 +84,60 @@ public class HandicapController
         }
         else
         {
-        	if (limit.getId() != null )
-        	{
-        		handicapService.updateHandicapLimit(limit);
-        	}
-        	else
-        	{
-        		handicapService.addHandicapLimit(raceSeriesID,limit);
-        	}
+            if ( limit.getLimit() == null || limit.getLimit() <= 0.0f )
+            {
+                result.addError(new FieldError(
+                        result.getObjectName(),
+                        "limit",
+                        limit.getLimit(),
+                        false,
+                        null,
+                        null,
+                        "A positive, non-zero limit value must be specified"));
+                response.setErrorMessageList(result.getAllErrors());
+                response.setStatus("FAIL");
+            }
+            else 
+            {
+                try
+                {
+                    if (limit.getId() != null )
+                	{
+                		handicapService.updateHandicapLimit(limit);
+                	}
+                	else
+                	{
+                		handicapService.addHandicapLimit(raceSeriesID,limit);
+                	}
+                    response.setStatus("SUCCESS");
+                }
+                catch( HandicapLimitAlreadyPresent e )
+                {
+                    addDuplicateFleetError(limit, result, response);
+                }
+                catch( InvalidUpdate e )
+                {
+                    addDuplicateFleetError(limit, result, response);
+                }
+            }
         }
         
         return response;
+    }
+
+    private void addDuplicateFleetError(HandicapLimit limit,
+            BindingResult result, ValidationResponse response)
+    {
+        result.addError(new FieldError(
+                result.getObjectName(),
+                "fleet",
+                limit.getFleet(),
+                false,
+                null,
+                null,
+                "A handicap limit has already been specified for this fleet"));
+        response.setErrorMessageList(result.getAllErrors());
+        response.setStatus("FAIL");
     }
 
     @Autowired

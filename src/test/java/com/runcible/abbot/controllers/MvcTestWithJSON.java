@@ -24,6 +24,8 @@ import com.runcible.abbot.model.BoatClass;
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.FleetSelector;
+import com.runcible.abbot.model.Handicap;
+import com.runcible.abbot.model.HandicapLimit;
 import com.runcible.abbot.model.PointsSystem;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
@@ -50,6 +52,8 @@ public class MvcTestWithJSON
                 competitionSet);
         
 		testRaceDayList.add(new RaceDay(testRaceTime));
+		
+		testHandicapList.add(testHandicap);
     }
 
     public byte[] convertObjectToJsonBytes(Object object) throws IOException
@@ -74,6 +78,7 @@ public class MvcTestWithJSON
     protected static final String   TEST_EMAIL = "fred@nowhere.com";
 
     protected static final Integer  TEST_RACE_SERIES_ID = 123;
+    protected static final Integer  TEST_HANDICAP_LIMIT_ID = 444;
     
     protected static final String FIRST_NAME="Fred";
     protected static final String LAST_NAME="Bloggs";
@@ -123,7 +128,7 @@ public class MvcTestWithJSON
             Arrays.asList(new FleetSelector(testBoatClass, null)));
     
     protected static final Fleet testFleet = new Fleet(
-            TEST_RACE_SERIES_ID,TEST_FLEET_NAME,TEST_FLEET_SELECTORS);
+            TEST_FLEET_ID, TEST_RACE_SERIES_ID,TEST_FLEET_NAME,TEST_FLEET_SELECTORS);
 
     protected static final Integer  TEST_COMPETITION_ID = 71;
     protected static final String   TEST_COMPETITION_NAME = "Sabot Season Points";
@@ -148,6 +153,21 @@ public class MvcTestWithJSON
     protected Race testRace;
 
     protected List<RaceDay> testRaceDayList = new ArrayList<RaceDay>();
+    
+    protected static final Float TEST_HANDICAP_LIMIT_VALUE = 34.0f;
+    
+    protected static final HandicapLimit testHandicapLimit = new HandicapLimit(
+            TEST_HANDICAP_LIMIT_ID,
+            TEST_RACE_SERIES_ID,
+            testFleet,
+            TEST_HANDICAP_LIMIT_VALUE);
+ 
+    protected static final Integer  TEST_HANDICAP_ID = 999;
+    protected static final Float    TEST_HANDICAP_VALUE = 1.0f;
+    protected static final Handicap testHandicap 
+        = new Handicap(TEST_HANDICAP_ID,TEST_BOAT_ID,TEST_HANDICAP_VALUE);
+    
+    protected List<Handicap> testHandicapList = new ArrayList<Handicap>();
     
     @Autowired
     protected WebApplicationContext wac;
