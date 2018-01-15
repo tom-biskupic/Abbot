@@ -117,9 +117,9 @@ public class RaceServiceTest
         Date date2 = cal.getTime();
         
         List<Race> testRaceList = new ArrayList<Race>();
-        testRaceList.add(new Race(TEST_RACE_SERIES_ID,date1,"Race1",null,null));
-        testRaceList.add(new Race(TEST_RACE_SERIES_ID,date1,"Race2",null,null));
-        testRaceList.add(new Race(TEST_RACE_SERIES_ID,date2,"Race3",null,null));
+        testRaceList.add(new Race(TEST_RACE_SERIES_ID,date1,"Race1",null,false,null));
+        testRaceList.add(new Race(TEST_RACE_SERIES_ID,date1,"Race2",null,false,null));
+        testRaceList.add(new Race(TEST_RACE_SERIES_ID,date2,"Race3",null,false,null));
         
         when(raceRepoMock.findRacesOrderByDate(TEST_RACE_SERIES_ID)).thenReturn(testRaceList);
         List<RaceDay> raceDays = fixture.getRaceDays(TEST_RACE_SERIES_ID);

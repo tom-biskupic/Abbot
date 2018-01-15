@@ -57,7 +57,7 @@ public class PointsServiceTest
 
 		setupDataFetchingMocks(raceResults);
 
-		when(mockRaceResultSorter.sortResults(raceResults, mockCompetition)).thenReturn(raceResults);
+		when(mockRaceResultSorter.sortResults(raceResults,ResultType.SCRATCH_RESULT)).thenReturn(raceResults);
 		
 		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
 		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
@@ -84,7 +84,8 @@ public class PointsServiceTest
 	    
 	    setupDataFetchingMocks(resultsWithMissingEntry);
 
-	    when(mockRaceResultSorter.sortResults(resultsWithMissingEntry, mockCompetition)).thenReturn(resultsWithMissingEntry);
+	    when(mockRaceResultSorter.sortResults(
+	            resultsWithMissingEntry, ResultType.SCRATCH_RESULT)).thenReturn(resultsWithMissingEntry);
 	        
 	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
 	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 2, ResultStatus.FINISHED)).thenReturn(2.0f);

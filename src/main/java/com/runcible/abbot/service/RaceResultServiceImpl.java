@@ -1,8 +1,6 @@
 package com.runcible.abbot.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +12,14 @@ import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
-import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.repository.RaceResultRepository;
+import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
+import com.runcible.abbot.service.points.RaceResultPlaceUpdater;
 
 @Component
 public class RaceResultServiceImpl implements RaceResultService 
@@ -54,33 +53,58 @@ public class RaceResultServiceImpl implements RaceResultService
 	}
 	
 	@Override
-	public void addResult(Integer raceId,RaceResult result) throws NoSuchUser, UserNotPermitted, NoSuchBoat 
+	public void addResult(Integer raceId,RaceResult result) 
+	        throws NoSuchUser, UserNotPermitted, NoSuchBoat, DuplicateResult 
 	{
 		checkAuthorized(raceId);
 		result.setRaceId(raceId);
 		
         updateCalculatedDurations(result);
 		
-		//
-		//    Not sure why we need to do this - something to do with it being
-		//    a ManyToOne relationship
-		//
-		Boat foundBoat = boatService.getBoatByID(result.getBoat().getId());
-		result.setBoat(foundBoat);
-		raceResultRepo.save(result);
+        updateRacePlaces(raceId, result);
+        
+        addResultInternal(result);
 	}
 
-	@Override
-	public void updateResult(RaceResult result) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult 
+    private void updateRacePlaces(Integer raceId, RaceResult result) throws DuplicateResult
+    {
+        List<RaceResult> existingResults = raceResultRepo.findRaceResults(raceId);
+        
+        raceResultPlaceUpdater.updateResultPlaces(result, existingResults);
+        
+        for( RaceResult nextResult : existingResults )
+        {
+            raceResultRepo.save(nextResult);
+        }
+    }
+
+    private void addResultInternal(RaceResult result)
+            throws NoSuchBoat, NoSuchUser, UserNotPermitted
+    {
+        //
+        //    Not sure why we need to do this - something to do with it being
+        //    a ManyToOne relationship
+        //
+        Boat foundBoat = boatService.getBoatByID(result.getBoat().getId());
+		result.setBoat(foundBoat);
+		raceResultRepo.save(result);
+    }
+
+    @Override
+	public void updateResult(RaceResult result) 
+	        throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult 
 	{
 		if ( raceResultRepo.findOne(result.getId()) == null )
 		{
 			throw new NoSuchRaceResult();
 		}
 
+		checkAuthorized(result.getRaceId());
+
 		updateCalculatedDurations(result);
 
-		checkAuthorized(result.getRaceId());
+		updateRacePlaces(result.getRaceId(), result);
+		
 		raceResultRepo.save(result);
 	}
 
@@ -93,6 +117,18 @@ public class RaceResultServiceImpl implements RaceResultService
         }
 	    checkAuthorized(found.getRaceId());
 	    raceResultRepo.delete(found);
+	    
+	    try
+	    {
+	        updateRacePlaces(found.getRaceId(), null);
+	    }
+	    catch(DuplicateResult e)
+	    {
+	        //
+	        // This is not possible
+	        //
+	    }
+
 	}
 	
 	//
@@ -141,7 +177,7 @@ public class RaceResultServiceImpl implements RaceResultService
         List<Boat> boats = findBoatsNotInRace(race);
         for(Boat boat : boats)
         {
-            addResult(race.getId(), makeResult(boat,raceID,resultStatus));
+            addResultInternal(makeResult(boat,raceID,resultStatus));
         }
     }
     
@@ -188,8 +224,9 @@ public class RaceResultServiceImpl implements RaceResultService
 		raceService.getRaceByID(raceId);
 	}
 
-	@Autowired	RaceService            raceService;
-	@Autowired  BoatService            boatService;
-	@Autowired 	RaceResultRepository   raceResultRepo;
-	@Autowired  TimeService            timeService;
+	private @Autowired	RaceService            raceService;
+	private @Autowired  BoatService            boatService;
+	private @Autowired 	RaceResultRepository   raceResultRepo;
+	private @Autowired  TimeService            timeService;
+	private @Autowired  RaceResultPlaceUpdater raceResultPlaceUpdater;
 }

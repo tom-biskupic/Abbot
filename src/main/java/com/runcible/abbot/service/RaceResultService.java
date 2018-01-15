@@ -11,6 +11,7 @@ import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
+import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
@@ -70,12 +71,13 @@ public interface RaceResultService
      * @param raceId The ID of the race to add this result to
      * @param result The result to add.
      * 
-     * @throws UserNotPermitted
-     * @throws NoSuchUser
-     * @throws NoSuchBoat 
+     * @throws UserNotPermitted User not authorized to perform this action
+     * @throws NoSuchUser       Logged on user does not exist
+     * @throws NoSuchBoat       Boat referred to in result does not exist
+     * @throws DuplicateResult  We already have a result for this boat
      */
     public void addResult(Integer raceId, RaceResult result)
-            throws NoSuchUser, UserNotPermitted, NoSuchBoat;
+            throws NoSuchUser, UserNotPermitted, NoSuchBoat, DuplicateResult;
 
     /**
      * Updates the result with the one provided
@@ -84,10 +86,11 @@ public interface RaceResultService
      * 
      * @throws NoSuchUser if the logged on user doesn't exist
      * @throws UserNotPermitted If the user is not permitted to manage this race
-     * @throws NoSuchRaceResult
+     * @throws NoSuchRaceResult The race result ID was invalid
+     * @throws DuplicateResult We alredy have a result for the boat with this ID
      */
     public void updateResult(RaceResult result)
-            throws NoSuchUser, UserNotPermitted, NoSuchRaceResult;
+            throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult;
     
     /**
      * Removes the specified result from the race.

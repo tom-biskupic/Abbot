@@ -79,7 +79,7 @@ public class PointsServiceImpl implements PointsService
         //  Sort the results by either handicap place or scratch place depending
         //  on the competition settings
         //
-        results = resultSorter.sortResults(results,competition);
+        results = resultSorter.sortResults(results,competition.getResultType());
         
         int numberOfStarters = countNumberOfStarters(results);
         

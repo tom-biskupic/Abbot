@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Handicap;
 import com.runcible.abbot.model.HandicapLimit;
+import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.repository.HandicapLimitsRepository;
@@ -19,9 +20,9 @@ import com.runcible.abbot.repository.HandicapRepository;
 import com.runcible.abbot.service.exceptions.InvalidUpdate;
 import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
+import com.runcible.abbot.service.exceptions.NoSuchHandicapLimit;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
-import com.runcible.abbot.service.extensions.NoSuchHandicapLimit;
 import com.runcible.abbot.service.points.RaceResultComparator;
 
 @Component
@@ -61,6 +62,11 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         List<RaceResult> raceResults = raceResultService.findAll(raceID);
         
         //
+        //  Get the handicap limit. Round to an int value for this handicap scheme
+        //
+        int limit = getHandicapLimit(raceID).intValue();
+                
+        //
         //  Sort the results so the first result is the best and so on
         //
         Collections.sort(
@@ -83,16 +89,41 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             if ( result.getStatus().isFinished() )
             {
                 adjustedHandicap -= handicapUpdateForResult(place,result);
+                
                 place++;
             }
             
             if ( result.getStatus().isStarted() )
             {
                 adjustedHandicap += pushOut;
+
+                if ( adjustedHandicap > limit )
+                {
+                    adjustedHandicap = limit;
+                }
                 
                 updateHandicap(result.getBoat(),adjustedHandicap);
             }
+            
         }
+    }
+
+    //
+    //  Get the handicap limit for the fleet that raced in the 
+    //  race with the ID specified
+    //
+    private Float getHandicapLimit(Integer raceID) throws NoSuchUser, UserNotPermitted
+    {
+        //
+        //  Get the race so we can find the fleet etc
+        //
+        Race race = racetService.getRaceByID(raceID);
+                
+        //
+        //  Get the handicap limit for the fleet in this race
+        //
+        HandicapLimit limit = getHandicapLimitForFleet(race.getRaceSeriesId(), race.getFleet().getId());
+        return limit.getLimit();
     }
 
     @Override
@@ -236,6 +267,9 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
 
     @Autowired
     private RaceResultService raceResultService;
+
+    @Autowired
+    private RaceService racetService;
 
     @Autowired
     private HandicapRepository handicapRepo;

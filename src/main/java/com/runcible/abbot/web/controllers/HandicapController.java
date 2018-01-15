@@ -26,9 +26,9 @@ import com.runcible.abbot.service.HandicapService;
 import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.InvalidUpdate;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
+import com.runcible.abbot.service.exceptions.NoSuchHandicapLimit;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
-import com.runcible.abbot.service.extensions.NoSuchHandicapLimit;
 import com.runcible.abbot.web.model.ValidationResponse;
 
 @Controller

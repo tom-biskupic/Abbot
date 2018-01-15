@@ -36,9 +36,10 @@ public class Race implements ModelWithId
             Date                    raceDate,
             String                  name,
             Fleet                   fleet,
+            boolean                 shortCourse,
             Set<Competition> 		competitions)
     {
-        this(null,raceSeriesId,raceDate,name,fleet,competitions);
+        this(null,raceSeriesId,raceDate,name,fleet,shortCourse,competitions);
     }
 
     public Race(    
@@ -47,6 +48,7 @@ public class Race implements ModelWithId
             Date                    raceDate,
             String                  name,
             Fleet                   fleet,
+            boolean                 shortCourse,
             Set<Competition> competitions)
     {
         this();
@@ -56,6 +58,7 @@ public class Race implements ModelWithId
         this.raceDate = raceDate;
         this.name = name;
         this.fleet = fleet;
+        this.shortCourseRace = shortCourse;
         this.competitions = competitions;
     }
 
@@ -174,6 +177,27 @@ public class Race implements ModelWithId
         }
     }
 
+    /**
+     * Returns true if this is a short-course race. Used to distinguish short course
+     * races from normal races in cases where we have a race series that is a mixture
+     * @return true if this is a short course race
+     */
+    public boolean isShortCourseRace()
+    {
+        return shortCourseRace;
+    }
+
+    /**
+     * Returns true if this is a short-course race. Used to distinguish short course
+     * races from normal races in cases where we have a race series that is a mixture
+     * @param shortCourseRace true if this is a short course race 
+     * 
+     */
+    public void setShortCourseRace(boolean shortCourseRace)
+    {
+        this.shortCourseRace = shortCourseRace;
+    }
+
     private   Integer                       raceId;
     private   Integer                       raceSeriesId;
     
@@ -189,4 +213,6 @@ public class Race implements ModelWithId
     
     @Size(min=1,message="At least one competition must be selected")
     private   Set<Competition>              competitions;
+    
+    private   boolean                       shortCourseRace;
 }

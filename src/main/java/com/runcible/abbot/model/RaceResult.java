@@ -1,6 +1,5 @@
 package com.runcible.abbot.model;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -11,17 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Models a result for a single boat in a single race.
@@ -44,7 +35,17 @@ public class RaceResult
 			Date         finishTime,
 			ResultStatus status)
 	{
-		this(null,raceId,boat,handicap,startTime,finishTime,status,null,null);
+		this( null,
+		      raceId,
+		      boat,
+		      handicap,
+		      startTime,
+		      finishTime,
+		      status,
+		      null,
+		      null,
+		      null,
+		      null);
 	}
 
 	public RaceResult( 
@@ -55,9 +56,21 @@ public class RaceResult
 			Date         finishTime,
 			ResultStatus status,
 			Integer		 sailingTime,
-			Integer		 correctedTime)
+			Integer		 correctedTime,
+			Integer      handicapPlace,
+			Integer      scratchPlace )
 	{
-		this(null,raceId,boat,handicap,startTime,finishTime,status,sailingTime,correctedTime);
+		this( null,
+		      raceId,
+		      boat,
+		      handicap,
+		      startTime,
+		      finishTime,
+		      status,
+		      sailingTime,
+		      correctedTime,
+		      handicapPlace,
+		      scratchPlace);
 	}
 
 	public RaceResult(
@@ -69,7 +82,9 @@ public class RaceResult
 			Date 	     finishTime,
 			ResultStatus status,
 			Integer		 sailingTime,
-			Integer		 correctedTime) 
+			Integer		 correctedTime,
+			Integer      handicapPlace,
+			Integer      scratchPlace) 
 	{
 		super();
 		this.id = id;
@@ -81,6 +96,8 @@ public class RaceResult
 		this.status = status;
 		this.sailingTime = sailingTime;
 		this.correctedTime = correctedTime;
+		this.handicapPlace = handicapPlace;
+		this.scratchPlace = scratchPlace;
 	}
 
 	/**
@@ -264,7 +281,44 @@ public class RaceResult
         this.correctedTime = correctedTime;
     }
 
-	private Integer            id=null;
+    /**
+     * Returns the place this finisher got on scratch (i.e over the line)
+     * @return the scratch place
+     */
+	public Integer getScratchPlace()
+    {
+        return scratchPlace;
+    }
+
+	/**
+	 * Sets the place this finisher got on sratch (i.e over the line)
+	 * @param scratchPlace the scratch place
+	 */
+    public void setScratchPlace(Integer scratchPlace)
+    {
+        this.scratchPlace = scratchPlace;
+    }
+
+    /**
+     * Returns the place this finisher got on handicap time
+     * @return the handicap place
+     */
+    public Integer getHandicapPlace()
+    {
+        return handicapPlace;
+    }
+
+    /**
+     * Sets the place this finisher got on handicap time
+     * @param handicapPlace the handicap place
+     */
+    public void setHandicapPlace(Integer handicapPlace)
+    {
+        this.handicapPlace = handicapPlace;
+    }
+
+
+    private Integer            id=null;
 	private Integer            raceId=null;
 	
 	@NotNull(message="A boat must be selected")
@@ -277,6 +331,9 @@ public class RaceResult
 	private Integer            sailingTime=null;
 	private Integer            correctedTime=null;
 
+	private Integer            scratchPlace=0;
+	private Integer            handicapPlace=0;
+	
     @NotNull(message="A result status must be provided")
 	private ResultStatus       status = null;
 }

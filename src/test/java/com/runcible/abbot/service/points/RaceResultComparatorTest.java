@@ -41,8 +41,10 @@ public class RaceResultComparatorTest
 		assertEquals(0,fixture.compare(testDNFResult, testDNFResult));
 	}
 
-	private RaceResult testFinishedResult1 = new RaceResult(null,null,null,null,null,ResultStatus.FINISHED,100,100);
-	private RaceResult testFinishedResult2 = new RaceResult(null,null,null,null,null,ResultStatus.FINISHED,110,90);
+	private RaceResult testFinishedResult1 = new RaceResult(
+	        null,null,null,null,null,ResultStatus.FINISHED,100,100,0,0);
+	private RaceResult testFinishedResult2 = new RaceResult(
+	        null,null,null,null,null,ResultStatus.FINISHED,110,90,0,0);
 	private RaceResult testDNFResult = new RaceResult(null,null,null,null,null,ResultStatus.DNF);
 	private RaceResult testDNSResult = new RaceResult(null,null,null,null,null,ResultStatus.DNS);
 }

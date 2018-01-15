@@ -1,4 +1,4 @@
-package com.runcible.abbot.service.extensions;
+package com.runcible.abbot.service.exceptions;
 
 public class NoSuchHandicapLimit extends Exception
 {

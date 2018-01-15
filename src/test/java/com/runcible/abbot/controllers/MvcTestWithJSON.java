@@ -49,6 +49,7 @@ public class MvcTestWithJSON
                 testRaceTime,
                 TEST_RACE_NAME,
                 testFleet,
+                false,
                 competitionSet);
         
 		testRaceDayList.add(new RaceDay(testRaceTime));

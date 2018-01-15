@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.stereotype.Component;
 
 /**
@@ -82,9 +81,27 @@ public class Handicap
         this.value = value;
     }
 
+    /**
+     * Returns the number of times this boat has won in the season.
+     * The the handicap adjustment changes with the number of wins 
+     * @return the number of wins.
+     */
+    public Integer getNumberOfWins()
+    {
+        return numberOfWins;
+    }
+
+    /**
+     * Sets the number of wins for this boat
+     * @param numberOfWins
+     */
+    public void setNumberOfWins(Integer numberOfWins)
+    {
+        this.numberOfWins = numberOfWins;
+    }
+
     private Integer     id;
     private Integer     boatID;
-    
-    @Range()
-    private Float       value;
+    private Float       value = 0.0f;
+    private Integer     numberOfWins = 0;
 }

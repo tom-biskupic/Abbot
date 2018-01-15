@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.ResultType;
 
 @Component
 public class RaceResultSorterImpl implements RaceResultSorter
@@ -14,11 +14,11 @@ public class RaceResultSorterImpl implements RaceResultSorter
     @Override
     public List<RaceResult> sortResults(
             List<RaceResult>    results,
-            Competition         competititon)
+            ResultType          resultType)
     {
         Collections.sort(
                 results,
-                new RaceResultComparator(competititon.getResultType()));
+                new RaceResultComparator(resultType));
 
         return results;
     }

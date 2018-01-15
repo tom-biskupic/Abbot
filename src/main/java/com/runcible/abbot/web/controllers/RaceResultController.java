@@ -24,6 +24,7 @@ import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;
+import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
@@ -58,7 +59,7 @@ public class RaceResultController
                 @Valid @RequestBody RaceResult	raceResult,
                 BindingResult                   bindingResult,
                 @PathVariable("raceseriesid") Integer raceSeriesId,
-                @PathVariable("raceid") Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, NoSuchBoat
+                @PathVariable("raceid") Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, NoSuchBoat, DuplicateResult
     {
         ValidationResponse response = new ValidationResponse();
         if ( bindingResult.hasErrors() )

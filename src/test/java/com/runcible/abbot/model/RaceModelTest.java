@@ -48,7 +48,7 @@ public class RaceModelTest extends ValidationTest
         Set<Competition> competitions = new HashSet<Competition>();
         competitions.add(new Competition());
         
-        Race fixture = new Race(0,0,new Date(),"Name",new Fleet(),competitions);
+        Race fixture = new Race(0,0,new Date(),"Name",new Fleet(),false, competitions);
         
         return fixture;
     }
