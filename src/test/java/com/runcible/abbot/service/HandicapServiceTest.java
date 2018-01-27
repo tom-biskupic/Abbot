@@ -6,6 +6,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -73,6 +75,7 @@ public class HandicapServiceTest
         setupHandicapLimitMocks(20.0f);
         
         when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         
         //
         //  Basically nothing should happen as the result is DNS
@@ -106,6 +109,7 @@ public class HandicapServiceTest
         when(mockHandicapRepo.findByBoatID(testBoatID1)).thenReturn(mockHandicap1);
         when(mockHandicapRepo.findByBoatID(testBoatID2)).thenReturn(mockHandicap2);
         when(mockHandicapRepo.findByBoatID(testBoatID3)).thenReturn(mockHandicap3);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         
         fixture.updateHandicapsFromResults(testRaceID);
         
@@ -123,6 +127,112 @@ public class HandicapServiceTest
         //  Second place 3-2 = 1
         //
         verify(mockHandicap3).setValue(new Float(1.0));
+    }
+
+    @Test
+    public void testUpdateHandicapsAdjustmentFourthWin() throws NoSuchUser, UserNotPermitted
+    {
+        RaceResult testResult1 = new RaceResult(
+                testRaceID,mockBoat1,6,null,null,ResultStatus.FINISHED,0,100,0,0);
+        RaceResult testResult2 = new RaceResult(
+                testRaceID,mockBoat2,5,null,null,ResultStatus.FINISHED,0,90,0,0);
+        RaceResult testResult3 = new RaceResult(
+                testRaceID,mockBoat3,3,null,null,ResultStatus.FINISHED,0,95,0,0);
+
+        when(mockBoat1.getId()).thenReturn(testBoatID1);
+        when(mockBoat2.getId()).thenReturn(testBoatID2);
+        when(mockBoat3.getId()).thenReturn(testBoatID3);
+        
+        List<RaceResult> resultList = new ArrayList<RaceResult>();
+        resultList.add(testResult1);
+        resultList.add(testResult2);
+        resultList.add(testResult3);
+        
+        setupHandicapLimitMocks(20.0f);
+        
+        when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
+        when(mockHandicapRepo.findByBoatID(testBoatID1)).thenReturn(mockHandicap1);
+        when(mockHandicapRepo.findByBoatID(testBoatID2)).thenReturn(mockHandicap2);
+        when(mockHandicapRepo.findByBoatID(testBoatID3)).thenReturn(mockHandicap3);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
+        
+        when(mockRace.getRaceDate()).thenReturn(testRaceDate);
+        when(mockRaceResultService.getWinsForBoatBeforeDate(
+                testRaceSeriesID, testFleetID, testBoatID1, testRaceDate)).thenReturn(1);
+        when(mockRaceResultService.getWinsForBoatBeforeDate(
+                testRaceSeriesID, testFleetID, testBoatID2, testRaceDate)).thenReturn(3);
+        when(mockRaceResultService.getWinsForBoatBeforeDate(
+                testRaceSeriesID, testFleetID, testBoatID3, testRaceDate)).thenReturn(2);
+
+        fixture.updateHandicapsFromResults(testRaceID);
+        
+        //
+        //  This guy is third so 6-1 = 5
+        //
+        verify(mockHandicap1).setValue(new Float(5.0));
+        
+        //
+        //  This guy came first but he has had 3 wins so 5 - 4 = 1
+        //
+        verify(mockHandicap2).setValue(new Float(1.0));
+        
+        //
+        //  Second place 3-2 = 1
+        //
+        verify(mockHandicap3).setValue(new Float(1.0));
+    }
+
+    @Test
+    public void testUpdateHandicapsPushOutFourthWin() throws NoSuchUser, UserNotPermitted
+    {
+        RaceResult testResult1 = new RaceResult(
+                testRaceID,mockBoat1,0,null,null,ResultStatus.FINISHED,0,100,0,0);
+        RaceResult testResult2 = new RaceResult(
+                testRaceID,mockBoat2,5,null,null,ResultStatus.DNF,0,0,0,0);
+        RaceResult testResult3 = new RaceResult(
+                testRaceID,mockBoat3,3,null,null,ResultStatus.DNS,0,0,0,0);
+
+        when(mockBoat1.getId()).thenReturn(testBoatID1);
+        when(mockBoat2.getId()).thenReturn(testBoatID2);
+        when(mockBoat3.getId()).thenReturn(testBoatID3);
+        
+        setupHandicapLimitMocks(20.0f);
+        
+        List<RaceResult> resultList = new ArrayList<RaceResult>();
+        resultList.add(testResult1);
+        resultList.add(testResult2);
+        resultList.add(testResult3);
+        
+        when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
+        when(mockHandicapRepo.findByBoatID(testBoatID1)).thenReturn(mockHandicap1);
+        when(mockHandicapRepo.findByBoatID(testBoatID2)).thenReturn(mockHandicap2);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
+        
+        when(mockRace.getRaceDate()).thenReturn(testRaceDate);
+        when(mockRaceResultService.getWinsForBoatBeforeDate(
+                testRaceSeriesID, testFleetID, testBoatID1, testRaceDate)).thenReturn(3);
+        when(mockRaceResultService.getWinsForBoatBeforeDate(
+                testRaceSeriesID, testFleetID, testBoatID2, testRaceDate)).thenReturn(1);
+        when(mockRaceResultService.getWinsForBoatBeforeDate(
+                testRaceSeriesID, testFleetID, testBoatID3, testRaceDate)).thenReturn(1);
+
+        fixture.updateHandicapsFromResults(testRaceID);
+        
+        //
+        //  This guy is first but he was already on zero so still zero
+        //
+        verify(mockHandicap1).setValue(new Float(0.0));
+        
+        //
+        //  This guy started but did not finish. The winner is on their third
+        //  win so this guy gets a 4 minute pushout
+        //
+        verify(mockHandicap2).setValue(new Float(9.0));
+
+        //
+        //  There should be no more updates as the third guy is DNS
+        //
+        verifyNoMoreInteractions(mockHandicap3);
     }
 
     @Test
@@ -149,6 +259,7 @@ public class HandicapServiceTest
         when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
         when(mockHandicapRepo.findByBoatID(testBoatID1)).thenReturn(mockHandicap1);
         when(mockHandicapRepo.findByBoatID(testBoatID2)).thenReturn(mockHandicap2);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         
         fixture.updateHandicapsFromResults(testRaceID);
         
@@ -207,6 +318,7 @@ public class HandicapServiceTest
         when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
         when(mockHandicapRepo.findByBoatID(testBoatID1)).thenReturn(mockHandicap1);
         when(mockHandicapRepo.findByBoatID(testBoatID2)).thenReturn(mockHandicap2);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         
         fixture.updateHandicapsFromResults(testRaceID);
         
@@ -231,7 +343,7 @@ public class HandicapServiceTest
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
         when(mockHandicapRepo.findByBoatID(testBoatID)).thenReturn(null);
-        
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         setupHandicapLimitMocks(20.0f);
         
         fixture.updateHandicapsFromResults(testRaceID);
@@ -301,6 +413,8 @@ public class HandicapServiceTest
     private static final Integer testHandicapLimitID = 911;
     
     private List<Boat> testBoatList = new ArrayList<Boat>();
+    
+    private Date testRaceDate = Calendar.getInstance().getTime();
     
     @Mock private Boat              mockBoat;
     @Mock private Boat              mockBoat1;

@@ -29,19 +29,19 @@ public class RaceResultPlaceUpdaterTest
     {
         testExistingResults = new ArrayList<RaceResult>();
         testExistingResults.add(mockExistingResult);
+        
+        testExistingResultsUpdateCase = new ArrayList<RaceResult>();
+        testExistingResultsUpdateCase.add(mockExistingResult);
+        testExistingResultsUpdateCase.add(mockResultToUpdate);
     }
     
     @Test
-    public void testSorting() throws DuplicateResult
+    public void testSortingAfterAdd() throws DuplicateResult
     {
-        when(mockResultToUpdate.getBoat()).thenReturn(mockBoat1);
-        when(mockResultToUpdate.getStatus()).thenReturn(ResultStatus.FINISHED);
-        when(mockBoat1.getId()).thenReturn(123);
-        when(mockExistingResult.getBoat()).thenReturn(mockBoat2);
-        when(mockExistingResult.getStatus()).thenReturn(ResultStatus.FINISHED);
-        when(mockBoat2.getId()).thenReturn(456);
+        setupMockBoats();
         
         fixture.updateResultPlaces(mockResultToUpdate, testExistingResults);
+        
         ArgumentCaptor<List> resultsCaptor1 = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<List> resultsCaptor2 = ArgumentCaptor.forClass(List.class);
         
@@ -60,8 +60,48 @@ public class RaceResultPlaceUpdaterTest
         verify(mockResultToUpdate).setScratchPlace(2);
 
     }
+
+    @Test
+    public void testSortingAfterUpdate() throws DuplicateResult
+    {
+        setupMockBoats();
+        
+        fixture.updateResultPlaces(mockResultToUpdate, testExistingResults);
+        
+        ArgumentCaptor<List> resultsCaptor1 = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List> resultsCaptor2 = ArgumentCaptor.forClass(List.class);
+        
+        verify(mockRaceResultSorter).sortResults(resultsCaptor1.capture(), eq(ResultType.HANDICAP_RESULT));
+        verify(mockRaceResultSorter).sortResults(resultsCaptor2.capture(), eq(ResultType.SCRATCH_RESULT));
+        
+        List<RaceResult> resultsList1 = resultsCaptor1.getValue();
+        assertEquals(2,resultsList1.size());
+        assertEquals(mockExistingResult,resultsList1.get(0));
+        assertEquals(mockResultToUpdate,resultsList1.get(1));
+        assertEquals(resultsList1,resultsCaptor2.getValue());
+        
+        verify(mockExistingResult).setHandicapPlace(1);
+        verify(mockExistingResult).setScratchPlace(1);
+        verify(mockResultToUpdate).setHandicapPlace(2);
+        verify(mockResultToUpdate).setScratchPlace(2);
+
+    }
+
+    private void setupMockBoats()
+    {
+        when(mockResultToUpdate.getId()).thenReturn(testResultID1);
+        when(mockResultToUpdate.getBoat()).thenReturn(mockBoat1);
+        when(mockResultToUpdate.getStatus()).thenReturn(ResultStatus.FINISHED);
+        when(mockBoat1.getId()).thenReturn(123);
+        when(mockExistingResult.getId()).thenReturn(testResultID2);
+        when(mockExistingResult.getBoat()).thenReturn(mockBoat2);
+        when(mockExistingResult.getStatus()).thenReturn(ResultStatus.FINISHED);
+        when(mockBoat2.getId()).thenReturn(456);
+    }
     
     private static final Integer testRaceID = 11;
+    private static final Integer testResultID1 = 919;
+    private static final Integer testResultID2 = 929;
     
     private @Mock Boat          mockBoat1;
     private @Mock RaceResult    mockExistingResult;
@@ -69,6 +109,7 @@ public class RaceResultPlaceUpdaterTest
     private @Mock RaceResult    mockResultToUpdate;
     
     private List<RaceResult> testExistingResults;
+    private List<RaceResult> testExistingResultsUpdateCase;
     
     private @Mock RaceResultSorter mockRaceResultSorter;
     

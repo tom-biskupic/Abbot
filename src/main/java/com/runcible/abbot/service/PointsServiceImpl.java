@@ -16,6 +16,7 @@ import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
+import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -23,7 +24,6 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.service.points.PointsCalculator;
 import com.runcible.abbot.service.points.PointsSorter;
 import com.runcible.abbot.service.points.PointsTotalCalculator;
-import com.runcible.abbot.service.points.RaceResultSorter;
 
 @Component
 public class PointsServiceImpl implements PointsService
@@ -75,23 +75,22 @@ public class PointsServiceImpl implements PointsService
         //
         List<RaceResult> results = raceResultService.findAll(race.getId());
         
-        //
-        //  Sort the results by either handicap place or scratch place depending
-        //  on the competition settings
-        //
-        results = resultSorter.sortResults(results,competition.getResultType());
+        boolean useHandicap = competition.getResultType() == ResultType.HANDICAP_RESULT;
         
         int numberOfStarters = countNumberOfStarters(results);
         
         Set<Boat> boatsDone = new HashSet<Boat>();
         
-        int place=1;
         for ( RaceResult result : results )
         {
+            
         	Boat boat = result.getBoat();
             boatPoints.get(boat).getPoints().add(
         			pointsCalculator.calculatePoints(
-        			        competition, numberOfStarters, place++, result.getStatus()));
+        			        competition, 
+        			        numberOfStarters, 
+        			        useHandicap ? result.getHandicapPlace() : result.getScratchPlace(), 
+        			        result.getStatus()));
             boatsDone.add(boat);
         }
         
@@ -105,7 +104,7 @@ public class PointsServiceImpl implements PointsService
             {
                 boatPoints.get(boat).getPoints().add(
                         pointsCalculator.calculatePoints(
-                                competition, numberOfStarters, place++, ResultStatus.DNS));
+                                competition, numberOfStarters, 0, ResultStatus.DNS));
             }
         }
     }
@@ -151,9 +150,6 @@ public class PointsServiceImpl implements PointsService
 
     @Autowired
     private PointsCalculator pointsCalculator;
-    
-    @Autowired
-    private RaceResultSorter resultSorter;
     
     @Autowired
     private PointsTotalCalculator pointsTotalCalculator;

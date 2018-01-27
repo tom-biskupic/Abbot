@@ -89,7 +89,7 @@ public class PointsServiceTest
 	        
 	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
 	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
-	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 3, ResultStatus.DNS)).thenReturn(3.0f);
+	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 0, ResultStatus.DNS)).thenReturn(3.0f);
 	        
 	    PointsTable pointsTable = fixture.generatePointsTable(testRaceSeriesID, testCompetitionID);
 	    assertEquals(mockCompetition,pointsTable.getCompetition());
@@ -160,11 +160,11 @@ public class PointsServiceTest
 	private Boat testBoat3 = new Boat(null, "IkeepTheTail", "1234", testClass, null, false, "", "");
 
 	private RaceResult resultBoat1 = new RaceResult(
-	        null, testBoat1, 1, new Date(), new Date(), ResultStatus.FINISHED);
+	        null, testBoat1, 1, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 1, 1);
 	private RaceResult resultBoat2 = new RaceResult(
-	        null, testBoat2, 1, new Date(), new Date(), ResultStatus.FINISHED);
+	        null, testBoat2, 1, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 2, 2);
 	private RaceResult resultBoat3 = new RaceResult(
-	        null, testBoat3, 1, new Date(), new Date(), ResultStatus.FINISHED);
+	        null, testBoat3, 1, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 3, 3);
 
 	@Mock private RaceService mockRaceService;
 	@Mock private CompetitionService mockCompetitionService;

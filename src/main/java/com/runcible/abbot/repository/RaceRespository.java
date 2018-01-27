@@ -1,5 +1,6 @@
 package com.runcible.abbot.repository;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -24,5 +25,4 @@ public interface RaceRespository extends PagingAndSortingRepository<Race, Intege
     public List<Race> findRacesInCompetition(
             @Param("seriesid") Integer seriesid,
             @Param("competitionid") Integer competitionid);
-
 }

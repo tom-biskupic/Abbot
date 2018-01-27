@@ -124,4 +124,19 @@ public interface RaceResultService
     public void addNonStartersToRace(
             Integer         raceId, 
             ResultStatus    result) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat;
+    
+    
+    /**
+     * Returns the number of times this boat has won before now
+     * @param raceSeriesId
+     * @param fleetId
+     * @param boatId
+     * @param thisRaceDate
+     * @return
+     */
+    public int getWinsForBoatBeforeDate(
+            Integer raceSeriesId,
+            Integer fleetId,
+            Integer boatId,
+            Date    thisRaceDate );
 }

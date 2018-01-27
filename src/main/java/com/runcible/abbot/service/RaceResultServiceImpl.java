@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,7 +216,16 @@ public class RaceResultServiceImpl implements RaceResultService
         }
     }
 
-   
+
+    public int getWinsForBoatBeforeDate(
+            Integer raceSeriesId,
+            Integer fleetId,
+            Integer boatId,
+            Date    thisRaceDate )
+    {
+        return raceResultRepo.getWinsForBoat(raceSeriesId, boatId, fleetId, thisRaceDate);
+    }
+
 	private void checkAuthorized(Integer raceId) throws NoSuchUser, UserNotPermitted 
 	{
 		//

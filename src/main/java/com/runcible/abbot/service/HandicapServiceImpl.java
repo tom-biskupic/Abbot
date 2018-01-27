@@ -2,7 +2,9 @@ package com.runcible.abbot.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -65,7 +67,15 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //  Get the handicap limit. Round to an int value for this handicap scheme
         //
         int limit = getHandicapLimit(raceID).intValue();
-                
+        
+        Race thisRace = raceService.getRaceByID(raceID);
+        
+        //
+        //  For each result, go see if any have won three times before. If so 
+        //  their adjustment for winning changes
+        //
+        Map<Integer,Boolean> thirdWinMap = findThirdWinBoats(raceResults,thisRace);
+        
         //
         //  Sort the results so the first result is the best and so on
         //
@@ -73,12 +83,13 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 raceResults,
                 new RaceResultComparator(ResultType.HANDICAP_RESULT));
 
+        
         //
         //  The pushout is the amount of time we have to add to everybody's
         //  handicap. This happens if the reduction of a handicap would take
         //  a competitor below zero
         //
-        int pushOut = findPushOut(raceResults);
+        int pushOut = findPushOut(raceResults,thirdWinMap);
         
         int place = 1;
         
@@ -88,7 +99,10 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             
             if ( result.getStatus().isFinished() )
             {
-                adjustedHandicap -= handicapUpdateForResult(place,result);
+                adjustedHandicap -= handicapUpdateForResult(
+                        place,
+                        result,
+                        thirdWinMap.get(result.getBoat().getId()));
                 
                 place++;
             }
@@ -108,6 +122,32 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         }
     }
 
+    private Map<Integer, Boolean> findThirdWinBoats(
+            List<RaceResult> raceResults, Race thisRace)
+    {
+        Map<Integer,Boolean> thirdWinMap = new HashMap<Integer,Boolean>();
+        
+        //
+        //  It should be possible to do this in one insane query but... Yeah no..
+        //  Maybe with a stored procedure in a real DB
+        //
+        for (RaceResult nextResult : raceResults)
+        {
+            if ( nextResult.getStatus().isStarted() )
+            {
+                int wins = raceResultService.getWinsForBoatBeforeDate(
+                        thisRace.getRaceSeriesId(), 
+                        thisRace.getFleet().getId(), 
+                        nextResult.getBoat().getId(), 
+                        thisRace.getRaceDate());
+            
+                thirdWinMap.put(nextResult.getBoat().getId(),(wins >= 2));
+            }
+        }
+        
+        return thirdWinMap;
+    }
+
     //
     //  Get the handicap limit for the fleet that raced in the 
     //  race with the ID specified
@@ -117,7 +157,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //
         //  Get the race so we can find the fleet etc
         //
-        Race race = racetService.getRaceByID(raceID);
+        Race race = raceService.getRaceByID(raceID);
                 
         //
         //  Get the handicap limit for the fleet in this race
@@ -210,7 +250,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         handicapRepo.save(handicap);
     }
 
-    private int findPushOut(List<RaceResult> raceResults)
+    private int findPushOut(List<RaceResult> raceResults, Map<Integer, Boolean> thirdWinMap)
     {
         int maxPushOut = 0;
         
@@ -223,7 +263,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 break;
             }
             
-            int adjustment = handicapUpdateForResult(i+1,nextResult);
+            int adjustment = handicapUpdateForResult(i+1,nextResult,thirdWinMap.get(nextResult.getBoat().getId()));
             int pushOut=0;
             
             if ( adjustment > nextResult.getHandicap() )
@@ -240,7 +280,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         return maxPushOut;
     }
 
-    private int handicapUpdateForResult(int place, RaceResult result)
+    private int handicapUpdateForResult(int place, RaceResult result, Boolean hadThreeWins)
     {
         int adjust=0;
         if ( result.getStatus().isFinished() )
@@ -248,7 +288,14 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             switch(place)
             {
             case 1:
-                adjust = 3;
+                if ( hadThreeWins )
+                {
+                    adjust = 4;
+                }
+                else
+                {
+                    adjust = 3;
+                }
                 break;
             case 2:
                 adjust = 2;
@@ -268,8 +315,6 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     @Autowired
     private RaceResultService raceResultService;
 
-    @Autowired
-    private RaceService racetService;
 
     @Autowired
     private HandicapRepository handicapRepo;
@@ -277,4 +322,6 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     @Autowired
     private HandicapLimitsRepository handicapLimitsRepo;
 
+    @Autowired
+    private RaceService raceService;
 }

@@ -19,18 +19,17 @@ public class RaceResultPlaceUpdaterImpl implements RaceResultPlaceUpdater
             RaceResult          updatedResult,
             List<RaceResult>    existingResults) throws DuplicateResult
     {
+        //
+        //  updatedResult will be null if this is called during a delte
+        //
         if ( updatedResult != null && alreadyHaveResultForBoat(updatedResult,existingResults) )
         {
             throw new DuplicateResult();
         }
-        
-        List<RaceResult> allResults = new ArrayList<RaceResult>();
-        allResults.addAll(existingResults);
-        
-        if ( updatedResult != null )
-        {
-            allResults.add(updatedResult);
-        }
+
+        List<RaceResult> allResults = buildResultList(
+                updatedResult,
+                existingResults);
         
         raceResultSorter.sortResults(allResults, ResultType.HANDICAP_RESULT);
         
@@ -61,6 +60,40 @@ public class RaceResultPlaceUpdaterImpl implements RaceResultPlaceUpdater
                 nextResult.setScratchPlace(0);
             }
         }
+    }
+
+    private List<RaceResult> buildResultList(
+            RaceResult          updatedResult,
+            List<RaceResult>    existingResults)
+    {
+        List<RaceResult> allResults = new ArrayList<RaceResult>();
+        
+        //
+        //  If we have a result and it has an ID then find the result it
+        //  is replacing in the list and remove that. Or rather just add
+        //  everything else
+        //
+        if ( updatedResult != null && updatedResult.getId() != null )
+        {
+            for (RaceResult nextResult : existingResults )
+            {
+                if ( nextResult.getId() != updatedResult.getId() )
+                {
+                    allResults.add(nextResult);
+                }
+            }
+        }
+        else
+        {
+            allResults.addAll(existingResults);
+        }
+        
+        if ( updatedResult != null )
+        {
+            allResults.add(updatedResult);
+        }
+        
+        return allResults;
     }
 
     private boolean alreadyHaveResultForBoat(
