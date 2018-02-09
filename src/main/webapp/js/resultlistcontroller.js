@@ -197,7 +197,7 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 
 	$scope.handicaps = [];
 	
-	$http.get(context+'/raceseries/'+race.raceSeriesId+'/fleet/'+race.fleet.id+'/handicaplist.json').then(
+	$http.get(context+'/raceseries/'+race.raceSeriesId+'/fleet/'+race.fleet.id+'/'+race.id+'/handicaplist.json').then(
 			function(response) 
 			{
 				$scope.handicaps=response.data;

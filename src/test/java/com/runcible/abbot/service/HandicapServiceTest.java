@@ -47,7 +47,7 @@ public class HandicapServiceTest
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockHandicapRepo.findByBoatID(testBoatID)).thenReturn(mockHandicap);
         
-        List<Handicap> handicaps = fixture.getHandicapsForFleet(testRaceSeriesID, testFleetID);
+        List<Handicap> handicaps = fixture.getHandicapsForFleet(testRaceSeriesID, testFleetID, testRaceID);
         assertEquals(1,handicaps.size());
         assertEquals(mockHandicap,handicaps.get(0));
     }
@@ -59,7 +59,7 @@ public class HandicapServiceTest
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockHandicapRepo.findByBoatID(testBoatID)).thenReturn(null);
         
-        List<Handicap> handicaps = fixture.getHandicapsForFleet(testRaceSeriesID, testFleetID);
+        List<Handicap> handicaps = fixture.getHandicapsForFleet(testRaceSeriesID, testFleetID,testRaceID);
         assertEquals(1,handicaps.size());
         assertEquals(testBoatID,handicaps.get(0).getBoatID());
         assertEquals(new Float(0.0f),handicaps.get(0).getValue());

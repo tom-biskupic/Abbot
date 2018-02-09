@@ -17,17 +17,21 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 public interface HandicapService
 {
     /**
-     * Returns a list of handicaps for each boat in the fleet specified. If a boat
-     * does not have a handicap a default is chosen (zero or whatever is appropriate
-     * for the current handicap system).
+     * Returns a list of handicaps for each boat in the fleet specified at the time of the race
+     * with ID specified. If a boat does not have a handicap a default is chosen (zero or whatever 
+     * is appropriate for the current handicap system).
      * @param raceSeriesID the ID of the race series this fleet is part of
-     * @param the ID of the fleet we are interested in
+     * @param fleetId the ID of the fleet we are interested in
+     * @param raceID the ID of the race we want the handicaps for
      * @return The list of handicaps for each boat
      * @throws NoSuchFleet 
      * @throws UserNotPermitted 
      * @throws NoSuchUser 
      */
-    public List<Handicap> getHandicapsForFleet(Integer raceSeriesID,Integer fleetId) 
+    public List<Handicap> getHandicapsForFleet(
+            Integer     raceSeriesID,
+            Integer     fleetId,
+            Integer     raceID ) 
             throws NoSuchUser, UserNotPermitted, NoSuchFleet;
 
     /**

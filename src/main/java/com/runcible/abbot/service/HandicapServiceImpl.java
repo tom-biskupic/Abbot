@@ -32,8 +32,10 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
 {
 
     @Override
-    public List<Handicap> getHandicapsForFleet(Integer raceSeriesID, Integer fleetId) 
-            throws NoSuchUser, UserNotPermitted, NoSuchFleet
+    public List<Handicap> getHandicapsForFleet(
+            Integer     raceSeriesID,
+            Integer     fleetId,
+            Integer     raceID ) throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
         List<Handicap> handicaps = new ArrayList<Handicap>();
         List<Boat> boats = boatService.getAllBoatsInFleetForSeries(raceSeriesID, fleetId);
@@ -127,10 +129,6 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     {
         Map<Integer,Boolean> thirdWinMap = new HashMap<Integer,Boolean>();
         
-        //
-        //  It should be possible to do this in one insane query but... Yeah no..
-        //  Maybe with a stored procedure in a real DB
-        //
         for (RaceResult nextResult : raceResults)
         {
             if ( nextResult.getStatus().isStarted() )

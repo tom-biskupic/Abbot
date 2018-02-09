@@ -35,12 +35,13 @@ import com.runcible.abbot.web.model.ValidationResponse;
 public class HandicapController
 {
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/fleet/{fleetid}/handicaplist.json",method=GET)
+    @RequestMapping(value="/raceseries/{raceseriesid}/fleet/{fleetid}/{raceid}/handicaplist.json",method=GET)
     public @ResponseBody List<Handicap> getHandicapsForFleet(
             @PathVariable("raceseriesid") Integer raceSeriesID,
-            @PathVariable("fleetid") Integer fleetID ) throws NoSuchUser, UserNotPermitted, NoSuchFleet
+            @PathVariable("fleetid") Integer fleetID,
+            @PathVariable("raceid") Integer raceID) throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
-        return handicapService.getHandicapsForFleet(raceSeriesID, fleetID);
+        return handicapService.getHandicapsForFleet(raceSeriesID, fleetID, raceID);
     }
 
     @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimitlist.json",method=GET)

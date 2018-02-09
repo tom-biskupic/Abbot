@@ -58,10 +58,10 @@ public class HandicapControllerTest extends MvcTestWithJSON
     @Test
     public void testGetHandicapsForFleet() throws Exception
     {
-        when(handicapService.getHandicapsForFleet(TEST_RACE_SERIES_ID, TEST_FLEET_ID)).thenReturn(
+        when(handicapService.getHandicapsForFleet(TEST_RACE_SERIES_ID, TEST_FLEET_ID, TEST_RACE_ID)).thenReturn(
                 testHandicapList);
         
-        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/fleet/"+TEST_FLEET_ID+"/handicaplist.json"))
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/fleet/"+TEST_FLEET_ID+"/"+ TEST_RACE_ID + "/handicaplist.json"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$[0].id", is(TEST_HANDICAP_ID)))
