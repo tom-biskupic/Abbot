@@ -73,5 +73,26 @@ public interface RaceService
 	 * @return The races in the selected competition
 	 */
 	public List<Race> getRacesInCompetition(Competition competition);
+
+	/**
+	 * Returns all the races for a given fleet in a race series
+	 * @param raceSeriesID The race series
+	 * @param fleetID The fleet ID
+	 * @return The list of races for that series/fleet
+	 * @throws UserNotPermitted  If the logged user is not permitted to manage this fleet
+	 * @throws NoSuchUser If the logged on user is invalid 
+	 */
+	public List<Race> getRacesForFleet(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted;
 	
+	/**
+	 * Returns the most recent finished race before the race provded.
+	 * Used to find the previous race for handicap reasons.
+	 * @param race This is the race we are finding the previous race of
+	 * @param allowShortCourse Can it be a short course race?
+	 * @return The previous race or NULL if there isn't one.
+	 * @throws NoSuchUser
+	 * @throws UserNotPermitted
+	 */
+	public Race findPreviousFinishedRace(Race race, boolean allowShortCourse) throws NoSuchUser, UserNotPermitted;
 }
+

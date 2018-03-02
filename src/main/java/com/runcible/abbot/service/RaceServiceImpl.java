@@ -96,7 +96,24 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
         
         return result;
     }
-    
+
+    public List<Race> getRacesForFleet(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted
+    {
+        throwIfUserNotPermitted(raceSeriesID);
+        List<Race> result = raceRepo.findRacesForFleet(raceSeriesID, fleetID);
+        
+        return result;
+    }
+
+    @Override
+    public Race findPreviousFinishedRace(
+            Race    race,
+            boolean allowShortCourse ) throws NoSuchUser, UserNotPermitted
+    {
+        return null;
+    }
+        
+
     private boolean sameDay(Date raceDate, Date day) 
     {
     	Calendar cal1 = Calendar.getInstance();
@@ -109,6 +126,7 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
 	}
 
 
+    
 	@Autowired
     private RaceRespository raceRepo;
     

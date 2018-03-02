@@ -1,0 +1,36 @@
+
+<div>
+	<div class="panel panel-default">
+	    <div class="panel-heading">Export Points Tables</div>
+	    <div class="panel-body">
+			<form class="navbar-form navbar-left">
+				<label for="competition">Choose a competition</label>
+				<select name="competition" 
+			            class="form-control" 
+			            ng-model="competition" 
+			            ng-options="competition.name for competition in competitions track by competition.id">
+				</select>
+				<button type="button" class="btn btn-default"
+						ng-click="exportPointsTable(competition)">Export</button>
+			</form>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+	    <div class="panel-heading">Export Races</div>
+	    <div class="panel-body">
+			<form class="navbar-form navbar-left">
+				<label for="competition">Choose a fleet</label>
+		         <select name="fleet" 
+		             class="form-control" 
+		             ng-model="selectedfleet" 
+		             ng-options="fleet.fleetName for fleet in fleets track by fleet.id"
+		             required>
+		         </select>
+				<button type="button" class="btn btn-default"
+						ng-click="exportRaces(selectedfleet)">Export</button>
+			</form>
+		</div>
+	</div>
+	
+</div>

@@ -85,12 +85,21 @@ public class PointsServiceImpl implements PointsService
         {
             
         	Boat boat = result.getBoat();
+
+            ResultStatus status = result.getStatus();
+
+        	int place = 0;
+        	if ( status.isFinished() )
+        	{
+        	    place = useHandicap ? result.getHandicapPlace() : result.getScratchPlace();
+        	}
+        	
             boatPoints.get(boat).getPoints().add(
         			pointsCalculator.calculatePoints(
         			        competition, 
         			        numberOfStarters, 
-        			        useHandicap ? result.getHandicapPlace() : result.getScratchPlace(), 
-        			        result.getStatus()));
+        			        place, 
+        			        status));
             boatsDone.add(boat);
         }
         
