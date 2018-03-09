@@ -62,8 +62,8 @@ angular.module("abbot").controller("raceDialogInstanceController",function($scop
     $scope.dateOptions = 
     {
     	    formatYear: 'yy',
-    	    maxDate: new Date(2020, 5, 22),
-    	    minDate: new Date(),
+    	    maxDate: null,
+    	    minDate: null,
     	    startingDay: 1
     };
     
