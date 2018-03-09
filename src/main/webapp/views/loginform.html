@@ -11,6 +11,8 @@
      <input type="password" class="form-control" name="password" ng-model="credentials.password" />
  </div>
  
+ <span ng-show="error" class="help-block">Login Failed</span>
+ 
  <button type="submit" class="btn btn-primary" ng-click="login()">Login</button>
  
  <a class="btn" href="#!/register" >Register &raquo;</button>

@@ -14,6 +14,8 @@ import com.runcible.abbot.service.AuthenticationService;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter 
 {
+    @Autowired RestAuthenticationFailureEntryPoint restAuthFailureHandler;
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception 
     {
@@ -34,7 +36,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                         "/logout",
                         "/login").permitAll()
            .anyRequest().authenticated().and()
-           .formLogin().loginPage("/login").permitAll().and()
+           .formLogin()
+               .loginProcessingUrl("/login")
+               .failureHandler(restAuthFailureHandler)
+               .permitAll()
+               .and()
            .logout().logoutUrl("/logout").invalidateHttpSession(true).permitAll().and()                   
            .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }

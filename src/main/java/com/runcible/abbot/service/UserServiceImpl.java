@@ -32,6 +32,15 @@ public class UserServiceImpl implements UserService
             throw new DuplicateUserException();
         }
 
+        //
+        //  if this is the first user created, make them an administrator
+        //
+        
+        if ( userRepo.count() == 0 )
+        {
+            user.setAdministrator(true);
+        }
+        
         userRepo.save(user);
     }
 

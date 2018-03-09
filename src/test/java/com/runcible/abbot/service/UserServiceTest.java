@@ -42,10 +42,24 @@ public class UserServiceTest
     {
         when(mockUser.getEmail()).thenReturn(testEmail);
         when(mockUserRepo.findByEmail(testEmail)).thenReturn(null);
+        when(mockUserRepo.count()).thenReturn(1L);
         
         fixture.addUser(mockUser);
         
         verify(mockUserRepo).save(mockUser);
+    }
+
+    @Test
+    public void testAddFirstUser() throws DuplicateUserException
+    {
+        when(mockUser.getEmail()).thenReturn(testEmail);
+        when(mockUserRepo.findByEmail(testEmail)).thenReturn(null);
+        when(mockUserRepo.count()).thenReturn(0L);
+        
+        fixture.addUser(mockUser);
+        
+        verify(mockUserRepo).save(mockUser);
+        verify(mockUser).setAdministrator(true);
     }
 
     @Test(expected=DuplicateUserException.class)

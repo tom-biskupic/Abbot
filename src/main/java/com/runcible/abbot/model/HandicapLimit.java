@@ -114,7 +114,7 @@ public class HandicapLimit
      * it is the maximum number of minutes.
      * @return the limit value for the handicap
      */
-    @Column(name="LIMIT")
+    @Column(name="MAX_HANDICAP")
     public Float getLimit()
     {
         return limit;

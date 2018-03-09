@@ -45,29 +45,29 @@ angular.module("abbot").controller("loggedOnUserController",function($scope,$con
 	      {
 	        "content-type" : "application/x-www-form-urlencoded"
 	      }
-	}).then(function(data) 
-	{
-		authenticate(function() 
-		{
-			if ($rootScope.authenticated) 
-	        {
-	          $location.path("/");
-	          $scope.error = false;
-	        }
-	        else 
-	        {
-	          $location.path("/loginform");
-	          $scope.error = true;
-	        }
-		  });
+		}).then(function(data) 
+        {
+		    authenticate(function() 
+		    {
+			    if ($rootScope.authenticated) 
+	            {
+			    	$location.path("/");
+			    	$scope.error = false;
+	            }
+			    else 
+			    {
+			    	$location.path("/loginform");
+			    	$scope.error = true;
+			    }
+		    });
 	    }, function(data) 
-		{
-	      $location.path("/loginform");
-	      $scope.error = true;
-	      $rootScope.authenticated = false;
+	    {
+	    	$location.path("/loginform");
+	    	$scope.error = true;
+	    	$rootScope.authenticated = false;
 	    });
-	};	 
-	  
+	}
+	
 	$scope.logout = function() 
 	{
 		$http.post('logout', {}).finally(function() 
