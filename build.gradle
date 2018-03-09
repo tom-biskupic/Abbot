@@ -41,11 +41,6 @@ repositories
 war 
 {
     baseName = 'Abbot3'
-//    from('src/main/java') 
-//    {
-//    	include 'application.properties'
-//    	into 'WEB-INF/classes/com/runcible/abbot'
-//	}
 }
 
 docker
@@ -90,8 +85,10 @@ dependencies
 	runtime 'com.fasterxml.jackson.core:jackson-databind'
 	//runtime 'javax.servlet:jstl'
 	runtime group: 'org.hsqldb', name: 'hsqldb', version: '2.4.0'
+	runtime group: 'mysql', name: 'mysql-connector-java', version: '5.1.45'
+
 			
-	testCompile 'org.mockito:mockito-all:1.9.5'
+	testCompile 'org.mockito:mockito-all:1.10.19'
 	testCompile 'junit:junit:4.11+'
 	testCompile 'org.springframework:spring-test:4.3.11.RELEASE'
 	testCompile 'org.springframework:spring-web:4.3.11.RELEASE'
