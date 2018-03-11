@@ -27,8 +27,7 @@ public class ExportServiceImpl implements ExportService
         PointsTable pointsTable = pointsService.generatePointsTable(raceSeriesID, competitionID);
         
         StringBuffer result = new StringBuffer();
-        result.append("<table class=\"table table-striped\">\n");
-        result.append("<thead>\n");
+        result.append("<table class=\"results-table\">\n");
         result.append(indent(1,"<tr>\n"));
         result.append(indent(2,makeTH("Boat Name")));
         result.append(indent(2,makeTH("Place")));
@@ -39,9 +38,6 @@ public class ExportServiceImpl implements ExportService
         result.append(indent(2,makeTH("Total")));
         result.append(indent(2,makeTH("Total With Drops")));
         result.append(indent(1,"</tr>\n"));
-        result.append("</thead>\n");
-        
-        result.append("<tbody>\n");
         
         for(PointsForBoat pointsForBoat : pointsTable.getPointsForBoat() )
         {
@@ -52,11 +48,12 @@ public class ExportServiceImpl implements ExportService
             {
                 result.append(indent(2,makeTD(new Float(points).toString())));
             }
-            result.append(indent(2,makeTD(new Float(pointsForBoat.getTotal()).toString())));
-            result.append(indent(2,makeTD(new Float(pointsForBoat.getTotalWithDrops()).toString())));
+            
+            ;
+            result.append(indent(2,makeTD(String.format("%0.2f", pointsForBoat.getTotal()))));
+            result.append(indent(2,makeTD(String.format("%0.2f", pointsForBoat.getTotalWithDrops()))));
             result.append(indent(1,"\t</tr>\n"));
         }
-        result.append("</tbody>\n");
         result.append("</table>\n");
         
         return result.toString();
@@ -86,8 +83,7 @@ public class ExportServiceImpl implements ExportService
         }
         else
         {
-            buffer.append("<table>\n");
-            buffer.append("<thead>\n");
+            buffer.append("<table class=\"results-table\">\n");
             buffer.append(indent(1,makeTH("Boat")));
             buffer.append(indent(1,makeTH("Number")));
             buffer.append(indent(1,makeTH("H'Cap")));
@@ -96,8 +92,7 @@ public class ExportServiceImpl implements ExportService
             buffer.append(indent(1,makeTH("Finish")));
             buffer.append(indent(1,makeTH("Time")));
             buffer.append(indent(1,makeTH("Corrected")));
-            buffer.append("</thead>\n");
-            buffer.append("<body>\n");
+
             for(RaceResult result : results)
             {
                 buffer.append(indent(1,"<tr>\n"));
@@ -141,7 +136,6 @@ public class ExportServiceImpl implements ExportService
                 }
                 buffer.append(indent(1,"</tr>\n"));
             }
-            buffer.append("</body>\n");
             buffer.append("</table>\n");
         }
     }
