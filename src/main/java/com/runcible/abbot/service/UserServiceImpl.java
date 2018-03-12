@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService
     @Override
     public User validateLogon(String email, String password)
     {
-        User user = userRepo.findByEmailAndPassword(email, password);
+        User user = userRepo.findByEmailAndPassword(email.trim(), password.trim());
         return user;
     }
 

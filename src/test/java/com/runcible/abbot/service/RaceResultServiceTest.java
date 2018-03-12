@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.repository.RaceResultRepository;
 import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
@@ -61,7 +62,7 @@ public class RaceResultServiceTest
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockBoatService.getBoatByID(testBoatID)).thenReturn(mockBoat);
         
-        setupCalculationMocks(true, true);
+        setupCalculationMocks(ResultStatus.FINISHED,true, true);
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(mockExistingRaceResult);
@@ -84,7 +85,7 @@ public class RaceResultServiceTest
         when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         
-        setupCalculationMocks(true, true);
+        setupCalculationMocks(ResultStatus.FINISHED,true, true);
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(mockExistingRaceResult);
@@ -106,7 +107,7 @@ public class RaceResultServiceTest
         when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         
-        setupCalculationMocks(false, false);
+        setupCalculationMocks(ResultStatus.DNS,false, false);
 
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         setupUpdateRacePlacesMocks(resultList);
@@ -126,7 +127,7 @@ public class RaceResultServiceTest
         when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         
-        setupCalculationMocks(true, false);
+        setupCalculationMocks(ResultStatus.DNF,true, false);
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         setupUpdateRacePlacesMocks(resultList);
@@ -162,12 +163,14 @@ public class RaceResultServiceTest
                 calculationsExpected ? (testSailingDuration-(60*testHandicap)) : null);
     }
 
-    private void setupCalculationMocks(boolean hasStartTime, boolean hasFinishTime)
+    private void setupCalculationMocks(ResultStatus resultStatus, boolean hasStartTime, boolean hasFinishTime)
     {
+        when(mockRaceResult.getStatus()).thenReturn(resultStatus);
+        
         when(mockRaceResult.getStartTime()).thenReturn(hasStartTime ? mockStartTime : null);
         when(mockRaceResult.getFinishTime()).thenReturn(hasFinishTime ? mockFinishTime : null);
         
-        if ( hasStartTime && hasFinishTime )
+        if ( resultStatus.isFinished() )
         {
             when(mockRaceResult.getHandicap()).thenReturn(testHandicap);
             when(mockTimeService.subtractTime(mockStartTime, mockFinishTime)).thenReturn(testSailingDuration);

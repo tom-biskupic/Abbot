@@ -96,7 +96,7 @@ public class RaceResultController
                             bindingResult, 
                             response, 
                             bindingResult.getObjectName(),
-                            "finishTimeTime", 
+                            "finishTime", 
                             raceResult.getFinishTime(),
                             "The finish time must be provided if the competitor finished");
                     

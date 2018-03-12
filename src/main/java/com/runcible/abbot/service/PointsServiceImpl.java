@@ -1,5 +1,6 @@
 package com.runcible.abbot.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.runcible.abbot.model.PointsForBoat;
 import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.RaceStatus;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
@@ -37,6 +39,8 @@ public class PointsServiceImpl implements PointsService
         PointsTable points = new PointsTable(competition);
         
         List<Race> races = raceService.getRacesInCompetition(competition);
+        races = findCompletedRaces(races);
+        
         points.setRaces(races);
         
         List<Boat> boats = boatService.getAllBoatsInFleetForSeries(
@@ -65,6 +69,20 @@ public class PointsServiceImpl implements PointsService
         return points;
     }
     
+    private List<Race> findCompletedRaces(List<Race> races)
+    {
+        List<Race> completedRaces = new ArrayList<Race>();
+        
+        for(Race race : races )
+        {
+            if (race.getRaceStatus() == RaceStatus.COMPLETED )
+            {
+                completedRaces.add(race);
+            }
+        }
+        return completedRaces;
+    }
+
     private void addPointsForRace(
             Map<Boat,PointsForBoat> boatPoints, 
             Race                    race,

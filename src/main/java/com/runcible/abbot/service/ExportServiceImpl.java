@@ -2,6 +2,7 @@ package com.runcible.abbot.service;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,8 +51,8 @@ public class ExportServiceImpl implements ExportService
             }
             
             ;
-            result.append(indent(2,makeTD(String.format("%0.2f", pointsForBoat.getTotal()))));
-            result.append(indent(2,makeTD(String.format("%0.2f", pointsForBoat.getTotalWithDrops()))));
+            result.append(indent(2,makeTD(String.format("%.1f", pointsForBoat.getTotal()))));
+            result.append(indent(2,makeTD(String.format("%.1f", pointsForBoat.getTotalWithDrops()))));
             result.append(indent(1,"\t</tr>\n"));
         }
         result.append("</table>\n");
@@ -75,6 +76,11 @@ public class ExportServiceImpl implements ExportService
     private void exportRace(Race race, StringBuffer buffer) throws NoSuchUser, UserNotPermitted
     {
         List<RaceResult> results = raceResultService.findAll(race.getId());
+        
+        if ( race.getRaceStatus() == RaceStatus.NOT_RUN )
+        {
+            return;
+        }
         
         buffer.append("<h3>"+race.getName()+" "+raceDateFormat.format(race.getRaceDate())+"</h3>\n");
         if ( race.getRaceStatus() == RaceStatus.ABANDONED )
@@ -143,7 +149,7 @@ public class ExportServiceImpl implements ExportService
     private String toTime(Integer sailingTime)
     {
         int hours = (int) Math.floor(sailingTime/3600);
-        int minutes = (int) Math.floor(sailingTime/60);
+        int minutes = (int) Math.floor((sailingTime-(hours*3600))/60);
         int seconds = sailingTime % 60;
         
         return String.format("%02d:%02d:%02d", hours,minutes,seconds);
@@ -175,9 +181,20 @@ public class ExportServiceImpl implements ExportService
         return result.toString();
     }
     
-    private SimpleDateFormat pointsTableHeadingDateFormat = new SimpleDateFormat("dd/MM");
-    private SimpleDateFormat raceDateFormat = new SimpleDateFormat("dd/MM/YYYY");
-    private SimpleDateFormat raceTimeFormat = new SimpleDateFormat("hh::mm::ss");
+    static  SimpleDateFormat pointsTableHeadingDateFormat = new SimpleDateFormat("dd/MM");
+    static  SimpleDateFormat raceDateFormat = new SimpleDateFormat("dd/MM/YYYY");
+    static SimpleDateFormat raceTimeFormat = new SimpleDateFormat("hh:mm:ss");
+    
+    static
+    {
+        //
+        //  Ugly hack...
+        //
+        TimeZone timeZone = TimeZone.getTimeZone("Australia/Sydney");
+        pointsTableHeadingDateFormat.setTimeZone(timeZone);
+        raceDateFormat.setTimeZone(timeZone);
+        raceTimeFormat.setTimeZone(timeZone);
+    }
     
     @Autowired
     private PointsService pointsService;

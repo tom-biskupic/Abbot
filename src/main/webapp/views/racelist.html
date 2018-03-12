@@ -23,8 +23,7 @@
 		        <td>
 		            <button type="button" class="btn" ng-click="deleteObject(race.id)">
 		                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-		            </button> <a ng-click="editObject(race.id)">{{race.raceDate |
-		                date:'medium'}}</a>
+		            </button> <a ng-click="editObject(race.id)">{{race.raceDate | date:'dd/MM/yyyy'}}</a>
 		        </td>
 		        <td>{{race.name}}</td>
 		        <td>{{race.fleet.fleetName}}</td>

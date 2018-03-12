@@ -23,6 +23,7 @@ import com.runcible.abbot.model.PointsSystem;
 import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
+import com.runcible.abbot.model.RaceStatus;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
@@ -44,6 +45,9 @@ public class PointsServiceTest
 		raceResults.add(resultBoat2);
 		raceResults.add(resultBoat3);
 		races.add(mockRace);
+
+		racesWithIncompleteEntry.add(mockRace);
+		racesWithIncompleteEntry.add(mockIncompleteRace);
 		
 		boats.add(testBoat1);
 		boats.add(testBoat2);
@@ -73,6 +77,34 @@ public class PointsServiceTest
 		checkPoints(pointsTable, testBoat3, 3.0f);
 	}
 
+	@Test
+	public void testSkippingIncompleteRaces() throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+	{
+	    setupCompetition();
+
+        when(mockFleet.getId()).thenReturn(testFleetID);
+        when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesID, testFleetID)).thenReturn(boats);
+        when(mockRaceService.getRacesInCompetition(mockCompetition)).thenReturn(racesWithIncompleteEntry);
+        when(mockRace.getId()).thenReturn(testRaceID);
+        when(mockRace.getRaceStatus()).thenReturn(RaceStatus.COMPLETED);
+        when(mockResultService.findAll(testRaceID)).thenReturn(raceResults);
+
+        when(mockIncompleteRace.getRaceStatus()).thenReturn(RaceStatus.NOT_RUN);
+
+        when(mockRaceResultSorter.sortResults(raceResults,ResultType.SCRATCH_RESULT)).thenReturn(raceResults);
+        
+        when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
+        when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
+        when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 3, ResultStatus.FINISHED)).thenReturn(3.0f);
+        
+        PointsTable pointsTable = fixture.generatePointsTable(testRaceSeriesID, testCompetitionID);
+        
+        //
+        //  Now verify that the race list only includes the complete race
+        //
+        assertEquals(races,pointsTable.getRaces());
+	}
+	
 	@Test
 	public void testResultMissing() throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
 	{
@@ -108,6 +140,7 @@ public class PointsServiceTest
 		when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesID, testFleetID)).thenReturn(boats);
 		when(mockRaceService.getRacesInCompetition(mockCompetition)).thenReturn(races);
 		when(mockRace.getId()).thenReturn(testRaceID);
+		when(mockRace.getRaceStatus()).thenReturn(RaceStatus.COMPLETED);
 		when(mockResultService.findAll(testRaceID)).thenReturn(results);
     }
 
@@ -142,6 +175,7 @@ public class PointsServiceTest
 
     private List<RaceResult> raceResults = new ArrayList<RaceResult>();
 	private List<Race> races = new ArrayList<Race>();
+	private List<Race> racesWithIncompleteEntry = new ArrayList<Race>();
 	private List<Boat> boats = new ArrayList<Boat>();
 
 	private static final Integer testRaceSeriesID = 123;
@@ -150,6 +184,7 @@ public class PointsServiceTest
 	private static final Integer testRaceID = 96;
 
 	@Mock private Race mockRace;
+	@Mock private Race mockIncompleteRace;
 	@Mock private Competition mockCompetition;
 	@Mock private Fleet mockFleet;
 

@@ -1,7 +1,6 @@
 package com.runcible.abbot.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
@@ -12,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,7 +36,7 @@ public class AuthenticationServiceTest
         checkAuthenticationToken(returnValue, false);
     }
 
-    @Test(expected=AuthenticationCredentialsNotFoundException.class)
+    @Test(expected=BadCredentialsException.class)
     public void testAuthenticateInvalidUser()
     {
         when(authenticationMock.getName()).thenReturn(TEST_EMAIL);

@@ -20,7 +20,7 @@ public class RaceResultPlaceUpdaterImpl implements RaceResultPlaceUpdater
             List<RaceResult>    existingResults) throws DuplicateResult
     {
         //
-        //  updatedResult will be null if this is called during a delte
+        //  updatedResult will be null if this is called during a delete
         //
         if ( updatedResult != null && alreadyHaveResultForBoat(updatedResult,existingResults) )
         {
@@ -42,7 +42,7 @@ public class RaceResultPlaceUpdaterImpl implements RaceResultPlaceUpdater
             }
             else
             {
-                nextResult.setHandicapPlace(0);
+                nextResult.setHandicapPlace(null);
             }
         }
         
@@ -57,7 +57,7 @@ public class RaceResultPlaceUpdaterImpl implements RaceResultPlaceUpdater
             }
             else
             {
-                nextResult.setScratchPlace(0);
+                nextResult.setScratchPlace(null);
             }
         }
     }

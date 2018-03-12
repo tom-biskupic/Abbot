@@ -202,17 +202,24 @@ public class RaceResultServiceImpl implements RaceResultService
 	
     private void updateCalculatedDurations(RaceResult result)
     {
-        if ( result.getStartTime() != null && result.getFinishTime() != null )
+        if ( result.getStatus().isFinished() )
         {
             int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
             result.setSailingTime(sailingTime);
     	        
     	    result.setCorrectedTime(sailingTime - result.getHandicap()*60);
         }
-        else
+        else 
         {
             result.setSailingTime(null);
             result.setCorrectedTime(null);
+            
+            result.setFinishTime(null);
+            
+            if ( ! result.getStatus().isStarted() )
+            {
+                result.setStartTime(null);
+            }
         }
     }
 
