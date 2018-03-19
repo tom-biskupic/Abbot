@@ -68,7 +68,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //
         //  Get the handicap limit. Round to an int value for this handicap scheme
         //
-        int limit = getHandicapLimit(raceID).intValue();
+        Float limit = getHandicapLimit(raceID);
         
         Race thisRace = raceService.getRaceByID(raceID);
         
@@ -91,13 +91,13 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //  handicap. This happens if the reduction of a handicap would take
         //  a competitor below zero
         //
-        int pushOut = findPushOut(raceResults,thirdWinMap);
+        Float pushOut = findPushOut(raceResults,thirdWinMap);
         
         int place = 1;
         
         for(RaceResult result : raceResults)
         {
-            int adjustedHandicap = result.getHandicap();
+            Float adjustedHandicap = result.getHandicap();
             
             if ( result.getStatus().isFinished() )
             {
@@ -234,23 +234,23 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     	handicapLimitsRepo.delete(id);
     }
     
-    private void updateHandicap(Boat boat, int adjustedHandicap)
+    private void updateHandicap(Boat boat, Float adjustedHandicap)
     {
         Handicap handicap = handicapRepo.findByBoatID(boat.getId());
         if ( handicap == null )
         {
-            handicap = new Handicap(null,boat.getId(),new Float(adjustedHandicap));
+            handicap = new Handicap(null,boat.getId(),adjustedHandicap);
         }
         else
         {
-            handicap.setValue(new Float(adjustedHandicap));
+            handicap.setValue(adjustedHandicap);
         }
         handicapRepo.save(handicap);
     }
 
-    private int findPushOut(List<RaceResult> raceResults, Map<Integer, Boolean> thirdWinMap)
+    private Float findPushOut(List<RaceResult> raceResults, Map<Integer, Boolean> thirdWinMap)
     {
-        int maxPushOut = 0;
+        Float maxPushOut = 0.0f;
         
         for(int i=0;(i<3) && (i<raceResults.size());i++)
         {
@@ -261,8 +261,8 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 break;
             }
             
-            int adjustment = handicapUpdateForResult(i+1,nextResult,thirdWinMap.get(nextResult.getBoat().getId()));
-            int pushOut=0;
+            Float adjustment = handicapUpdateForResult(i+1,nextResult,thirdWinMap.get(nextResult.getBoat().getId()));
+            Float pushOut=0.0f;
             
             if ( adjustment > nextResult.getHandicap() )
             {
@@ -278,9 +278,9 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         return maxPushOut;
     }
 
-    private int handicapUpdateForResult(int place, RaceResult result, Boolean hadThreeWins)
+    private Float handicapUpdateForResult(int place, RaceResult result, Boolean hadThreeWins)
     {
-        int adjust=0;
+        Float adjust=0.0f;
         if ( result.getStatus().isFinished() )
         {
             switch(place)
@@ -288,18 +288,18 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             case 1:
                 if ( hadThreeWins )
                 {
-                    adjust = 4;
+                    adjust = 4.0f;
                 }
                 else
                 {
-                    adjust = 3;
+                    adjust = 3.0f;
                 }
                 break;
             case 2:
-                adjust = 2;
+                adjust = 2.0f;
                 break;
             case 3:
-                adjust = 1;
+                adjust = 1.0f;
                 break;
             }
         }

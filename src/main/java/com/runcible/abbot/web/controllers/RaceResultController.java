@@ -82,7 +82,7 @@ public class RaceResultController
                             bindingResult.getObjectName(),
                             "startTime", 
                             raceResult.getStartTime(),
-                            "The start time must be provided if the competitor finished");
+                            "The start time must be provided if the competitor started or finished");
                     
                     return response;
                 }

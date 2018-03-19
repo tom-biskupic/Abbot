@@ -195,11 +195,11 @@ public class PointsServiceTest
 	private Boat testBoat3 = new Boat(null, "IkeepTheTail", "1234", testClass, null, false, "", "");
 
 	private RaceResult resultBoat1 = new RaceResult(
-	        null, testBoat1, 1, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 1, 1);
+	        null, testBoat1, 1.0f, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 1, 1);
 	private RaceResult resultBoat2 = new RaceResult(
-	        null, testBoat2, 1, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 2, 2);
+	        null, testBoat2, 1.0f, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 2, 2);
 	private RaceResult resultBoat3 = new RaceResult(
-	        null, testBoat3, 1, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 3, 3);
+	        null, testBoat3, 1.0f, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 3, 3);
 
 	@Mock private RaceService mockRaceService;
 	@Mock private CompetitionService mockCompetitionService;

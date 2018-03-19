@@ -184,7 +184,7 @@ public class RaceResultServiceImpl implements RaceResultService
     
     private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus)
     {
-        return new RaceResult(raceID,boat,0,null,null,resultStatus);
+        return new RaceResult(raceID,boat,0.0f,null,null,resultStatus);
     }
 
     private boolean haveResultForBoat(List<RaceResult> raceResults, Boat nextBoat)
@@ -207,7 +207,7 @@ public class RaceResultServiceImpl implements RaceResultService
             int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
             result.setSailingTime(sailingTime);
     	        
-    	    result.setCorrectedTime(sailingTime - result.getHandicap()*60);
+    	    result.setCorrectedTime(sailingTime - (int)(result.getHandicap()*60.0f));
         }
         else 
         {

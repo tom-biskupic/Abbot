@@ -160,7 +160,7 @@ public class RaceResultServiceTest
     {
         verify(mockRaceResult).setSailingTime(calculationsExpected ? testSailingDuration : null);
         verify(mockRaceResult).setCorrectedTime(
-                calculationsExpected ? (testSailingDuration-(60*testHandicap)) : null);
+                calculationsExpected ? (testSailingDuration-(int)(60.0f*testHandicap)) : null);
     }
 
     private void setupCalculationMocks(ResultStatus resultStatus, boolean hasStartTime, boolean hasFinishTime)
@@ -195,11 +195,11 @@ public class RaceResultServiceTest
                deletedResult ? null : mockRaceResult, testResultList);
     }
 
-    private static final Integer testRaceID = 1233;
-    private static final Integer testRaceResultID = 4556;
-    private static final Integer testBoatID = 111;
-    private static final Integer testSailingDuration = 2345;
-    private static final Integer testHandicap = 5;
+    private static final Integer    testRaceID = 1233;
+    private static final Integer    testRaceResultID = 4556;
+    private static final Integer    testBoatID = 111;
+    private static final Integer    testSailingDuration = 2345;
+    private static final Float      testHandicap = 5.0f;
 
     private @Mock TimeService           mockTimeService;
     private @Mock RaceService           mockRaceService;

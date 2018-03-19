@@ -37,9 +37,9 @@ public class RaceResultTest extends ValidationTest
         return new RaceResult(testID,boat,testHandicap,testStart,testFinish,testStatus);
     }
 
-    private Integer testID = 1234;
-    private Integer testHandicap = 12;
-    private Date testStart = new Date();
-    private Date testFinish = new Date();
-    private ResultStatus testStatus = ResultStatus.DNC;
+    private Integer         testID = 1234;
+    private Float           testHandicap = 12.0f;
+    private Date            testStart = new Date();
+    private Date            testFinish = new Date();
+    private ResultStatus    testStatus = ResultStatus.DNC;
 }

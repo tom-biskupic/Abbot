@@ -30,7 +30,7 @@ public class RaceResult
 	public RaceResult( 
 			Integer      raceId, 
 			Boat         boat, 
-			Integer      handicap, 
+			Float        handicap, 
 			Date         startTime, 
 			Date         finishTime,
 			ResultStatus status)
@@ -51,7 +51,7 @@ public class RaceResult
 	public RaceResult( 
 			Integer      raceId, 
 			Boat         boat, 
-			Integer      handicap, 
+			Float        handicap, 
 			Date         startTime, 
 			Date         finishTime,
 			ResultStatus status,
@@ -77,7 +77,7 @@ public class RaceResult
 			Integer      id, 
 			Integer      raceId, 
 			Boat         boat, 
-			Integer      handicap, 
+			Float        handicap, 
 			Date         startTime, 
 			Date 	     finishTime,
 			ResultStatus status,
@@ -165,7 +165,7 @@ public class RaceResult
 	 * @return
 	 */
 	@Column(name="HANDICAP")
-	public Integer getHandicap() 
+	public Float getHandicap() 
 	{
 		return handicap;
 	}
@@ -174,7 +174,7 @@ public class RaceResult
 	 * Sets the handicap applied for this boat in this race
 	 * @param handicap the handicap of this boat in this race
 	 */
-	public void setHandicap(Integer handicap) 
+	public void setHandicap(Float handicap) 
 	{
 		this.handicap = handicap;
 	}
@@ -323,7 +323,7 @@ public class RaceResult
 	
 	@NotNull(message="A boat must be selected")
 	private Boat               boat=null;
-	private Integer            handicap=0;
+	private Float              handicap=0.0f;
 
 	private	Date               startTime=null;
 	private Date               finishTime=null;

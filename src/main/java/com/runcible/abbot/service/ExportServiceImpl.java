@@ -108,7 +108,7 @@ public class ExportServiceImpl implements ExportService
                 
                 buffer.append(indent(1,makeTD(result.getBoat().getName())));
                 buffer.append(indent(1,makeTD(result.getBoat().getSailNumber())));
-                buffer.append(indent(1,makeTD(new Integer(result.getHandicap()).toString())));
+                buffer.append(indent(1,makeTD(result.getHandicap().toString())));
                 
                 if ( finished )
                 {
