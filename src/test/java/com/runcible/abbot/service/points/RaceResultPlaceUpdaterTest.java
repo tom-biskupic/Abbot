@@ -38,7 +38,7 @@ public class RaceResultPlaceUpdaterTest
     @Test
     public void testSortingAfterAdd() throws DuplicateResult
     {
-        setupMockBoats();
+        setupMockBoats(false);
         
         fixture.updateResultPlaces(mockResultToUpdate, testExistingResults);
         
@@ -64,7 +64,7 @@ public class RaceResultPlaceUpdaterTest
     @Test
     public void testSortingAfterUpdate() throws DuplicateResult
     {
-        setupMockBoats();
+        setupMockBoats(false);
         
         fixture.updateResultPlaces(mockResultToUpdate, testExistingResults);
         
@@ -87,15 +87,51 @@ public class RaceResultPlaceUpdaterTest
 
     }
 
-    private void setupMockBoats()
+    @Test 
+    public void testTie() throws DuplicateResult
+    {
+        setupMockBoats(true);
+        
+        fixture.updateResultPlaces(mockResultToUpdate, testExistingResults);
+        
+        ArgumentCaptor<List> resultsCaptor1 = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List> resultsCaptor2 = ArgumentCaptor.forClass(List.class);
+        
+        verify(mockRaceResultSorter).sortResults(resultsCaptor1.capture(), eq(ResultType.HANDICAP_RESULT));
+        verify(mockRaceResultSorter).sortResults(resultsCaptor2.capture(), eq(ResultType.SCRATCH_RESULT));
+        
+        List<RaceResult> resultsList1 = resultsCaptor1.getValue();
+        assertEquals(2,resultsList1.size());
+        assertEquals(mockExistingResult,resultsList1.get(0));
+        assertEquals(mockResultToUpdate,resultsList1.get(1));
+        assertEquals(resultsList1,resultsCaptor2.getValue());
+        
+        verify(mockExistingResult).setHandicapPlace(1);
+        verify(mockExistingResult).setScratchPlace(1);
+        verify(mockResultToUpdate).setHandicapPlace(1);
+        verify(mockResultToUpdate).setScratchPlace(1);
+    }
+    
+    private void setupMockBoats(boolean makeTie)
     {
         when(mockResultToUpdate.getId()).thenReturn(testResultID1);
         when(mockResultToUpdate.getBoat()).thenReturn(mockBoat1);
         when(mockResultToUpdate.getStatus()).thenReturn(ResultStatus.FINISHED);
+        when(mockResultToUpdate.getSailingTime()).thenReturn(100);
+        when(mockResultToUpdate.getCorrectedTime()).thenReturn(100);
         when(mockBoat1.getId()).thenReturn(123);
         when(mockExistingResult.getId()).thenReturn(testResultID2);
         when(mockExistingResult.getBoat()).thenReturn(mockBoat2);
         when(mockExistingResult.getStatus()).thenReturn(ResultStatus.FINISHED);
+        when(mockExistingResult.getSailingTime()).thenReturn(makeTie? 100 : 90);
+        when(mockExistingResult.getCorrectedTime()).thenReturn(makeTie? 100 : 90);
+
+        if ( makeTie )
+        {
+            when(mockExistingResult.getHandicapPlace()).thenReturn(1);
+            when(mockExistingResult.getScratchPlace()).thenReturn(1);
+        }
+        
         when(mockBoat2.getId()).thenReturn(456);
     }
     

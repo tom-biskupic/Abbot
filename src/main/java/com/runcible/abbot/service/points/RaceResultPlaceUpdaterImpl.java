@@ -34,31 +34,57 @@ public class RaceResultPlaceUpdaterImpl implements RaceResultPlaceUpdater
         raceResultSorter.sortResults(allResults, ResultType.HANDICAP_RESULT);
         
         int nextPlace=1;
+        RaceResult previousResult = null;
+        
         for(RaceResult nextResult : allResults)
         {
             if (nextResult.getStatus().isFinished() )
             {
-                nextResult.setHandicapPlace(nextPlace++);
+                if (    previousResult != null 
+                        && 
+                        ( nextResult.getCorrectedTime().equals(previousResult.getCorrectedTime()) ) )
+                {
+                    nextResult.setHandicapPlace(previousResult.getHandicapPlace());
+                    nextPlace++;
+                }
+                else
+                {
+                    nextResult.setHandicapPlace(nextPlace++);
+                }
             }
             else
             {
                 nextResult.setHandicapPlace(null);
             }
+            
+            previousResult = nextResult;
         }
         
         raceResultSorter.sortResults(allResults, ResultType.SCRATCH_RESULT);
-        
+        previousResult = null;
         nextPlace=1;
         for(RaceResult nextResult : allResults)
         {
             if (nextResult.getStatus().isFinished() )
             {
-                nextResult.setScratchPlace(nextPlace++);
+                if (    previousResult != null 
+                        && 
+                        ( nextResult.getSailingTime().equals(previousResult.getSailingTime()) ) )
+                {
+                    nextResult.setScratchPlace(previousResult.getScratchPlace());
+                    nextPlace++;
+                }
+                else
+                {
+                    nextResult.setScratchPlace(nextPlace++);
+                }
             }
             else
             {
                 nextResult.setScratchPlace(null);
             }
+            
+            previousResult = nextResult;
         }
     }
 
