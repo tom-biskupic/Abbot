@@ -54,9 +54,10 @@ public class AuditServiceImpl implements AuditService
     {
         logger.info(
                 String.format(
-                        "%s %s named %s/%s in Race Series %s", 
+                        "%s %s %s named %s/%s in Race Series %s", 
                         getUserName(),
                         eventType.toString(),
+                        objectType,
                         name,
                         subObjectName,
                         getSeriesName(raceSeriesId) ));
