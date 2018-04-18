@@ -14,6 +14,8 @@ import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.repository.RaceRespository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -34,6 +36,8 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
         throwIfUserNotPermitted(raceSeriesId);
         race.setRaceSeriesId(raceSeriesId);
         raceRepo.save(race);
+        
+        auditEvent(race, AuditEventType.CREATED);
     }
 
     @Override
@@ -41,6 +45,7 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
     {
         throwIfUserNotPermitted(race.getRaceSeriesId());
         raceRepo.save(race);
+        auditEvent(race, AuditEventType.UPDATED);
     }
 
     @Override
@@ -57,6 +62,7 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
         Race found = raceRepo.findOne(raceID);
         throwIfUserNotPermitted(found.getRaceSeriesId());
         raceRepo.delete(found);
+        auditEvent(found, AuditEventType.DELETED);
     }
 
     @Override
@@ -125,11 +131,23 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);	
 	}
 
+    private void auditEvent(Race race, AuditEventType eventType) throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType,
+                race.getRaceSeriesId(), 
+                RACE_OBJECT_NAME, 
+                race.getName());
+    }
 
+    private static final String RACE_OBJECT_NAME = "Race";
     
 	@Autowired
     private RaceRespository raceRepo;
     
     @Autowired
     private RaceSeriesService raceSeriesService;
+    
+    @Autowired
+    private AuditService audit;
 }

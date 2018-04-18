@@ -13,13 +13,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockReset;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Boat;
+import com.runcible.abbot.model.Fleet;
+import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.repository.RaceResultRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
@@ -58,7 +63,9 @@ public class RaceResultServiceTest
     @Test
     public void testAddResult() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, NoSuchBoat, DuplicateResult
     {
-        when(mockRaceResult.getBoat()).thenReturn(mockBoat);
+        setupGeneralRaceResultMocks();
+        setupRaceMock();
+        
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockBoatService.getBoatByID(testBoatID)).thenReturn(mockBoat);
         
@@ -76,16 +83,19 @@ public class RaceResultServiceTest
         verify(mockRaceResultRepo).save(mockExistingRaceResult);
         
         verifyCalculations(true);
+        
+        verifyAudit(AuditEventType.CREATED);
     }
 
     @Test
     public void testUpdateResult() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult
     {
-        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
-        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        setupGeneralRaceResultMocks();
+        
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         
         setupCalculationMocks(ResultStatus.FINISHED,true, true);
+        setupRaceMock();
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(mockExistingRaceResult);
@@ -94,18 +104,20 @@ public class RaceResultServiceTest
         fixture.updateResult(mockRaceResult);
         verifyCalculations(true);
         verify(mockRaceResultRepo).save(mockRaceResult);
-        verify(mockRaceService).getRaceByID(testRaceID);
         
         verifyUpdateRacePlaces(resultList, false);
         verify(mockRaceResultRepo).save(mockExistingRaceResult);
+        
+        verifyAudit(AuditEventType.UPDATED);
     }
 
     @Test
     public void testUpdateResultDNS() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult
     {
-        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
-        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        setupGeneralRaceResultMocks();
+
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        setupRaceMock();
         
         setupCalculationMocks(ResultStatus.DNS,false, false);
 
@@ -115,17 +127,19 @@ public class RaceResultServiceTest
         fixture.updateResult(mockRaceResult);
         verifyCalculations(false);
         verify(mockRaceResultRepo).save(mockRaceResult);
-        verify(mockRaceService).getRaceByID(testRaceID);
         
         verifyUpdateRacePlaces(resultList, false);
+        
+        verifyAudit(AuditEventType.UPDATED);
     }
 
     @Test
     public void testUpdateResultDNF() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult
     {
-        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
-        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        setupGeneralRaceResultMocks();
+        
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        setupRaceMock();
         
         setupCalculationMocks(ResultStatus.DNF,true, false);
         
@@ -135,16 +149,18 @@ public class RaceResultServiceTest
         fixture.updateResult(mockRaceResult);
         verifyCalculations(false);
         verify(mockRaceResultRepo).save(mockRaceResult);
-        verify(mockRaceService).getRaceByID(testRaceID);
         
         verifyUpdateRacePlaces(resultList, false);
+        
+        verifyAudit(AuditEventType.UPDATED);
     }
 
     @Test
     public void testRemoveResult() throws NoSuchRaceResult, NoSuchUser, UserNotPermitted, DuplicateResult
     {
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
-        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        setupGeneralRaceResultMocks();
+        setupRaceMock();
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(mockExistingRaceResult);
@@ -152,8 +168,9 @@ public class RaceResultServiceTest
 
         fixture.removeResult(testRaceResultID);
         verify(mockRaceResultRepo).delete(mockRaceResult);
-        verify(mockRaceService).getRaceByID(testRaceID);
         verifyUpdateRacePlaces(resultList, true);
+        
+        verifyAudit(AuditEventType.DELETED);
     }
     
     private void verifyCalculations(boolean calculationsExpected)
@@ -195,12 +212,47 @@ public class RaceResultServiceTest
                deletedResult ? null : mockRaceResult, testResultList);
     }
 
+    private void verifyAudit(AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        String text = String.format(
+                "Race Result for boat %s in race name %s, fleet %s",
+                testBoatName,
+                testRaceName,
+                testFleetName);
+
+        verify(mockAudit).auditEventFreeForm(
+                eventType, testRaceSeriesId, text);
+    }
+
+    private void setupGeneralRaceResultMocks()
+    {
+        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
+        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        when(mockRaceResult.getBoat()).thenReturn(mockBoat);
+        when(mockBoat.getName()).thenReturn(testBoatName);
+    }
+
+    private void setupRaceMock() throws NoSuchUser, UserNotPermitted
+    {
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
+        when(mockRace.getFleet()).thenReturn(mockFleet);
+        when(mockFleet.getFleetName()).thenReturn(testFleetName);
+        when(mockRace.getName()).thenReturn(testRaceName);
+        when(mockRace.getRaceSeriesId()).thenReturn(testRaceSeriesId);
+    }
+
+ 
     private static final Integer    testRaceID = 1233;
     private static final Integer    testRaceResultID = 4556;
     private static final Integer    testBoatID = 111;
     private static final Integer    testSailingDuration = 2345;
     private static final Float      testHandicap = 5.0f;
-
+    private static final String     testFleetName = "Lasers";
+    private static final String     testRaceName = "The muppet's trophy";
+    private static final String     testBoatName = "Boaty McBoatface";
+    private static final Integer    testRaceSeriesId = 111;
+    
     private @Mock TimeService           mockTimeService;
     private @Mock RaceService           mockRaceService;
     private @Mock BoatService           mockBoatService;
@@ -214,6 +266,9 @@ public class RaceResultServiceTest
     private @Mock Date                      mockStartTime;
     private @Mock Date                      mockFinishTime;
     private @Mock RaceResultPlaceUpdater    mockRaceResultPlaceUpdater;
+    private @Mock Race                      mockRace;
+    private @Mock AuditService              mockAudit;
+    private @Mock Fleet                     mockFleet;
     
     @InjectMocks
     private RaceResultService fixture = new RaceResultServiceImpl();

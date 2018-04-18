@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.repository.FleetRespository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -27,7 +29,10 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
         fleet.setRaceSeriesId(raceSeriesId);
         
         fleetRepo.save(fleet);
+        
+        auditEvent(fleet, AuditEventType.CREATED);
     }
+
 
     @Override
     public Page<Fleet> getAllFleetsForSeries(Integer raceSeriesId, Pageable p) throws NoSuchUser, UserNotPermitted
@@ -50,6 +55,8 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
         throwIfUserNotPermitted(fleet.getRaceSeriesId());
 
         fleetRepo.save(fleet);
+        
+        auditEvent(fleet, AuditEventType.UPDATED);
     }
     
     @Override
@@ -80,8 +87,25 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
         throwIfUserNotPermitted(found.getRaceSeriesId());
 
         fleetRepo.delete(fleetId);
+        
+        auditEvent(found, AuditEventType.DELETED);
     }
 
+    private void auditEvent(Fleet fleet, AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType, 
+                fleet.getRaceSeriesId(), 
+                FLEET_OBJECT_NAME, 
+                fleet.getFleetName());
+    }
+ 
+    private static final String FLEET_OBJECT_NAME = "Fleet";
+    
     @Autowired
     private FleetRespository fleetRepo;
+    
+    @Autowired
+    private AuditService audit;
 }

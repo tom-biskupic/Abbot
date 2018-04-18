@@ -14,6 +14,8 @@ import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.repository.RaceResultRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
@@ -65,6 +67,8 @@ public class RaceResultServiceImpl implements RaceResultService
         updateRacePlaces(raceId, result);
         
         addResultInternal(result);
+        
+        auditEvent(result, AuditEventType.CREATED);
 	}
 
     private void updateRacePlaces(Integer raceId, RaceResult result) throws DuplicateResult
@@ -107,6 +111,8 @@ public class RaceResultServiceImpl implements RaceResultService
 		updateRacePlaces(result.getRaceId(), result);
 		
 		raceResultRepo.save(result);
+		
+		auditEvent(result, AuditEventType.UPDATED);
 	}
 
 	public void removeResult(Integer resultId) throws NoSuchRaceResult, NoSuchUser, UserNotPermitted
@@ -130,6 +136,7 @@ public class RaceResultServiceImpl implements RaceResultService
 	        //
 	    }
 
+	    auditEvent(found, AuditEventType.DELETED);
 	}
 	
 	//
@@ -241,9 +248,25 @@ public class RaceResultServiceImpl implements RaceResultService
 		raceService.getRaceByID(raceId);
 	}
 
-	private @Autowired	RaceService            raceService;
-	private @Autowired  BoatService            boatService;
-	private @Autowired 	RaceResultRepository   raceResultRepo;
-	private @Autowired  TimeService            timeService;
-	private @Autowired  RaceResultPlaceUpdater raceResultPlaceUpdater;
+    private void auditEvent(RaceResult result, AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        Race race = raceService.getRaceByID(result.getRaceId());
+        String text = String.format(
+                "Race Result for boat %s in race name %s, fleet %s",
+                result.getBoat().getName(),
+                race.getName(),
+                race.getFleet().getFleetName());
+                
+        audit.auditEventFreeForm(eventType, race.getRaceSeriesId(), text);
+    }
+
+	private static final String RESULT_OBJECT_NAME = "Race result";
+	
+	@Autowired private RaceService            raceService;
+	@Autowired private BoatService            boatService;
+	@Autowired private RaceResultRepository   raceResultRepo;
+	@Autowired private TimeService            timeService;
+	@Autowired private RaceResultPlaceUpdater raceResultPlaceUpdater;
+	@Autowired private AuditService           audit;
 }

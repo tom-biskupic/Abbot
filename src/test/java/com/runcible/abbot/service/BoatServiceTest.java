@@ -23,6 +23,8 @@ import com.runcible.abbot.model.BoatDivision;
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.FleetSelector;
 import com.runcible.abbot.repository.BoatRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
@@ -142,9 +144,12 @@ public class BoatServiceTest
     {
     	setupCheckPermissionsMocks(true);
     	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
+    	when(boatMock.getName()).thenReturn(TEST_BOAT_NAME);
+    	
     	fixture.updateBoat(boatMock);
     	
     	verify(boatRepoMock).save(boatMock);
+    	verifyAuditMock(AuditEventType.UPDATED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -158,9 +163,12 @@ public class BoatServiceTest
     public void testAddBoat() throws NoSuchRaceSeries, NoSuchUser, UserNotPermitted
     {
     	setupCheckPermissionsMocks(true);
+    	when(boatMock.getName()).thenReturn(TEST_BOAT_NAME);
+    	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
     	fixture.addBoat(TEST_RACE_SERIES_ID, boatMock);
     	verify(boatRepoMock).save(boatMock);
     	verify(boatMock).setRaceSeriesID(TEST_RACE_SERIES_ID);
+    	verifyAuditMock(AuditEventType.CREATED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -206,9 +214,11 @@ public class BoatServiceTest
     	setupCheckPermissionsMocks(true);
     	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(boatMock);
     	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
+    	when(boatMock.getName()).thenReturn(TEST_BOAT_NAME);
     	
     	fixture.removeBoat(TEST_BOAT_ID);
     	verify(boatRepoMock).delete(boatMock);
+    	verifyAuditMock(AuditEventType.DELETED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -235,6 +245,16 @@ public class BoatServiceTest
         when(raceSeriesAuthorizationServiceMock.isLoggedOnUserPermitted(TEST_RACE_SERIES_ID)).thenReturn(permitted);
     }
 
+    private void verifyAuditMock(AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        verify(auditServiceMock).auditEvent(
+                eventType, 
+                TEST_RACE_SERIES_ID, 
+                BOAT_OBJECT_NAME, 
+                TEST_BOAT_NAME);
+    }
+
     private static Integer TEST_RACE_SERIES_ID=1;
     private static Integer TEST_FLEET_ID=2;
     private static Integer TEST_BOAT_DIVISION_ID=3;
@@ -242,6 +262,9 @@ public class BoatServiceTest
     private static Integer TEST_BOAT_DIVISION_ID2=5;
     private static Integer TEST_BOAT_CLASS_ID2=6;
     private static Integer TEST_BOAT_ID=7;
+
+    private static final String BOAT_OBJECT_NAME = "Boat"; 
+    private static final String TEST_BOAT_NAME = "Goats afloat";
     
     @Mock private Fleet 			fleetMock;
     @Mock private BoatDivision 		boatDivisionMock;
@@ -257,6 +280,7 @@ public class BoatServiceTest
     @Mock private BoatRepository 	boatRepoMock;
     @Mock private FleetService		fleetServiceMock;
     @Mock private RaceSeriesAuthorizationService    raceSeriesAuthorizationServiceMock;
+    @Mock private AuditService      auditServiceMock;
     
     @InjectMocks
     BoatServiceImpl fixture;

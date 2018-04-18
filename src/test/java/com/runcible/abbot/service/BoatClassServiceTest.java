@@ -18,6 +18,8 @@ import com.runcible.abbot.model.BoatClass;
 import com.runcible.abbot.model.BoatDivision;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.repository.BoatClassRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.DuplicateDivision;
 import com.runcible.abbot.service.exceptions.NoSuchBoatClass;
 import com.runcible.abbot.service.exceptions.NoSuchDivision;
@@ -58,8 +60,16 @@ public class BoatClassServiceTest
     public void testAddBoatClass() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
+        when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
+        when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         fixture.addBoatClass(TEST_RACE_SERIES_ID, boatClassMock);
+        verify(boatClassMock).setRaceSeriesId(TEST_RACE_SERIES_ID);
         verify(boatClassRepoMock).save(boatClassMock);
+        verify(auditServiceMock).auditEvent(
+                AuditEventType.CREATED, 
+                TEST_RACE_SERIES_ID, 
+                BOAT_CLASS_OBJECT_NAME, 
+                TEST_BOAT_CLASS_NAME);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -75,10 +85,17 @@ public class BoatClassServiceTest
         setupCheckPermissionsMocks(true);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
         fixture.updateBoatClass(boatClassMock);
         verify(boatClassRepoMock).save(boatClassMock);
+        
+        verify(auditServiceMock).auditEvent(
+                AuditEventType.UPDATED, 
+                TEST_RACE_SERIES_ID, 
+                BOAT_CLASS_OBJECT_NAME, 
+                TEST_BOAT_CLASS_NAME);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -100,10 +117,17 @@ public class BoatClassServiceTest
         when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
         fixture.removeBoatClass(TEST_BOAT_CLASS_ID);
         verify(boatClassRepoMock).delete(TEST_BOAT_CLASS_ID);
+        
+        verify(auditServiceMock).auditEvent(
+                AuditEventType.DELETED, 
+                TEST_RACE_SERIES_ID, 
+                BOAT_CLASS_OBJECT_NAME, 
+                TEST_BOAT_CLASS_NAME);
     }
 
     @Test(expected=NoSuchBoatClass.class)
@@ -171,11 +195,19 @@ public class BoatClassServiceTest
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
         when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(divisionMock.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(null);
         fixture.addDivision(TEST_ID, divisionMock);
         verify(boatClassRepoMock).save(boatClassMock);
         verify(boatClassMock).addDivision(divisionMock);
+        
+        verify(auditServiceMock).auditEvent(
+                AuditEventType.CREATED, 
+                TEST_RACE_SERIES_ID, 
+                DIVISION_OBJECT_NAME, 
+                TEST_BOAT_CLASS_NAME,
+                TEST_NAME);
     }
 
     @Test(expected=DuplicateDivision.class)
@@ -216,7 +248,9 @@ public class BoatClassServiceTest
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
 
         when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(divisionMock.getName()).thenReturn(TEST_NAME);
+        when(divisionMock2.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(divisionMock2);
         when(divisionMock.getId()).thenReturn(TEST_ID);
         when(divisionMock2.getId()).thenReturn(TEST_ID);
@@ -226,6 +260,14 @@ public class BoatClassServiceTest
         verify(boatClassMock).removeDivision(divisionMock2);
         verify(boatClassMock).addDivision(divisionMock);
         verify(boatClassRepoMock).save(boatClassMock);
+        
+        verify(auditServiceMock).auditEvent(
+                AuditEventType.UPDATED, 
+                TEST_RACE_SERIES_ID, 
+                DIVISION_OBJECT_NAME, 
+                TEST_BOAT_CLASS_NAME,
+                TEST_NAME);
+
     }
 
     @Test(expected=DuplicateDivision.class)
@@ -287,13 +329,22 @@ public class BoatClassServiceTest
         
         when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
         
+        when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(boatClassMock.getDivision(TEST_ID)).thenReturn(divisionMock);
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
-        
+        when(divisionMock.getName()).thenReturn(TEST_NAME);
         fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
         verify(boatClassMock).removeDivision(divisionMock);
         verify(boatClassRepoMock).save(boatClassMock);
+        
+        verify(auditServiceMock).auditEvent(
+                AuditEventType.DELETED, 
+                TEST_RACE_SERIES_ID, 
+                DIVISION_OBJECT_NAME, 
+                TEST_BOAT_CLASS_NAME,
+                TEST_NAME);
+
     }
 
     @Test(expected=NoSuchBoatClass.class)
@@ -341,7 +392,10 @@ public class BoatClassServiceTest
     public static final String  TEST_NAME="Radial";
     public static final Integer TEST_BOAT_CLASS_ID=6969;
     public static final Integer TEST_RACE_SERIES_ID=999;
-    
+    public static final String  BOAT_CLASS_OBJECT_NAME = "Boat class"; 
+    public static final String  TEST_BOAT_CLASS_NAME = "Sabot";
+    public static final String  DIVISION_OBJECT_NAME = "Division";
+            
     @Mock private Page<BoatClass>                   boatClassPageMock;
     @Mock private List<BoatClass>                   mockBoatList;
     @Mock private BoatClass                         boatClassMock;
@@ -352,6 +406,7 @@ public class BoatClassServiceTest
     @Mock private RaceSeriesAuthorizationService    raceSeriesAuthorizationServiceMock;
     @Mock private Pageable                          pageableMock;
     @Mock private RaceSeriesService                 raceSeriesServiceMock;
+    @Mock private AuditService                      auditServiceMock;
     
     @InjectMocks
     BoatClassServiceImpl fixture;

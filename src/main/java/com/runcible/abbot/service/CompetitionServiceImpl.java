@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.repository.CompetitionRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -40,7 +42,10 @@ public class CompetitionServiceImpl extends AuthorizedService implements Competi
     {
         throwIfUserNotPermitted(competition.getRaceSeriesId());
         competitionRepo.save(competition);
+        
+        auditEvent(competition, AuditEventType.UPDATED);
     }
+
 
     @Override
     public void addCompetition(Integer raceSeriesId, Competition competition) throws NoSuchRaceSeries, NoSuchUser, UserNotPermitted
@@ -49,6 +54,8 @@ public class CompetitionServiceImpl extends AuthorizedService implements Competi
         competition.setRaceSeriesId(raceSeriesId);
         
         competitionRepo.save(competition);
+        
+        auditEvent(competition, AuditEventType.CREATED);
     }
 
     @Override
@@ -77,12 +84,29 @@ public class CompetitionServiceImpl extends AuthorizedService implements Competi
         throwIfUserNotPermitted(found.getRaceSeriesId());
 
         competitionRepo.delete(competitionId);
+        
+        auditEvent(found, AuditEventType.DELETED);
     }
 
+    private void auditEvent(
+            Competition     competition, 
+            AuditEventType  eventType) throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType, 
+                competition.getRaceSeriesId(), 
+                COMPETITION_OBJECT_NAME, 
+                competition.getName());
+    }
+
+    private static final String COMPETITION_OBJECT_NAME = "Competition";
+    
     @Autowired
     private RaceSeriesService raceSeriesService;
     
     @Autowired
     private CompetitionRepository competitionRepo;
 
+    @Autowired
+    private AuditService audit;
 }

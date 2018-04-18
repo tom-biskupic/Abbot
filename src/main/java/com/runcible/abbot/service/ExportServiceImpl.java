@@ -7,11 +7,14 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.PointsForBoat;
 import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.RaceStatus;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -56,12 +59,20 @@ public class ExportServiceImpl implements ExportService
             result.append(indent(1,"\t</tr>\n"));
         }
         result.append("</table>\n");
+
+        audit.auditEvent(
+                AuditEventType.EXPORTED, 
+                raceSeriesID, 
+                "Competition", 
+                pointsTable.getCompetition().getName() );
         
         return result.toString();
     }
 
-    public String exportRaces(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted
+    public String exportRaces(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
+        Fleet fleet = fleetService.getFleetByID(fleetID);
+        
         List<Race> races = raceService.getRacesForFleet(raceSeriesID, fleetID);
         StringBuffer buffer = new StringBuffer();
         
@@ -70,6 +81,12 @@ public class ExportServiceImpl implements ExportService
             exportRace(race,buffer);
         }
         
+        audit.auditEvent(
+                AuditEventType.EXPORTED, 
+                raceSeriesID, 
+                "Races", 
+                fleet.getFleetName() );
+
         return buffer.toString();
     }
     
@@ -205,5 +222,10 @@ public class ExportServiceImpl implements ExportService
     @Autowired
     private RaceResultService raceResultService;
 
+    @Autowired
+    private FleetService fleetService;
+
+    @Autowired
+    private AuditService audit;
 }
 

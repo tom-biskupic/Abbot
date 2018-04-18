@@ -26,6 +26,8 @@ import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.RaceStatus;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -75,6 +77,12 @@ public class PointsServiceTest
 		checkPoints(pointsTable, testBoat1, 1.0f);
 		checkPoints(pointsTable, testBoat2, 2.0f);
 		checkPoints(pointsTable, testBoat3, 3.0f);
+		
+        verify(mockAudit).auditEvent(
+                AuditEventType.CREATED, 
+                testRaceSeriesID, 
+                POINTS_TABLE_NAME, 
+                TEST_COMPETITION_NAME);
 	}
 
 	@Test
@@ -103,6 +111,12 @@ public class PointsServiceTest
         //  Now verify that the race list only includes the complete race
         //
         assertEquals(races,pointsTable.getRaces());
+        
+        verify(mockAudit).auditEvent(
+                AuditEventType.CREATED, 
+                testRaceSeriesID, 
+                POINTS_TABLE_NAME, 
+                TEST_COMPETITION_NAME);
 	}
 	
 	@Test
@@ -131,6 +145,12 @@ public class PointsServiceTest
 	    checkPoints(pointsTable, testBoat1, 1.0f);
 	    checkPoints(pointsTable, testBoat2, 2.0f);
 	    checkPoints(pointsTable, testBoat3, 3.0f);
+	    
+        verify(mockAudit).auditEvent(
+                AuditEventType.CREATED, 
+                testRaceSeriesID, 
+                POINTS_TABLE_NAME, 
+                TEST_COMPETITION_NAME);
 	}
 
     private void setupDataFetchingMocks(List<RaceResult> results)
@@ -151,6 +171,7 @@ public class PointsServiceTest
 		when(mockCompetition.getFleet()).thenReturn(mockFleet);
 		when(mockCompetition.getResultType()).thenReturn(ResultType.SCRATCH_RESULT);
 		when(mockCompetition.getPointsSystem()).thenReturn(PointsSystem.LOW_POINTS);
+		when(mockCompetition.getName()).thenReturn(TEST_COMPETITION_NAME);
     }
 
     private void checkPoints(PointsTable pointsTable, Boat boat, float points)
@@ -201,6 +222,9 @@ public class PointsServiceTest
 	private RaceResult resultBoat3 = new RaceResult(
 	        null, testBoat3, 1.0f, new Date(), new Date(), ResultStatus.FINISHED, 0, 0, 3, 3);
 
+	private static final String POINTS_TABLE_NAME = "Points table"; 
+	private static final String TEST_COMPETITION_NAME = "Laser season point score";
+	
 	@Mock private RaceService mockRaceService;
 	@Mock private CompetitionService mockCompetitionService;
 	@Mock private BoatService mockBoatService;
@@ -209,6 +233,7 @@ public class PointsServiceTest
 	@Mock private RaceResultSorter mockRaceResultSorter;
 	@Mock private PointsTotalCalculator mockPointsTotalCalculator;
 	@Mock private PointsSorter mockPointsSorter;
+	@Mock private AuditService mockAudit;
 	
 	@InjectMocks
 	private PointsService fixture = new PointsServiceImpl();

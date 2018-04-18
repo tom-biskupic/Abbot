@@ -39,6 +39,7 @@ public interface RaceSeriesService
      * Add a race series
      * @param series the series to add
      * @throws NoSuchUser 
+     * @throws UserNotPermitted 
      */
-    public void add(RaceSeries series) throws NoSuchUser;
+    public void add(RaceSeries series) throws NoSuchUser, UserNotPermitted;
 }

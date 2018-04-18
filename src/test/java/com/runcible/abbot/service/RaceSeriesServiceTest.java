@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.model.User;
 import com.runcible.abbot.repository.RaceSeriesRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -26,8 +28,10 @@ public class RaceSeriesServiceTest
     {
         when(loggedOnUserServiceMock.getLoggedOnUser()).thenReturn(userMock);
         when(raceSeriesRepoMock.save(raceSeriesMock)).thenReturn(raceSeriesMock);
+        when(raceSeriesMock.getName()).thenReturn(TEST_SERIES_NAME);
         fixture.add(raceSeriesMock);
         verify(raceSeriesAuthorizationServiceMock).authorizeUserForRaceSeries(raceSeriesMock, userMock);
+        auditEvent(AuditEventType.CREATED);
     }
 
     @Test
@@ -52,8 +56,10 @@ public class RaceSeriesServiceTest
 	{
         setupCheckPermissionsMocks(true);
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
+        when(raceSeriesMock.getName()).thenReturn(TEST_SERIES_NAME);
 	    fixture.update(raceSeriesMock);
 	    verify(raceSeriesRepoMock).save(raceSeriesMock);
+	    auditEvent(AuditEventType.UPDATED);
 	}
 
     @Test(expected=UserNotPermitted.class)
@@ -79,19 +85,28 @@ public class RaceSeriesServiceTest
     {
         when(raceSeriesAuthorizationServiceMock.isLoggedOnUserPermitted(TEST_ID)).thenReturn(permitted);
     }
+
+    private void auditEvent(AuditEventType evenType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        verify(auditMock).auditEvent(evenType, RACE_SERIES_OBJECT_NAME, TEST_SERIES_NAME);
+    }
+
+    private static final Integer   TEST_ID=1234;
+	private static final Integer   TEST_USER_ID=3456;
+	private static final String	   TEST_NAME="Radial";
+	private static final String    RACE_SERIES_OBJECT_NAME = "Race series";
+	private static final String    TEST_SERIES_NAME = "2017/2017 Season";
+	
+	@Mock private RaceSeriesRepository 	           raceSeriesRepoMock;
+    @Mock private LoggedOnUserService 	           loggedOnUserServiceMock;
+    @Mock private Pageable                         pageableMock;
+    @Mock private User 					           userMock;
+    @Mock private Page<RaceSeries> 		           raceSeriesPageMock;
+	@Mock private RaceSeries 			           raceSeriesMock;
+	@Mock private RaceSeriesAuthorizationService   raceSeriesAuthorizationServiceMock;
+	@Mock private AuditService                     auditMock;
     
-	public static final Integer TEST_ID=1234;
-	public static final Integer TEST_USER_ID=3456;
-	public static final String	TEST_NAME="Radial";
-	
-	@Mock private RaceSeriesRepository 	raceSeriesRepoMock;
-    @Mock private LoggedOnUserService 	loggedOnUserServiceMock;
-    @Mock private Pageable 				pageableMock;
-    @Mock private User 					userMock;
-    @Mock private Page<RaceSeries> 		raceSeriesPageMock;
-	@Mock private RaceSeries 			raceSeriesMock;
-	@Mock private RaceSeriesAuthorizationService raceSeriesAuthorizationServiceMock;
-	
-    @InjectMocks
+	@InjectMocks
     RaceSeriesServiceImpl fixture;
 }

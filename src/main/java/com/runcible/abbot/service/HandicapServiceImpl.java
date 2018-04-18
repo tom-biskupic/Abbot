@@ -20,6 +20,8 @@ import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.repository.HandicapLimitsRepository;
 import com.runcible.abbot.repository.HandicapRepository;
 import com.runcible.abbot.service.exceptions.InvalidUpdate;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchHandicapLimit;
@@ -122,6 +124,11 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             }
             
         }
+        
+        audit.auditEventFreeForm(
+                AuditEventType.UPDATED, 
+                thisRace.getRaceSeriesId(), 
+                "Handicaps as a result of the race "+thisRace.getName());
     }
 
     private Map<Integer, Boolean> findThirdWinBoats(
@@ -198,6 +205,12 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         limit.setRaceSeriesID(raceSeriesID);
         
         handicapLimitsRepo.save(limit);
+        
+        audit.auditEvent(
+                AuditEventType.CREATED, 
+                raceSeriesID, 
+                HANDICAP_LIMIT_OBJECT_NAME, 
+                limit.getFleet().getFleetName() );
     }
 
     @Override
@@ -213,6 +226,13 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         }
 
         handicapLimitsRepo.save(limit);
+        
+        audit.auditEvent(
+                AuditEventType.UPDATED, 
+                limit.getRaceSeriesID(), 
+                HANDICAP_LIMIT_OBJECT_NAME, 
+                limit.getFleet().getFleetName() );
+
     }
 
     @Override
@@ -232,6 +252,13 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         throwIfUserNotPermitted(limit.getRaceSeriesID());
     	
     	handicapLimitsRepo.delete(id);
+    	
+        audit.auditEvent(
+                AuditEventType.DELETED, 
+                limit.getRaceSeriesID(), 
+                HANDICAP_LIMIT_OBJECT_NAME, 
+                limit.getFleet().getFleetName() );
+
     }
     
     private void updateHandicap(Boat boat, Float adjustedHandicap)
@@ -307,6 +334,9 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         return adjust;
     }
     
+    private static final String HANDICAP_OBJECT_NAME="Handicap";
+    private static final String HANDICAP_LIMIT_OBJECT_NAME="Handicap Limit";
+    
     @Autowired
     private BoatService boatService;
 
@@ -322,4 +352,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
 
     @Autowired
     private RaceService raceService;
+    
+    @Autowired
+    private AuditService audit;
 }

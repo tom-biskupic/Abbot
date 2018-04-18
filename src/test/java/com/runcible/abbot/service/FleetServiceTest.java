@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.repository.FleetRespository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -31,10 +33,13 @@ public class FleetServiceTest
         setupCheckPermissionsMocks(true);
 
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-
+        when(fleetMock.getFleetName()).thenReturn(TEST_NAME);
+        
         fixture.addFleet(TEST_RACE_SERIES_ID, fleetMock);
         verify(fleetMock).setRaceSeriesId(TEST_RACE_SERIES_ID);
         verify(fleetRepoMock).save(fleetMock);
+        
+        verifiyAudit(AuditEventType.CREATED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -81,8 +86,11 @@ public class FleetServiceTest
         setupCheckPermissionsMocks(true);
 
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(fleetMock.getFleetName()).thenReturn(TEST_NAME);
         fixture.updateFleet(fleetMock);
         verify(fleetRepoMock).save(fleetMock);
+        
+        verifiyAudit(AuditEventType.UPDATED);
     }
     
     @Test
@@ -124,9 +132,12 @@ public class FleetServiceTest
 
         when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(fleetMock);
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(fleetMock.getFleetName()).thenReturn(TEST_NAME);
         
         fixture.removeFleet(TEST_FLEET_ID);
         verify(fleetRepoMock).delete(TEST_FLEET_ID);
+        
+        verifiyAudit(AuditEventType.DELETED);
     }
 
     @Test(expected=NoSuchFleet.class)
@@ -154,10 +165,16 @@ public class FleetServiceTest
         when(raceSeriesAuthorizationServiceMock.isLoggedOnUserPermitted(TEST_RACE_SERIES_ID)).thenReturn(permitted);
     }
 
+    private void verifiyAudit( AuditEventType eventType ) throws NoSuchUser, UserNotPermitted
+    {
+        verify(auditMock).auditEvent(eventType, TEST_RACE_SERIES_ID, FLEET_OBJECT_NAME, TEST_NAME);
+    }
+    
     public static final Integer TEST_ID=1234;
     public static final Integer TEST_FLEET_ID=3456;
     public static final String  TEST_NAME="Radial";
     public static final Integer TEST_RACE_SERIES_ID=9999;
+    public static final String  FLEET_OBJECT_NAME="Fleet";
     
     @Mock private FleetRespository      fleetRepoMock;
     @Mock private RaceSeriesAuthorizationService raceSeriesAuthorizationServiceMock;
@@ -167,6 +184,7 @@ public class FleetServiceTest
     @Mock private RaceSeriesService     raceSeriesServiceMock;
     @Mock private RaceSeries            raceSeriesMock;
     @Mock private List<Fleet>           fleetListMock;
+    @Mock private AuditService          auditMock;
     
     @InjectMocks
     FleetServiceImpl fixture;

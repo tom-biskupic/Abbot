@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.runcible.abbot.model.BoatClass;
 import com.runcible.abbot.model.BoatDivision;
 import com.runcible.abbot.repository.BoatClassRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.DuplicateDivision;
 import com.runcible.abbot.service.exceptions.NoSuchBoatClass;
 import com.runcible.abbot.service.exceptions.NoSuchDivision;
@@ -44,13 +46,17 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
         throwIfUserNotPermitted(raceSeriesId);
         boatClass.setRaceSeriesId(raceSeriesId);
         boatClassRepo.save(boatClass);
+        
+        auditEvent(boatClass, AuditEventType.CREATED);
     }
-    
+
     @Override
     public void updateBoatClass(BoatClass boatClass) throws NoSuchUser, UserNotPermitted
     {
         throwIfUserNotPermitted(boatClass.getRaceSeriesId());
         boatClassRepo.save(boatClass);
+        
+        auditEvent(boatClass, AuditEventType.UPDATED);
     }
 
     @Override
@@ -65,6 +71,8 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
         throwIfUserNotPermitted(foundClass.getRaceSeriesId());
 
         boatClassRepo.delete(boatClassId);
+        
+        auditEvent(foundClass, AuditEventType.DELETED);
     }
 
     @Override
@@ -100,8 +108,10 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
 
         boatClass.addDivision(division);
         boatClassRepo.save(boatClass);
+
+        auditEvent(division, boatClass, AuditEventType.CREATED);
     }
-    
+
     @Override
     public void updateDivision(Integer boatClassId, BoatDivision division) 
             throws DuplicateDivision, NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
@@ -132,6 +142,8 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
         boatClass.addDivision(division);
 
         boatClassRepo.save(boatClass);
+        
+        auditEvent(division, boatClass, AuditEventType.UPDATED);
     }
     
     @Override
@@ -157,14 +169,41 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
         boatClass.removeDivision(foundDivision);
         
         boatClassRepo.save(boatClass);
+        
+        auditEvent(foundDivision, boatClass, AuditEventType.DELETED);
     }
 
+    private void auditEvent(
+            BoatClass       boatClass, 
+            AuditEventType  eventType) throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType, 
+                boatClass.getRaceSeriesId(), 
+                BOAT_CLASS_NAME, 
+                boatClass.getName());
+    }
+    
+    private void auditEvent(
+            BoatDivision    division, 
+            BoatClass       boatClass,
+            AuditEventType  eventType) throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType, 
+                boatClass.getRaceSeriesId(), 
+                DIVISION_NAME, 
+                boatClass.getName(),
+                division.getName());
+    }
+    
     @Autowired 
     private BoatClassRepository boatClassRepo;
     
-    @Autowired
-    private RaceSeriesAuthorizationService raceSeriesAuthorizationService;
     
     @Autowired
-    private RaceSeriesService raceSeriesService;
+    private AuditService audit;
+    
+    private static final String DIVISION_NAME = "Division";
+    private static final String BOAT_CLASS_NAME = "Boat class";
 }

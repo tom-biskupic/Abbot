@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceDay;
 import com.runcible.abbot.repository.RaceRespository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -31,9 +33,11 @@ public class RaceServiceTest
     public void testAddRace() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
+        setupRaceMock();
         fixture.addRace(TEST_RACE_SERIES_ID, raceMock);
         verify(raceRepoMock).save(raceMock);
-    } 
+        verifyAuditEvent(AuditEventType.CREATED);
+    }
 
     @Test(expected=UserNotPermitted.class)
     public void testAddRaceNotPermitted() throws NoSuchUser, UserNotPermitted
@@ -46,9 +50,10 @@ public class RaceServiceTest
     public void testUpdateRace() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
-        when(raceMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        setupRaceMock();
         fixture.updateRace(raceMock);
         verify(raceRepoMock).save(raceMock);
+        verifyAuditEvent(AuditEventType.UPDATED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -139,15 +144,36 @@ public class RaceServiceTest
         when(raceSeriesAuthorizationServiceMock.isLoggedOnUserPermitted(TEST_RACE_SERIES_ID)).thenReturn(permitted);
     }
 
+    private void setupRaceMock()
+    {
+        when(raceMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(raceMock.getName()).thenReturn(TEST_RACE_NAME);
+    } 
+
+    private void verifyAuditEvent(AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        verify(auditMock).auditEvent(
+                eventType, 
+                TEST_RACE_SERIES_ID, 
+                RACE_OBJECT_NAME, 
+                TEST_RACE_NAME);
+    }
+
+
     public static final Integer TEST_ID=999;
     public static final Integer TEST_RACE_SERIES_ID=999;
 
+    private static final String RACE_OBJECT_NAME = "Race"; 
+    private static final String TEST_RACE_NAME = "The Muppet's Trophy";
+    
     @Mock private RaceSeriesAuthorizationService    raceSeriesAuthorizationServiceMock;
-    @Mock private Race raceMock;
-    @Mock private RaceRespository raceRepoMock;
-    @Mock private Pageable pageableMock;
-    @Mock private Page<Race> pageMock;
-    @Mock private List<Date> dateListMock;
+    @Mock private Race              raceMock;
+    @Mock private RaceRespository   raceRepoMock;
+    @Mock private Pageable          pageableMock;
+    @Mock private Page<Race>        pageMock;
+    @Mock private List<Date>        dateListMock;
+    @Mock private AuditService      auditMock;
     
     @InjectMocks private RaceServiceImpl fixture;
 }

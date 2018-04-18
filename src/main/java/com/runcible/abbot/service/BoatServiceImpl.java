@@ -13,6 +13,8 @@ import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.FleetSelector;
 import com.runcible.abbot.repository.BoatRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
@@ -36,6 +38,8 @@ public class BoatServiceImpl extends AuthorizedService implements BoatService
     {
         throwIfUserNotPermitted(boat.getRaceSeriesID());
         boatRepo.save(boat);
+        
+        auditEvent(boat, AuditEventType.UPDATED);
     }
 
     @Override
@@ -44,6 +48,8 @@ public class BoatServiceImpl extends AuthorizedService implements BoatService
         throwIfUserNotPermitted(raceSeriesId);
         boat.setRaceSeriesID(raceSeriesId);
         boatRepo.save(boat);
+        
+        auditEvent(boat, AuditEventType.CREATED);
     }
 
     @Override
@@ -72,6 +78,8 @@ public class BoatServiceImpl extends AuthorizedService implements BoatService
 
         throwIfUserNotPermitted(found.getRaceSeriesID());
         boatRepo.delete(found);
+        
+        auditEvent(found, AuditEventType.DELETED);
     }
 
     @Override
@@ -105,9 +113,25 @@ public class BoatServiceImpl extends AuthorizedService implements BoatService
     	return returnList;
 	}
 
+    private void auditEvent(Boat boat, AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType, 
+                boat.getRaceSeriesID(), 
+                BOAT_OBJECT_NAME, 
+                boat.getName());
+    }
+
+
+    private static final String BOAT_OBJECT_NAME = "Boat";
+    
     @Autowired
     private BoatRepository boatRepo;
     
     @Autowired
     private FleetService fleetService;
+    
+    @Autowired
+    private AuditService audit;
 }

@@ -37,5 +37,5 @@ public interface ExportService
      * @throws UserNotPermitted     If the logged on user is not permitted to perform this operation
      * @throws NoSuchFleet          If the fleet associated with the 
      */
-    public String exportRaces(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted;
+    public String exportRaces(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted, NoSuchFleet;
 }

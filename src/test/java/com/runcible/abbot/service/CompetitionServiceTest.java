@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.repository.CompetitionRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -46,9 +48,12 @@ public class CompetitionServiceTest
     {
         setupCheckPermissionsMocks(true);
         when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(competitionMock.getName()).thenReturn(TEST_COMPETITION_NAME);
         
         fixture.updateCompetition(competitionMock);
         verify(competitionRepoMock).save(competitionMock);
+        
+        verifyAuditEvent(AuditEventType.UPDATED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -65,8 +70,13 @@ public class CompetitionServiceTest
     {
         setupCheckPermissionsMocks(true);
         
+        when(competitionMock.getName()).thenReturn(TEST_COMPETITION_NAME);
+        when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        
         fixture.addCompetition(TEST_RACE_SERIES_ID, competitionMock);
         verify(competitionRepoMock).save(competitionMock);
+        
+        verifyAuditEvent(AuditEventType.CREATED);
     }
 
     @Test(expected=UserNotPermitted.class)
@@ -104,9 +114,12 @@ public class CompetitionServiceTest
 
         when(competitionRepoMock.findOne(TEST_COMPETITION_ID)).thenReturn(competitionMock);
         when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(competitionMock.getName()).thenReturn(TEST_COMPETITION_NAME);
         
         fixture.removeCompetition(TEST_COMPETITION_ID);
         verify(competitionRepoMock).delete(TEST_COMPETITION_ID);
+        
+        verifyAuditEvent(AuditEventType.DELETED);
     }
 
     @Test(expected=NoSuchCompetition.class)
@@ -132,10 +145,23 @@ public class CompetitionServiceTest
     {
         when(raceSeriesAuthorizationServiceMock.isLoggedOnUserPermitted(TEST_RACE_SERIES_ID)).thenReturn(permitted);
     }
-    
+
+    private void verifyAuditEvent(AuditEventType eventType)
+            throws NoSuchUser, UserNotPermitted
+    {
+        verify(auditMock).auditEvent(
+                eventType, 
+                TEST_RACE_SERIES_ID, 
+                COMPETITION_OBJECT_NAME, 
+                TEST_COMPETITION_NAME);
+    }
+
+
     public static final Integer TEST_ID=1234;
     public static final Integer TEST_COMPETITION_ID=1111;
     public static final Integer TEST_RACE_SERIES_ID=9999;
+    public static final String  COMPETITION_OBJECT_NAME = "Competition"; 
+    public static final String  TEST_COMPETITION_NAME = "Laser Series Pointscore";
     
     @Mock private RaceSeriesService                 raceSeriesServiceMock;
     @Mock private CompetitionRepository             competitionRepoMock;
@@ -144,6 +170,7 @@ public class CompetitionServiceTest
     @Mock private Page<Competition>                 competitionPageMock;
     @Mock private Competition                       competitionMock;
     @Mock private RaceSeries                        raceSeriesMock;
+    @Mock private AuditService                      auditMock;
     
     @InjectMocks
     private CompetitionServiceImpl fixture;

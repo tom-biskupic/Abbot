@@ -27,6 +27,8 @@ import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.repository.HandicapLimitsRepository;
 import com.runcible.abbot.repository.HandicapRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -344,6 +346,8 @@ public class HandicapServiceTest
         when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
         when(mockHandicapRepo.findByBoatID(testBoatID)).thenReturn(null);
         when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
+        when(mockRace.getName()).thenReturn(TEST_RACE_NAME);
+        
         setupHandicapLimitMocks(20.0f);
         
         fixture.updateHandicapsFromResults(testRaceID);
@@ -351,6 +355,11 @@ public class HandicapServiceTest
         verify(mockHandicapRepo).save(handicapCaptor.capture());
         
         assertEquals(new Float(0.0),handicapCaptor.getValue().getValue());
+        
+        verify(mockAudit).auditEventFreeForm(
+                AuditEventType.UPDATED, 
+                testRaceSeriesID, 
+                "Handicaps as a result of the race "+TEST_RACE_NAME);
     }
 
     @Test
@@ -415,7 +424,10 @@ public class HandicapServiceTest
     private List<Boat> testBoatList = new ArrayList<Boat>();
     
     private Date testRaceDate = Calendar.getInstance().getTime();
-    
+
+    private static final String     HANDICAP_OBJECT_NAME = "Handicap"; 
+    private static final String     TEST_RACE_NAME = "The Muppet's trophy";
+
     @Mock private Boat              mockBoat;
     @Mock private Boat              mockBoat1;
     @Mock private Boat              mockBoat2;
@@ -434,6 +446,7 @@ public class HandicapServiceTest
     @Mock private RaceService           mockRaceService;
     @Mock private HandicapLimitsRepository  mockHandicapLimitRepo;
     @Mock private RaceSeriesAuthorizationService    mockRaceSeriesAuthorizationService;
+    @Mock private AuditService          mockAudit;
     
     @InjectMocks
     private HandicapService fixture = new HandicapServiceImpl();

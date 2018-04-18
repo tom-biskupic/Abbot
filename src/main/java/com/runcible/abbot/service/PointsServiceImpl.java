@@ -19,6 +19,8 @@ import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.RaceStatus;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -66,6 +68,12 @@ public class PointsServiceImpl implements PointsService
         //
         pointsSorter.sortPoints(points);
 
+        audit.auditEvent(
+                AuditEventType.CREATED, 
+                raceSeriesID, 
+                "Points table",
+                competition.getName() );
+        
         return points;
     }
     
@@ -183,4 +191,7 @@ public class PointsServiceImpl implements PointsService
     
     @Autowired
     private PointsSorter pointsSorter;
+    
+    @Autowired
+    private AuditService audit;
 }

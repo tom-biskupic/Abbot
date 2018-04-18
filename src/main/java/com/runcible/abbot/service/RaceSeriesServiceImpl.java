@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.runcible.abbot.model.RaceSeries;
 import com.runcible.abbot.model.User;
 import com.runcible.abbot.repository.RaceSeriesRepository;
+import com.runcible.abbot.service.audit.AuditEventType;
+import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -42,28 +44,34 @@ public class RaceSeriesServiceImpl extends AuthorizedService implements RaceSeri
 
         Date now = Calendar.getInstance().getTime();
         series.setLastUpdated(now);
-        raceSeriesRepo.save(series);    
+        raceSeriesRepo.save(series);
+        auditEvent(series, AuditEventType.UPDATED);
     }
 
+
     @Override
-    public void add(RaceSeries series) throws NoSuchUser
+    public void add(RaceSeries series) throws NoSuchUser, UserNotPermitted
     {
         Date now = Calendar.getInstance().getTime();
         series.setDateCreated(now);
         series.setLastUpdated(now);
         RaceSeries savedSeries = raceSeriesRepo.save(series);
         
-        try
-        {
-            raceSeriesAuthorizationService.authorizeUserForRaceSeries(savedSeries, loggedOnUserService.getLoggedOnUser());
-        }
-        catch (UserNotPermitted e)
-        {
-            // This should not be possible
-            e.printStackTrace();
-        }
+        raceSeriesAuthorizationService.authorizeUserForRaceSeries(savedSeries, loggedOnUserService.getLoggedOnUser());
+        
+        auditEvent(series, AuditEventType.CREATED);
     }
-    
+
+    private void auditEvent(RaceSeries series, AuditEventType eventType) throws NoSuchUser, UserNotPermitted
+    {
+        audit.auditEvent(
+                eventType, 
+                RACE_SERIES_OBJECT_NAME, 
+                series.getName());
+    }
+
+    private static final String RACE_SERIES_OBJECT_NAME = "Race series";
+
     @Autowired
     private RaceSeriesRepository raceSeriesRepo;
     
@@ -72,4 +80,7 @@ public class RaceSeriesServiceImpl extends AuthorizedService implements RaceSeri
     
     @Autowired
     private RaceSeriesAuthorizationService raceSeriesAuthorizationService;
+    
+    @Autowired
+    private AuditService audit;
 }
