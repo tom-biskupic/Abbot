@@ -5,8 +5,6 @@ import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -18,6 +16,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableTransactionManagement
@@ -39,14 +40,38 @@ class PersistenceContext
         return em;
     }
     
+//    @Bean(destroyMethod = "close")
+//    DataSource dataSource(Environment env) 
+//    {
+//        BasicDataSource dataSource = new BasicDataSource();
+//        dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));
+//        dataSource.setUrl(env.getRequiredProperty("db.url"));
+//        dataSource.setUsername(env.getRequiredProperty("db.username"));
+//        dataSource.setPassword(env.getRequiredProperty("db.password"));
+//        return dataSource;
+//    }
+
     @Bean(destroyMethod = "close")
-    DataSource dataSource(Environment env) 
+    public DataSource dataSource(Environment env)
     {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));
-        dataSource.setUrl(env.getRequiredProperty("db.url"));
-        dataSource.setUsername(env.getRequiredProperty("db.username"));
-        dataSource.setPassword(env.getRequiredProperty("db.password"));
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName(env.getRequiredProperty("db.driver"));
+        hikariConfig.setJdbcUrl(env.getRequiredProperty("db.url")); 
+        hikariConfig.setUsername(env.getRequiredProperty("db.username"));
+        hikariConfig.setPassword(env.getRequiredProperty("db.password"));
+
+        hikariConfig.setMaximumPoolSize(5);
+        hikariConfig.setConnectionTestQuery("SELECT 1");
+        hikariConfig.setPoolName("springHikariCP");
+        hikariConfig.setMaximumPoolSize(5);
+        
+        hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
+        hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
+
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+
         return dataSource;
     }
 
