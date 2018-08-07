@@ -2,6 +2,7 @@ package com.runcible.abbot.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
@@ -17,9 +18,10 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 
 @Configuration
 @ConfigurationProperties(value="classpath:application.properties")
-@Import(value= {PersistenceContext.class, WebSecurityConfig.class})
+@Import(value= {PersistenceContext.class, WebSecurityConfig.class, WebConfig.class})
 @ComponentScan(basePackages = {"com.runcible.abbot"} )
 @EnableAutoConfiguration
+@SpringBootApplication
 public class Application extends SpringBootServletInitializer 
 {
     public static void main(String[] args) 

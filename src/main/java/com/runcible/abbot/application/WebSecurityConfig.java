@@ -33,6 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                         "/views/registersuccessful.html",
                         "/register",
                         "/user",
+                        "/webjars/**",
                         "/logout",
                         "/login").permitAll()
            .anyRequest().authenticated().and()

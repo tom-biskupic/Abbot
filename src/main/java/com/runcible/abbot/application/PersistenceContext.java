@@ -40,17 +40,6 @@ class PersistenceContext
         return em;
     }
     
-//    @Bean(destroyMethod = "close")
-//    DataSource dataSource(Environment env) 
-//    {
-//        BasicDataSource dataSource = new BasicDataSource();
-//        dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));
-//        dataSource.setUrl(env.getRequiredProperty("db.url"));
-//        dataSource.setUsername(env.getRequiredProperty("db.username"));
-//        dataSource.setPassword(env.getRequiredProperty("db.password"));
-//        return dataSource;
-//    }
-
     @Bean(destroyMethod = "close")
     public DataSource dataSource(Environment env)
     {
