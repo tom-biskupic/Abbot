@@ -1,10 +1,12 @@
-abbotModule.controller("resultListController",function($scope,$http,$controller,$rootScope,$uibModal)
+abbotModule.controller("resultListController",function($scope,$http,$controller,$rootScope,$uibModal,$filter)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
     $scope.raceSeriesID = $rootScope.seriesID;
     $scope.raceDays = [];
     $scope.selectedRace = null;
+    $scope.race_tree_data = [];
+    $scope.race_tree = {};
     
     $scope.setDialogController('raceResultDialogInstanceController');
     
@@ -14,44 +16,70 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
 	            function(response)
 	            {
 	                $scope.raceDays = response.data;
-	                if ( $scope.raceDays.length > 0 )
+	                $scope.race_tree_data = [];
+	                
+	                var selectedRaceNode = null;
+	                var dayNodeToExpand = null;
+	                
+	            	for(dayIndex=0;dayIndex<$scope.raceDays.length;dayIndex++)
+	            	{
+	            		day = $scope.raceDays[dayIndex];
+
+	            		var newDayNode = {};
+	            		newDayNode.label = $filter('date')(day.day,'dd/MM/yyyy');
+	            		newDayNode.children = [];
+	            		
+	            		for( raceIndex=0;raceIndex<day.races.length;raceIndex++ )
+	            		{
+	            			var race = day.races[raceIndex];
+	            			var newRaceNode = {};
+
+	            			if ( 	$scope.selectedRace != null 
+	            					&& 
+	            					$scope.selectedRace != undefined
+	            					&&
+	            					$scope.selectedRace.id == race.id )
+	            			{
+	            				selectedRaceNode = newRaceNode;
+	            				dayNodeToExpand = newDayNode;
+	            			}
+	            			
+	            			newRaceNode.label = race.fleet.fleetName+' - '+race.name;
+	            			newRaceNode.data = race;
+	            			newDayNode.children.push(newRaceNode);
+	            		}
+	            		
+	            		$scope.race_tree_data.push(newDayNode);
+	            	}
+	            	
+	                if ( $scope.race_tree_data.length > 0 )
 	                {
 	                	if ( $scope.selectedRace == undefined || $scope.selectedRace == null)
 	                	{
-		                	lastDay = $scope.raceDays[$scope.raceDays.length-1];
-		                	$scope.selectRace(lastDay.races[0].id);
-		                	lastDay.isOpen=true;
+		                	lastDayNode = $scope.race_tree_data[$scope.race_tree_data.length-1];
+		                	selectedRaceNode = lastDayNode.children[0];
+		                	dayNodeToExpand = lastDayNode; 
 	                	}
+	                	
+	                	$scope.race_tree.expand_branch(dayNodeToExpand);
+	                	$scope.race_tree.select_branch(selectedRaceNode);
 	                }
 	            });
     }
     
-    $scope.selectRace = function(id)
+    $scope.race_tree_handler = function(branch) 
     {
-    	$scope.selectedRace = $scope.findRace(id); 
-    	$scope.init(
-    			'/Abbot3',
-    			'/raceseries/'+$scope.raceSeriesID+'/race/'+$scope.selectedRace.id+'/resultlist.json',
-    			'/raceseries/'+$scope.raceSeriesID+'/race/'+$scope.selectedRace.id+'/result.json/',
-    			'views/raceresultform.html');
-    }
-    
-    $scope.findRace = function(id)
-    {
-    	for(dayIndex=0;dayIndex<$scope.raceDays.length;dayIndex++)
+    	var _race = branch.data;
+    	if ( _race != null )
     	{
-    		day = $scope.raceDays[dayIndex];
-    		for( raceIndex=0;raceIndex<day.races.length;raceIndex++ )
-    		{
-    			race = day.races[raceIndex];
-    			if ( race.id == id )
-    			{
-    				return race; 
-    			}
-    		}
+    		$scope.selectedRace = _race;
+        	$scope.init(
+        			'/Abbot3',
+        			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/resultlist.json',
+        			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/result.json/',
+        			'views/raceresultform.html');
     	}
-    	return null;
-    }
+    };
     
     //
     //	Overload opendialog so we pass the fleet ID to the dialog

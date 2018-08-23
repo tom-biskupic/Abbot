@@ -1,14 +1,6 @@
 
 <div class="col-sm-3 col-md-3" id="race-select">
-	<uib-accordion close-others="true" ng-repeat="raceDay in raceDays">
-		<div uib-accordion-group class="panel-default" heading="{{raceDay.day | date:'dd/MM/yyyy'}}" is-open="raceDay.isOpen">
-			<div class="list-group" ng-repeat="race in raceDay.races" >
-				<a ng-click="selectRace(race.id)" class="list-group-item list-group-item-action" ng-class="{active: selectedRace.id == race.id}">
-					{{race.fleet.fleetName}} - {{race.name}}
-				</a>
-			</div>
-		</div>
-	</uib-accordion>
+	<abn-tree tree-data="race_tree_data" tree-control="race_tree" on-select="race_tree_handler(branch)" expand-level="2">
 </div>
 
 <div class="col-sm-9 col-md-9">
