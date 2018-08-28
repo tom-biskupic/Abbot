@@ -70,7 +70,7 @@ public class HandicapServiceTest
     @Test 
     public void testUpdateHandicapsAllDNS() throws NoSuchUser, UserNotPermitted
     {
-        RaceResult testResult = new RaceResult(testRaceID,mockBoat,0.0f,null,null,ResultStatus.DNS);
+        RaceResult testResult = new RaceResult(testRaceID,mockBoat,0.0f,false,null,null,ResultStatus.DNS);
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(testResult);
         
@@ -90,11 +90,11 @@ public class HandicapServiceTest
     public void testUpdateHandicapsSortingAndAdjustment() throws NoSuchUser, UserNotPermitted
     {
         RaceResult testResult1 = new RaceResult(
-                testRaceID,mockBoat1,6.0f,null,null,ResultStatus.FINISHED,0,100,0,0);
+                testRaceID,mockBoat1,6.0f,false,null,null,ResultStatus.FINISHED,0,100,0,0);
         RaceResult testResult2 = new RaceResult(
-                testRaceID,mockBoat2,5.0f,null,null,ResultStatus.FINISHED,0,90,0,0);
+                testRaceID,mockBoat2,5.0f,false,null,null,ResultStatus.FINISHED,0,90,0,0);
         RaceResult testResult3 = new RaceResult(
-                testRaceID,mockBoat3,3.0f,null,null,ResultStatus.FINISHED,0,95,0,0);
+                testRaceID,mockBoat3,3.0f,false,null,null,ResultStatus.FINISHED,0,95,0,0);
 
         when(mockBoat1.getId()).thenReturn(testBoatID1);
         when(mockBoat2.getId()).thenReturn(testBoatID2);
@@ -135,11 +135,11 @@ public class HandicapServiceTest
     public void testUpdateHandicapsAdjustmentFourthWin() throws NoSuchUser, UserNotPermitted
     {
         RaceResult testResult1 = new RaceResult(
-                testRaceID,mockBoat1,6.0f,null,null,ResultStatus.FINISHED,0,100,0,0);
+                testRaceID,mockBoat1,6.0f,false,null,null,ResultStatus.FINISHED,0,100,0,0);
         RaceResult testResult2 = new RaceResult(
-                testRaceID,mockBoat2,5.0f,null,null,ResultStatus.FINISHED,0,90,0,0);
+                testRaceID,mockBoat2,5.0f,false,null,null,ResultStatus.FINISHED,0,90,0,0);
         RaceResult testResult3 = new RaceResult(
-                testRaceID,mockBoat3,3.0f,null,null,ResultStatus.FINISHED,0,95,0,0);
+                testRaceID,mockBoat3,3.0f,false,null,null,ResultStatus.FINISHED,0,95,0,0);
 
         when(mockBoat1.getId()).thenReturn(testBoatID1);
         when(mockBoat2.getId()).thenReturn(testBoatID2);
@@ -188,11 +188,11 @@ public class HandicapServiceTest
     public void testUpdateHandicapsPushOutFourthWin() throws NoSuchUser, UserNotPermitted
     {
         RaceResult testResult1 = new RaceResult(
-                testRaceID,mockBoat1,0.0f,null,null,ResultStatus.FINISHED,0,100,0,0);
+                testRaceID,mockBoat1,0.0f,false,null,null,ResultStatus.FINISHED,0,100,0,0);
         RaceResult testResult2 = new RaceResult(
-                testRaceID,mockBoat2,5.0f,null,null,ResultStatus.DNF,0,0,0,0);
+                testRaceID,mockBoat2,5.0f,false,null,null,ResultStatus.DNF,0,0,0,0);
         RaceResult testResult3 = new RaceResult(
-                testRaceID,mockBoat3,3.0f,null,null,ResultStatus.DNS,0,0,0,0);
+                testRaceID,mockBoat3,3.0f,false,null,null,ResultStatus.DNS,0,0,0,0);
 
         when(mockBoat1.getId()).thenReturn(testBoatID1);
         when(mockBoat2.getId()).thenReturn(testBoatID2);
@@ -241,11 +241,11 @@ public class HandicapServiceTest
     public void testUpdateHandicapsPushOut() throws NoSuchUser, UserNotPermitted
     {
         RaceResult testResult1 = new RaceResult(
-                testRaceID,mockBoat1,0.0f,null,null,ResultStatus.FINISHED,0,100,0,0);
+                testRaceID,mockBoat1,0.0f,false,null,null,ResultStatus.FINISHED,0,100,0,0);
         RaceResult testResult2 = new RaceResult(
-                testRaceID,mockBoat2,5.0f,null,null,ResultStatus.DNF,0,0,0,0);
+                testRaceID,mockBoat2,5.0f,false,null,null,ResultStatus.DNF,0,0,0,0);
         RaceResult testResult3 = new RaceResult(
-                testRaceID,mockBoat3,3.0f,null,null,ResultStatus.DNS,0,0,0,0);
+                testRaceID,mockBoat3,3.0f,false,null,null,ResultStatus.DNS,0,0,0,0);
 
         when(mockBoat1.getId()).thenReturn(testBoatID1);
         when(mockBoat2.getId()).thenReturn(testBoatID2);
@@ -288,6 +288,7 @@ public class HandicapServiceTest
                 testRaceID,
                 mockBoat1,
                 0.0f,
+                false,
                 null,
                 null,
                 ResultStatus.FINISHED,
@@ -300,6 +301,7 @@ public class HandicapServiceTest
                 testRaceID,
                 mockBoat2,
                 19.0f,
+                false,
                 null,
                 null,
                 ResultStatus.DNF,
@@ -338,7 +340,7 @@ public class HandicapServiceTest
     @Test 
     public void testUpdateHandicapsAddHandicap() throws NoSuchUser, UserNotPermitted
     {
-        RaceResult testResult = new RaceResult(testRaceID,mockBoat,0.0f,null,null,ResultStatus.FINISHED);
+        RaceResult testResult = new RaceResult(testRaceID,mockBoat,0.0f,false,null,null,ResultStatus.FINISHED);
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(testResult);
         

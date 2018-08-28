@@ -65,6 +65,7 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
 	                	$scope.race_tree.select_branch(selectedRaceNode);
 	                }
 	            });
+    
     }
     
     $scope.race_tree_handler = function(branch) 
@@ -78,6 +79,13 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/resultlist.json',
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/result.json/',
         			'views/raceresultform.html');
+    	}
+    	else
+    	{
+    		//
+    		//	So this is a race day - we want to toggle the expanded-ness when they click
+    		//
+    		$scope.race_tree.expand_branch(branch);
     	}
     };
     
@@ -233,14 +241,27 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 	
 	$scope.onBoatChanged = function()
 	{
+		$scope.object.handicap = $scope.findHandicapForBoat($scope.object.boat.id);
+	}
+	
+	$scope.revertHandicap = function()
+	{
+		if ( ! $scope.object.overrideHandicap )
+		{
+			$scope.object.handicap = $scope.findHandicapForBoat($scope.object.boat.id);
+		}
+	}
+	
+	$scope.findHandicapForBoat = function(boatId)
+	{
 		for (var i=0;i<$scope.handicaps.length;i++)
 		{
-			if ( $scope.handicaps[i].boatID == $scope.object.boat.id )
+			if ( $scope.handicaps[i].boatID == boatId )
 			{
-				$scope.object.handicap = $scope.handicaps[i].value;
-				break;
+				return $scope.handicaps[i].value;
 			}
 		}
+		return 0;
 	}
 	
 	$scope.dateOptions = 

@@ -42,9 +42,9 @@ public class RaceResultComparatorTest
 	}
 
 	private RaceResult testFinishedResult1 = new RaceResult(
-	        null,null,null,null,null,ResultStatus.FINISHED,100,100,0,0);
+	        null,null,null,false,null,null,ResultStatus.FINISHED,100,100,0,0);
 	private RaceResult testFinishedResult2 = new RaceResult(
-	        null,null,null,null,null,ResultStatus.FINISHED,110,90,0,0);
-	private RaceResult testDNFResult = new RaceResult(null,null,null,null,null,ResultStatus.DNF);
-	private RaceResult testDNSResult = new RaceResult(null,null,null,null,null,ResultStatus.DNS);
+	        null,null,null,false,null,null,ResultStatus.FINISHED,110,90,0,0);
+	private RaceResult testDNFResult = new RaceResult(null,null,null,false,null,null,ResultStatus.DNF);
+	private RaceResult testDNSResult = new RaceResult(null,null,null,false,null,null,ResultStatus.DNS);
 }

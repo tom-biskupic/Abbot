@@ -31,6 +31,7 @@ public class RaceResult
 			Integer      raceId, 
 			Boat         boat, 
 			Float        handicap, 
+			boolean      overrideHandicap,
 			Date         startTime, 
 			Date         finishTime,
 			ResultStatus status)
@@ -39,6 +40,7 @@ public class RaceResult
 		      raceId,
 		      boat,
 		      handicap,
+		      overrideHandicap,
 		      startTime,
 		      finishTime,
 		      status,
@@ -51,7 +53,8 @@ public class RaceResult
 	public RaceResult( 
 			Integer      raceId, 
 			Boat         boat, 
-			Float        handicap, 
+			Float        handicap,
+			boolean      overrideHandicap,
 			Date         startTime, 
 			Date         finishTime,
 			ResultStatus status,
@@ -64,6 +67,7 @@ public class RaceResult
 		      raceId,
 		      boat,
 		      handicap,
+		      overrideHandicap,
 		      startTime,
 		      finishTime,
 		      status,
@@ -77,7 +81,8 @@ public class RaceResult
 			Integer      id, 
 			Integer      raceId, 
 			Boat         boat, 
-			Float        handicap, 
+			Float        handicap,
+			boolean      overrideHandicap,
 			Date         startTime, 
 			Date 	     finishTime,
 			ResultStatus status,
@@ -91,6 +96,7 @@ public class RaceResult
 		this.raceId = raceId;
 		this.boat = boat;
 		this.handicap = handicap;
+		this.overrideHandicap = overrideHandicap;
 		this.startTime = startTime;
 		this.finishTime = finishTime;
 		this.status = status;
@@ -317,6 +323,25 @@ public class RaceResult
         this.handicapPlace = handicapPlace;
     }
 
+    /**
+     * Returns true if the handicap value was selected by the user
+     * (instead of calculated)
+     * @return if the handicap has been overriden
+     */
+    public Boolean getOverrideHandicap()
+    {
+        return overrideHandicap;
+    }
+
+    /**
+     * Sets if the handicap value was selected by the user
+     * (instead of calculated)
+     * @param overrideHandicap if the handicap was overridden
+     */
+    public void setOverrideHandicap(Boolean overrideHandicap)
+    {
+        this.overrideHandicap = overrideHandicap;
+    }
 
     private Integer            id=null;
 	private Integer            raceId=null;
@@ -333,6 +358,7 @@ public class RaceResult
 
 	private Integer            scratchPlace=0;
 	private Integer            handicapPlace=0;
+	private Boolean            overrideHandicap=false;
 	
     @NotNull(message="A result status must be provided")
 	private ResultStatus       status = null;

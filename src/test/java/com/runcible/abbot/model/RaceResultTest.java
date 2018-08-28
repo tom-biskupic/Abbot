@@ -34,7 +34,7 @@ public class RaceResultTest extends ValidationTest
     private RaceResult makeResult()
     {
         Boat boat = new Boat();
-        return new RaceResult(testID,boat,testHandicap,testStart,testFinish,testStatus);
+        return new RaceResult(testID,boat,testHandicap,false,testStart,testFinish,testStatus);
     }
 
     private Integer         testID = 1234;

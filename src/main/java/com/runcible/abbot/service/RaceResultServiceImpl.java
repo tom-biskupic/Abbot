@@ -191,7 +191,7 @@ public class RaceResultServiceImpl implements RaceResultService
     
     private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus)
     {
-        return new RaceResult(raceID,boat,0.0f,null,null,resultStatus);
+        return new RaceResult(raceID,boat,0.0f,false,null,null,resultStatus);
     }
 
     private boolean haveResultForBoat(List<RaceResult> raceResults, Boat nextBoat)

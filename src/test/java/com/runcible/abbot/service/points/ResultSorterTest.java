@@ -81,19 +81,19 @@ public class ResultSorterTest
     private Boat testNonFinisher2 = new Boat(null, "NotFinishedEither", "1234", testClass, null, false, "", "");
 
     private RaceResult resultBoat1 = new RaceResult(
-            null, testBoat1, 1.0f, new Date(), new Date(), ResultStatus.FINISHED,90,90,0,0);
+            null, testBoat1, 1.0f, false, new Date(), new Date(), ResultStatus.FINISHED,90,90,0,0);
     private RaceResult resultBoat2 = new RaceResult(
-            null, testBoat2, 1.0f, new Date(), new Date(), ResultStatus.FINISHED,100,85,0,0);
+            null, testBoat2, 1.0f, false, new Date(), new Date(), ResultStatus.FINISHED,100,85,0,0);
     private RaceResult resultBoat3 = new RaceResult(
-            null, testBoat3, 1.0f, new Date(), new Date(), ResultStatus.FINISHED,95,94,0,0);
+            null, testBoat3, 1.0f, false, new Date(), new Date(), ResultStatus.FINISHED,95,94,0,0);
     private RaceResult resultNonStarter1 = new RaceResult(
-            null, testNonStarter1, 1.0f, new Date(), new Date(), ResultStatus.DNS);
+            null, testNonStarter1, 1.0f, false, new Date(), new Date(), ResultStatus.DNS);
     private RaceResult resultNonStarter2 = new RaceResult(
-            null, testNonStarter2, 1.0f, new Date(), new Date(), ResultStatus.DNC);
+            null, testNonStarter2, 1.0f, false, new Date(), new Date(), ResultStatus.DNC);
     private RaceResult resultNonFinisher1 = new RaceResult(
-            null, testNonFinisher1, 1.0f, new Date(), new Date(),ResultStatus.DNF);
+            null, testNonFinisher1, 1.0f, false, new Date(), new Date(),ResultStatus.DNF);
     private RaceResult resultNonFinisher2 = new RaceResult(
-            null, testNonFinisher2, 1.0f, new Date(), new Date(),ResultStatus.OCS);
+            null, testNonFinisher2, 1.0f, false, new Date(), new Date(),ResultStatus.OCS);
 
     private RaceResultSorter fixture = new RaceResultSorterImpl();
 }
