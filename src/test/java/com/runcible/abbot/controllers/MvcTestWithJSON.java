@@ -129,7 +129,7 @@ public class MvcTestWithJSON
             Arrays.asList(new FleetSelector(testBoatClass, null)));
     
     protected static final Fleet testFleet = new Fleet(
-            TEST_FLEET_ID, TEST_RACE_SERIES_ID,TEST_FLEET_NAME,TEST_FLEET_SELECTORS);
+            TEST_FLEET_ID, TEST_RACE_SERIES_ID,TEST_FLEET_NAME,TEST_FLEET_SELECTORS,false);
 
     protected static final Integer  TEST_COMPETITION_ID = 71;
     protected static final String   TEST_COMPETITION_NAME = "Sabot Season Points";

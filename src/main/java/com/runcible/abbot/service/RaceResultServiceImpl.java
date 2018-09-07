@@ -27,7 +27,9 @@ import com.runcible.abbot.service.points.RaceResultPlaceUpdater;
 @Component
 public class RaceResultServiceImpl implements RaceResultService 
 {
-	@Override
+	private static final float TARGET_YARDSTICK = 110;
+	
+    @Override
 	public Page<RaceResult> findAll(Integer raceId,Pageable p) throws NoSuchUser, UserNotPermitted 
 	{
 		checkAuthorized(raceId);
@@ -59,17 +61,23 @@ public class RaceResultServiceImpl implements RaceResultService
 	public void addResult(Integer raceId,RaceResult result) 
 	        throws NoSuchUser, UserNotPermitted, NoSuchBoat, DuplicateResult 
 	{
-		checkAuthorized(raceId);
+	    Race race = raceService.getRaceByID(raceId);
+	    
 		result.setRaceId(raceId);
 		
-        updateCalculatedDurations(result);
+		updateCalculatedDurations(result,adjustResultsOnYardStick(race));
 		
         updateRacePlaces(raceId, result);
         
         addResultInternal(result);
         
-        auditEvent(result, AuditEventType.CREATED);
+        auditEvent(result, race, AuditEventType.CREATED);
 	}
+
+    private Boolean adjustResultsOnYardStick(Race race)
+    {
+        return race.getFleet().getCompeteOnYardstick();
+    }
 
     private void updateRacePlaces(Integer raceId, RaceResult result) throws DuplicateResult
     {
@@ -104,15 +112,15 @@ public class RaceResultServiceImpl implements RaceResultService
 			throw new NoSuchRaceResult();
 		}
 
-		checkAuthorized(result.getRaceId());
+		Race race = raceService.getRaceByID(result.getRaceId());
 
-		updateCalculatedDurations(result);
+		updateCalculatedDurations(result,adjustResultsOnYardStick(race));
 
 		updateRacePlaces(result.getRaceId(), result);
 		
 		raceResultRepo.save(result);
 		
-		auditEvent(result, AuditEventType.UPDATED);
+		auditEvent(result, race, AuditEventType.UPDATED);
 	}
 
 	public void removeResult(Integer resultId) throws NoSuchRaceResult, NoSuchUser, UserNotPermitted
@@ -122,7 +130,9 @@ public class RaceResultServiceImpl implements RaceResultService
         {
             throw new NoSuchRaceResult();
         }
-	    checkAuthorized(found.getRaceId());
+        
+        Race race = raceService.getRaceByID(found.getRaceId());
+        
 	    raceResultRepo.delete(found);
 	    
 	    try
@@ -136,7 +146,7 @@ public class RaceResultServiceImpl implements RaceResultService
 	        //
 	    }
 
-	    auditEvent(found, AuditEventType.DELETED);
+	    auditEvent(found, race, AuditEventType.DELETED);
 	}
 	
 	//
@@ -207,11 +217,17 @@ public class RaceResultServiceImpl implements RaceResultService
         return false;
     }
 	
-    private void updateCalculatedDurations(RaceResult result)
+    private void updateCalculatedDurations(RaceResult result, boolean useYardstick)
     {
         if ( result.getStatus().isFinished() )
         {
             int sailingTime = timeService.subtractTime(result.getStartTime(), result.getFinishTime());
+            
+            if ( useYardstick )
+            {
+                float yardstick = findYardStick(result);
+                sailingTime = correctForYardstick(sailingTime,yardstick);
+            }
             result.setSailingTime(sailingTime);
     	        
     	    result.setCorrectedTime(sailingTime - (int)(result.getHandicap()*60.0f));
@@ -231,6 +247,30 @@ public class RaceResultServiceImpl implements RaceResultService
     }
 
 
+    private int correctForYardstick(int sailingTime, float yardstick)
+    {
+        //
+        //  Adjust the time to cacluate an equivalent sailing time
+        //  if the vessel had a yardstick of 110. This is a middle
+        //  of-the-road yardstick for sailing vessels
+        //
+        
+        return (int)((float)sailingTime * yardstick/TARGET_YARDSTICK);
+    }
+
+    private float findYardStick(RaceResult result)
+    {
+        Boat boat  = result.getBoat();
+        if ( boat.getDivision() != null && boat.getDivision().getYardStick() != 0)
+        {
+            return boat.getDivision().getYardStick();
+        }
+        else
+        {
+            return boat.getBoatClass().getYardStick();
+        }
+    }
+
     public int getWinsForBoatBeforeDate(
             Integer raceSeriesId,
             Integer fleetId,
@@ -248,10 +288,12 @@ public class RaceResultServiceImpl implements RaceResultService
 		raceService.getRaceByID(raceId);
 	}
 
-    private void auditEvent(RaceResult result, AuditEventType eventType)
+    private void auditEvent(
+            RaceResult      result,
+            Race            race,
+            AuditEventType  eventType)
             throws NoSuchUser, UserNotPermitted
     {
-        Race race = raceService.getRaceByID(result.getRaceId());
         String text = String.format(
                 "Race Result for boat %s in race name %s, fleet %s",
                 result.getBoat().getName(),

@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Boat;
+import com.runcible.abbot.model.BoatClass;
+import com.runcible.abbot.model.BoatDivision;
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
@@ -35,6 +37,9 @@ import com.runcible.abbot.service.points.RaceResultPlaceUpdater;
 @RunWith(MockitoJUnitRunner.class)
 public class RaceResultServiceTest
 {
+    private static final float testYardstick = 132.0f;
+    private static final float targetYardstick = 110.0f;
+
     enum TimeValues { NO_START_TIME, NO_FINISH_TIME, NO_EITHER_TIME, BOTH_TIMES };
     
     @Test
@@ -64,7 +69,7 @@ public class RaceResultServiceTest
     public void testAddResult() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, NoSuchBoat, DuplicateResult
     {
         setupGeneralRaceResultMocks();
-        setupRaceMock();
+        setupRaceMock(false);
         
         when(mockBoat.getId()).thenReturn(testBoatID);
         when(mockBoatService.getBoatByID(testBoatID)).thenReturn(mockBoat);
@@ -82,7 +87,35 @@ public class RaceResultServiceTest
         verifyUpdateRacePlaces(resultList, false);
         verify(mockRaceResultRepo).save(mockExistingRaceResult);
         
-        verifyCalculations(true);
+        verifyCalculations(true, false);
+        
+        verifyAudit(AuditEventType.CREATED);
+    }
+
+    @Test
+    public void testAddResultYardstickFleet() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, NoSuchBoat, DuplicateResult
+    {
+        setupGeneralRaceResultMocks();
+        setupYardstickMocks(false,testYardstick);
+        setupRaceMock(true);
+        
+        when(mockBoat.getId()).thenReturn(testBoatID);
+        when(mockBoatService.getBoatByID(testBoatID)).thenReturn(mockBoat);
+        
+        setupCalculationMocks(ResultStatus.FINISHED,true, true);
+        
+        List<RaceResult> resultList = new ArrayList<RaceResult>();
+        resultList.add(mockExistingRaceResult);
+        setupUpdateRacePlacesMocks(resultList);
+        
+        fixture.addResult(testRaceID, mockRaceResult);
+        verify(mockRaceResult).setRaceId(testRaceID);
+        verify(mockRaceResult).setBoat(mockBoat);
+
+        verifyUpdateRacePlaces(resultList, false);
+        verify(mockRaceResultRepo).save(mockExistingRaceResult);
+        
+        verifyCalculations(true, true);
         
         verifyAudit(AuditEventType.CREATED);
     }
@@ -91,18 +124,18 @@ public class RaceResultServiceTest
     public void testUpdateResult() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult
     {
         setupGeneralRaceResultMocks();
-        
+
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         
         setupCalculationMocks(ResultStatus.FINISHED,true, true);
-        setupRaceMock();
+        setupRaceMock(false);
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(mockExistingRaceResult);
         setupUpdateRacePlacesMocks(resultList);
 
         fixture.updateResult(mockRaceResult);
-        verifyCalculations(true);
+        verifyCalculations(true, false);
         verify(mockRaceResultRepo).save(mockRaceResult);
         
         verifyUpdateRacePlaces(resultList, false);
@@ -117,7 +150,7 @@ public class RaceResultServiceTest
         setupGeneralRaceResultMocks();
 
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
-        setupRaceMock();
+        setupRaceMock(false);
         
         setupCalculationMocks(ResultStatus.DNS,false, false);
 
@@ -125,7 +158,7 @@ public class RaceResultServiceTest
         setupUpdateRacePlacesMocks(resultList);
 
         fixture.updateResult(mockRaceResult);
-        verifyCalculations(false);
+        verifyCalculations(false, false);
         verify(mockRaceResultRepo).save(mockRaceResult);
         
         verifyUpdateRacePlaces(resultList, false);
@@ -137,9 +170,9 @@ public class RaceResultServiceTest
     public void testUpdateResultDNF() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult
     {
         setupGeneralRaceResultMocks();
-        
+
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
-        setupRaceMock();
+        setupRaceMock(false);
         
         setupCalculationMocks(ResultStatus.DNF,true, false);
         
@@ -147,7 +180,7 @@ public class RaceResultServiceTest
         setupUpdateRacePlacesMocks(resultList);
 
         fixture.updateResult(mockRaceResult);
-        verifyCalculations(false);
+        verifyCalculations(false, false);
         verify(mockRaceResultRepo).save(mockRaceResult);
         
         verifyUpdateRacePlaces(resultList, false);
@@ -160,7 +193,7 @@ public class RaceResultServiceTest
     {
         when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
         setupGeneralRaceResultMocks();
-        setupRaceMock();
+        setupRaceMock(false);
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         resultList.add(mockExistingRaceResult);
@@ -173,11 +206,26 @@ public class RaceResultServiceTest
         verifyAudit(AuditEventType.DELETED);
     }
     
-    private void verifyCalculations(boolean calculationsExpected)
+    private void verifyCalculations(boolean calculationsExpected, boolean adjustedForYardstick)
     {
-        verify(mockRaceResult).setSailingTime(calculationsExpected ? testSailingDuration : null);
-        verify(mockRaceResult).setCorrectedTime(
-                calculationsExpected ? (testSailingDuration-(int)(60.0f*testHandicap)) : null);
+        Integer correctedTime = null;
+        Integer sailingDuration = null;
+        
+        if ( calculationsExpected )
+        {
+            if ( adjustedForYardstick )
+            {
+                sailingDuration = (int)((float)testSailingDuration * testYardstick/targetYardstick);
+            }
+            else
+            {
+                sailingDuration = testSailingDuration;
+            }
+            correctedTime = sailingDuration - (int)(60.0f*testHandicap);
+        }
+
+        verify(mockRaceResult).setSailingTime(sailingDuration);
+        verify(mockRaceResult).setCorrectedTime(correctedTime);
     }
 
     private void setupCalculationMocks(ResultStatus resultStatus, boolean hasStartTime, boolean hasFinishTime)
@@ -233,11 +281,26 @@ public class RaceResultServiceTest
         when(mockBoat.getName()).thenReturn(testBoatName);
     }
 
-    private void setupRaceMock() throws NoSuchUser, UserNotPermitted
+    private void setupYardstickMocks(boolean hasDivision,Float yardstick)
+    {
+        when(mockBoat.getDivision()).thenReturn(hasDivision ? mockDivision : null);
+        if ( hasDivision )
+        {
+            when(mockDivision.getYardStick()).thenReturn(yardstick);
+        }
+        else
+        {
+            when(mockBoat.getBoatClass()).thenReturn(mockBoatClass);
+            when(mockBoatClass.getYardStick()).thenReturn(yardstick);
+        }
+    }
+
+    private void setupRaceMock(boolean yardstickFleet) throws NoSuchUser, UserNotPermitted
     {
         when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         when(mockRace.getFleet()).thenReturn(mockFleet);
         when(mockFleet.getFleetName()).thenReturn(testFleetName);
+        when(mockFleet.getCompeteOnYardstick()).thenReturn(yardstickFleet);
         when(mockRace.getName()).thenReturn(testRaceName);
         when(mockRace.getRaceSeriesId()).thenReturn(testRaceSeriesId);
     }
@@ -269,6 +332,8 @@ public class RaceResultServiceTest
     private @Mock Race                      mockRace;
     private @Mock AuditService              mockAudit;
     private @Mock Fleet                     mockFleet;
+    private @Mock BoatClass                 mockBoatClass;
+    private @Mock BoatDivision              mockDivision;
     
     @InjectMocks
     private RaceResultService fixture = new RaceResultServiceImpl();

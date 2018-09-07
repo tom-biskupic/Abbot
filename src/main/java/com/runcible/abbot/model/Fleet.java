@@ -27,24 +27,28 @@ public class Fleet implements ModelWithId
     		Integer				id,
     		Integer  			raceSeriesId,
             String              fleetName,
-            Set<FleetSelector>  fleetClasses)
+            Set<FleetSelector>  fleetClasses,
+            boolean             competeOnYardstick)
     {
         super();
         this.id = id;
         this.raceSeriesId = raceSeriesId;
         this.fleetClasses = fleetClasses;
         this.fleetName = fleetName;
+        this.competeOnYardstick = competeOnYardstick;
     }
 
     public Fleet(
     		Integer             raceSeriesId,
             String              fleetName,
-            Set<FleetSelector>  fleetClasses)
+            Set<FleetSelector>  fleetClasses,
+            boolean             competeOnYardstick)
     {
         super();
         this.raceSeriesId = raceSeriesId;
         this.fleetClasses = fleetClasses;
         this.fleetName = fleetName;
+        this.competeOnYardstick = competeOnYardstick;
     }
 
     public Fleet()
@@ -94,6 +98,32 @@ public class Fleet implements ModelWithId
         this.fleetClasses = classes;
     }
 
+    /**
+     * Returns true if when combining results from races where this
+     * fleet competes, the results should be adjusted for each vessels
+     * yardstick. The effect is that the scratch result is adjusted
+     * by the vessels yardstick and then a handicap is applied after that
+     * @return if the fleet competes on yardstick
+     */
+    @Column
+    public Boolean getCompeteOnYardstick()
+    {
+        return competeOnYardstick;
+    }
+
+    /**
+     * Sets if when combining results from races where this
+     * fleet competes, the results should be adjusted for each vessels
+     * yardstick. The effect is that the scratch result is adjusted
+     * by the vessels yardstick and then a handicap is applied after that
+
+     * @param competeOnYardstick true if the fleet competes on yardstick
+     */
+    public void setCompeteOnYardstick(Boolean competeOnYardstick)
+    {
+        this.competeOnYardstick = competeOnYardstick;
+    }
+
     @Column
     public Integer getRaceSeriesId()
     {
@@ -118,4 +148,5 @@ public class Fleet implements ModelWithId
     private	Integer             raceSeriesId;
     private String              fleetName="";
     private Set<FleetSelector>  fleetClasses = new HashSet<FleetSelector>();
+    private Boolean             competeOnYardstick = false;
 }
