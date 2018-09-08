@@ -337,6 +337,62 @@ public class HandicapServiceTest
         verify(mockHandicap2).setValue(new Float(20.0));
     }
 
+    @Test
+    public void testUpdateHandicapsNoLimitSet() throws NoSuchUser, UserNotPermitted
+    {
+        RaceResult testResult1 = new RaceResult(
+                testRaceID,
+                mockBoat1,
+                0.0f,
+                false,
+                null,
+                null,
+                ResultStatus.FINISHED,
+                0,
+                100,
+                0,
+                0);
+        
+        RaceResult testResult2 = new RaceResult(
+                testRaceID,
+                mockBoat2,
+                19.0f,
+                false,
+                null,
+                null,
+                ResultStatus.DNF,
+                0,
+                0,
+                0,
+                0);
+
+        when(mockBoat1.getId()).thenReturn(testBoatID1);
+        when(mockBoat2.getId()).thenReturn(testBoatID2);
+        
+        setupHandicapLimitMocks(null);
+        
+        List<RaceResult> resultList = new ArrayList<RaceResult>();
+        resultList.add(testResult1);
+        resultList.add(testResult2);
+        
+        when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
+        when(mockHandicapRepo.findByBoatID(testBoatID1)).thenReturn(mockHandicap1);
+        when(mockHandicapRepo.findByBoatID(testBoatID2)).thenReturn(mockHandicap2);
+        when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
+        
+        fixture.updateHandicapsFromResults(testRaceID);
+        
+        //
+        //  This guy is first but he was already on zero so still zero
+        //
+        verify(mockHandicap1).setValue(new Float(0.0));
+        
+        //
+        //  This guy hit the handicap limit so he gets the limit
+        //
+        verify(mockHandicap2).setValue(new Float(22.0));
+    }
+
     @Test 
     public void testUpdateHandicapsAddHandicap() throws NoSuchUser, UserNotPermitted
     {
@@ -403,9 +459,16 @@ public class HandicapServiceTest
         when(mockRace.getRaceSeriesId()).thenReturn(testRaceSeriesID);
         when(mockRace.getFleet()).thenReturn(mockFleet);
         when(mockFleet.getId()).thenReturn(testFleetID);
-        when(mockHandicapLimitRepo.findByFleetID(testRaceSeriesID, testFleetID)).thenReturn(mockHandicapLimit);
-        when(mockHandicapLimit.getLimit()).thenReturn(handicapLimitValue);
-        when(mockHandicapLimit.getRaceSeriesID()).thenReturn(testRaceSeriesID);
+        if ( handicapLimitValue == null )
+        {
+            when(mockHandicapLimitRepo.findByFleetID(testRaceSeriesID, testFleetID)).thenReturn(null);
+        }
+        else
+        {
+            when(mockHandicapLimitRepo.findByFleetID(testRaceSeriesID, testFleetID)).thenReturn(mockHandicapLimit);
+            when(mockHandicapLimit.getLimit()).thenReturn(handicapLimitValue);
+            when(mockHandicapLimit.getRaceSeriesID()).thenReturn(testRaceSeriesID);
+        }
     }
 
     private void setupCheckPermissionsMocks(boolean permitted) throws NoSuchUser

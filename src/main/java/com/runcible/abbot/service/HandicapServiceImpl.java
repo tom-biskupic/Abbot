@@ -115,7 +115,7 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             {
                 adjustedHandicap += pushOut;
 
-                if ( adjustedHandicap > limit )
+                if ( limit > 0.0f && adjustedHandicap > limit )
                 {
                     adjustedHandicap = limit;
                 }
@@ -168,7 +168,18 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //  Get the handicap limit for the fleet in this race
         //
         HandicapLimit limit = getHandicapLimitForFleet(race.getRaceSeriesId(), race.getFleet().getId());
-        return limit.getLimit();
+        
+        //
+        // Return zero if no limit has been specified
+        //
+        if ( limit != null )
+        {
+            return limit.getLimit();
+        }
+        else
+        {
+            return 0.0f;
+        }
     }
 
     @Override
