@@ -13,7 +13,12 @@ angular.module("abbot").controller("ManageUsersController",function($scope,$cont
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
 	
-    $scope.init('/Abbot3','/userlist.json','/user.json','views/editusermodal.html');
+    $scope.init(
+    		'/Abbot3',
+    		'/userlist.json',
+    		'/user.json',
+    		'views/editusermodal.html',
+    		'User');
     
     $scope.passwordConfirm = "";
     

@@ -255,7 +255,7 @@ public class RaceResultServiceImpl implements RaceResultService
         //  of-the-road yardstick for sailing vessels
         //
         
-        return (int)((float)sailingTime * yardstick/TARGET_YARDSTICK);
+        return (int)((float)sailingTime * TARGET_YARDSTICK / yardstick);
     }
 
     private float findYardStick(RaceResult result)

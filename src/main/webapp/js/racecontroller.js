@@ -3,7 +3,12 @@ angular.module("abbot").controller("raceController",function($scope,$http,$contr
     angular.extend(this,$controller('listController', {$scope: $scope})); 
 
 	$scope.raceSeriesID = $rootScope.seriesID;
-	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/racelist.json','/raceseries/'+$scope.raceSeriesID+'/race.json','views/raceform.html')
+	$scope.init(
+			'/Abbot3',
+			'/raceseries/'+$scope.raceSeriesID+'/racelist.json',
+			'/raceseries/'+$scope.raceSeriesID+'/race.json',
+			'views/raceform.html',
+			'Race');
 
 	$scope.setDialogController('raceDialogInstanceController');
 	

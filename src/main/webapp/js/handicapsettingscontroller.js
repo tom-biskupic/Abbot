@@ -1,9 +1,14 @@
-abbotModule.controller("handicapSettingsController",function($scope,$http,$controller,$rootScope)
+angular.module("abbot").controller("handicapSettingsController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
 	$scope.raceSeriesID = $rootScope.seriesID;
-    $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/handicaplimitlist.json','/raceseries/'+$scope.raceSeriesID+'/handicaplimit.json','views/handicaplimitform.html')
+    $scope.init(
+    		'/Abbot3',
+    		'/raceseries/'+$scope.raceSeriesID+'/handicaplimitlist.json',
+    		'/raceseries/'+$scope.raceSeriesID+'/handicaplimit.json',
+    		'views/handicaplimitform.html',
+    		"Handicap Setting");
     
     $scope.setDialogController('handicapSettingsDialogInstanceController');
 });

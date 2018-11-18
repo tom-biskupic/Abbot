@@ -215,7 +215,7 @@ public class RaceResultServiceTest
         {
             if ( adjustedForYardstick )
             {
-                sailingDuration = (int)((float)testSailingDuration * testYardstick/targetYardstick);
+                sailingDuration = (int)((float)testSailingDuration * targetYardstick/testYardstick);
             }
             else
             {

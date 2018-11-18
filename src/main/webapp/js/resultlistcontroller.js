@@ -1,4 +1,4 @@
-abbotModule.controller("resultListController",function($scope,$http,$controller,$rootScope,$uibModal,$filter)
+angular.module("abbot").controller("resultListController",function($scope,$http,$controller,$rootScope,$uibModal,$filter)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
@@ -78,7 +78,8 @@ abbotModule.controller("resultListController",function($scope,$http,$controller,
         			'/Abbot3',
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/resultlist.json',
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/result.json/',
-        			'views/raceresultform.html');
+        			'views/raceresultform.html',
+        			"Race Result");
     	}
     	else
     	{

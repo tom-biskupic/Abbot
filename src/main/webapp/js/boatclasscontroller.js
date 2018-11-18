@@ -1,10 +1,15 @@
 
-abbotModule.controller("boatClassController",function($scope,$http,$controller,$rootScope)
+angular.module("abbot").controller("boatClassController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
 	$scope.raceSeriesID = $rootScope.seriesID;
-	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/boatclasslist.json','/raceseries/'+$scope.raceSeriesID+'/boatclass.json','views/boatclassform.html')
+	$scope.init(
+			'/Abbot3',
+			'/raceseries/'+$scope.raceSeriesID+'/boatclasslist.json',
+			'/raceseries/'+$scope.raceSeriesID+'/boatclass.json',
+			'views/boatclassform.html',
+			'Boat Class');
 
     $scope.newBoatDivision = function(boatClassId)
     {

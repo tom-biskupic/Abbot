@@ -7,18 +7,20 @@
 //	listResource is the resource used to get lists of items at a time (i.e. '/userlist.json')
 //	itemResource is the resourced used to either get details of a particular item or to post updates
 //	editDialogId is the ID of the modal edit dialog for items in the list
+//  objectName is the name of the object type being edited - e.g 'Boat' or 'Race' etc.
 //
-var abbotModule = angular.module("abbot").controller("listController",function($scope, $controller, $http)
+angular.module("abbot").controller("listController",function($scope, $controller, $http, confirmService)
 {
     angular.extend(this,$controller('dialogController', {$scope: $scope}));
     
-    $scope.init = function(contextPath, listResource,itemResource, editDialogId)
+    $scope.init = function(contextPath, listResource, itemResource, editDialogId, objectName)
     {
         $scope.contextPath = contextPath;
         $scope.listResource = listResource;
         $scope.itemResource = itemResource;
         $scope.editDialogId = editDialogId;
-
+        $scope.objectName = objectName;
+        
         if ($scope.page)
         {
             page = $scope.page.page;
@@ -93,8 +95,10 @@ var abbotModule = angular.module("abbot").controller("listController",function($
 
     $scope.deleteObject = function(id)
     {
-        $http.delete($scope.contextPath+$scope.itemResource+"/"+id).then(
-                function(response) { $scope.loadPage($scope.page.number) });
+    	confirmService.confirm($scope.objectName).then(function(){
+            $http.delete($scope.contextPath+$scope.itemResource+"/"+id).then(
+                    function(response) { $scope.loadPage($scope.page.number) });
+    	});
     }
     
     $scope.getSortClass = function(columnName)

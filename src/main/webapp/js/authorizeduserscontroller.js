@@ -1,4 +1,4 @@
-abbotModule.controller("authorizedUsersController",function($scope,$http,$controller,$rootScope)
+angular.module("abbot").controller("authorizedUsersController",function($scope,$http,$controller,$rootScope)
 {
 	angular.extend(this,$controller('listController', {$scope: $scope}));	
 	

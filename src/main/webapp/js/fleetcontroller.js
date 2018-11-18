@@ -1,9 +1,14 @@
-abbotModule.controller("fleetController",function($scope,$http,$controller,$rootScope)
+angular.module("abbot").controller("fleetController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
 
 	$scope.raceSeriesID = $rootScope.seriesID;
-    $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/fleetlist.json','/raceseries/'+$scope.raceSeriesID+'/fleet.json','views/fleetform.html');
+    $scope.init(
+    		'/Abbot3',
+    		'/raceseries/'+$scope.raceSeriesID+'/fleetlist.json',
+    		'/raceseries/'+$scope.raceSeriesID+'/fleet.json',
+    		'views/fleetform.html',
+    		'Fleet');
     
     $scope.setDialogController('fleetDialogInstanceController');
 });

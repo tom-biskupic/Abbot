@@ -1,10 +1,14 @@
 
-abbotModule.controller("competitionController",function($scope,$http,$controller,$rootScope)
+angular.module("abbot").controller("competitionController",function($scope,$http,$controller,$rootScope)
 {
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
 	$scope.raceSeriesID = $rootScope.seriesID;
-    $scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/competitionlist.json','/raceseries/'+$scope.raceSeriesID+'/competition.json','views/competitionform.html')
+    $scope.init(
+    		'/Abbot3','/raceseries/'+$scope.raceSeriesID+'/competitionlist.json',
+    		'/raceseries/'+$scope.raceSeriesID+'/competition.json',
+    		'views/competitionform.html',
+    		'Competition');
     
     $scope.setDialogController('competitionDialogInstanceController');
 });
