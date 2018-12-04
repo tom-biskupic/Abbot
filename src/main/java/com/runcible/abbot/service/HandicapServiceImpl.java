@@ -62,6 +62,18 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     @Override
     public void updateHandicapsFromResults(Integer raceID) throws NoSuchUser, UserNotPermitted
     {
+        Race thisRace = raceService.getRaceByID(raceID);
+
+        //
+        //  For now, if this is a short course race it doesn't affect the handicap
+        //  The second race of the day will need to be done manually.
+        //  TODO: Make handicaps work for short course.
+        //
+        if ( thisRace.isShortCourseRace() )
+        {
+            return;
+        }
+        
         //
         //  Handicap adjustments are only made to boats that competed in the race
         //
@@ -72,7 +84,6 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //
         Float limit = getHandicapLimit(raceID);
         
-        Race thisRace = raceService.getRaceByID(raceID);
         
         //
         //  For each result, go see if any have won three times before. If so 

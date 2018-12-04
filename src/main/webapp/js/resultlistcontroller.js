@@ -186,6 +186,8 @@ lastStartTime = null;
 angular.module("abbot").controller("raceResultDialogInstanceController",function(
 		$scope, $http, $controller, $uibModalInstance,$rootScope,object,context,resource,race )
 {
+	$scope.race = race;
+	
 	if ( object.startTime != undefined )
 	{
 		object.startTime = new Date(object.startTime);
@@ -259,7 +261,15 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 		{
 			if ( $scope.handicaps[i].boatID == boatId )
 			{
-				return $scope.handicaps[i].value;
+				// Urgh... This is horrible. Fix me...
+				if ( $scope.race.shortCourseRace )
+				{
+					return $scope.handicaps[i].value/2.0;
+				}
+				else
+				{
+					return $scope.handicaps[i].value;
+				}
 			}
 		}
 		return 0;
