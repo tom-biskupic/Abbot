@@ -1,5 +1,7 @@
 package com.runcible.abbot.service;
 
+import java.util.Collection;
+
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -15,10 +17,10 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 public interface ExportService
 {
     /**
-     * Exports the pointstable for the competition with the ID specified as HTML
+     * Exports the pointstable for the competitions with the ID specified as HTML
      * 
-     * @param raceSeriesID The Race Series the competition is part of
-     * @param competitionID The competition ID
+     * @param raceSeriesID      The Race Series the competition is part of
+     * @param competitionIds    List of competitions to generate HTML for
      * @return A string containing the points table as HTML
      * @throws NoSuchCompetition    If the competition ID is invalid
      * @throws NoSuchUser           If the logged on user is not valid
@@ -26,8 +28,10 @@ public interface ExportService
      * @throws NoSuchFleet          If the fleet associated with the 
      *                              competition is not valid (should not happen)
      */
-    public String exportCompetition(Integer raceSeriesID, Integer competitionID) 
-            throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet;
+    public String exportCompetitions(
+                Integer             raceSeriesID, 
+                Collection<Integer> competitionIds) 
+                        throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet;
     
     /**
      * Exports the races for a fleet as HTML

@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -23,14 +24,29 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 @Component
 public class ExportServiceImpl implements ExportService
 {
-
     @Override
-    public String exportCompetition(Integer raceSeriesID,Integer competitionID) 
+    public String exportCompetitions(
+            Integer             raceSeriesID, 
+            Collection<Integer> competitionIds) 
+                    throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        String result = "";
+        
+        for(Integer competitionId : competitionIds )
+        {
+            result += exportCompetitions(raceSeriesID,competitionId);
+        }
+        
+        return result;
+    }
+    
+    private String exportCompetitions(Integer raceSeriesID,Integer competitionID) 
             throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
     {
         PointsTable pointsTable = pointsService.generatePointsTable(raceSeriesID, competitionID);
         
         StringBuffer result = new StringBuffer();
+        result.append("<h1>"+pointsTable.getCompetition().getName()+"</h1>");
         result.append("<table class=\"results-table\">\n");
         result.append(indent(1,"<tr>\n"));
         result.append(indent(2,makeTH("Boat Name")));

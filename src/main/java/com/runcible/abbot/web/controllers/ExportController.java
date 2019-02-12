@@ -2,6 +2,9 @@ package com.runcible.abbot.web.controllers;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.runcible.abbot.service.ExportService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
@@ -20,13 +24,13 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 @Controller
 public class ExportController
 {
-    @RequestMapping(value="/raceseries/{raceSeriesId}/exportPoints.json/{competitionId}",method=GET)
+    @RequestMapping(value="/raceseries/{raceSeriesId}/exportPoints.json",method=GET)
     public ResponseEntity<ByteArrayResource> exportPointsHTML(
-                @PathVariable("raceSeriesId") Integer   raceSeriesId,
-                @PathVariable("competitionId")Integer   competitionId ) 
+                @PathVariable("raceSeriesId")   Integer       raceSeriesId,
+                @RequestParam("competition")  Collection<Integer>   competitionIds ) 
                         throws NoSuchUser, UserNotPermitted, NoSuchCompetition, NoSuchFleet
     {
-        String pointsAsHTML = exportService.exportCompetition(raceSeriesId, competitionId);
+        String pointsAsHTML = exportService.exportCompetitions(raceSeriesId, competitionIds);
         return makeResponseEntity(pointsAsHTML.getBytes());
         
     }

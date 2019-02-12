@@ -3,6 +3,22 @@
 	<div class="panel panel-default">
 	    <div class="panel-heading">Export Points Tables</div>
 	    <div class="panel-body">
+	    	<table class="table table-striped" >
+                    <thead>
+                        <tr>
+                            <th>Competition Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="competition in competitionsToExport">
+                            <td>
+                                {{competition.name}}</a>
+                            </td>
+                        </tr>
+                    </tbody>                 
+                </table>
+                <p class="help-block" ng-show="(competitionsToExport === undefined || competitionsToExport.length == 0)">No Competitions selected for export</p>
+	    
 			<form class="navbar-form navbar-left">
 				<label for="competition">Choose a competition</label>
 				<select name="competition" 
@@ -11,7 +27,11 @@
 			            ng-options="competition.name for competition in competitions track by competition.id">
 				</select>
 				<button type="button" class="btn btn-default"
-						ng-click="exportPointsTable(competition)">Export</button>
+						ng-click="addCompetitionToExport(competition)">Add</button>
+				<button type="button" class="btn btn-default"
+						ng-click="exportCompetitions()">Export</button>
+				<button type="button" class="btn btn-default"
+						ng-click="clearCompetitionsToExport()">Clear</button>
 			</form>
 		</div>
 	</div>

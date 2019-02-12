@@ -2,6 +2,8 @@ angular.module("abbot").controller("exportController",function($scope,$http,$con
 {
     $scope.raceSeriesId = $rootScope.seriesID;
     $scope.context = '/Abbot3';
+    $scope.competitionsToExport = [];
+    
     
     $http.get($scope.context+'/raceseries/'+$scope.raceSeriesId+'/competitionlist.json/all').then(
             function(response) 
@@ -15,14 +17,52 @@ angular.module("abbot").controller("exportController",function($scope,$http,$con
                 $scope.fleets = response.data
             });
 
-    $scope.exportPointsTable = function(competition)
+    $scope.addCompetitionToExport = function(competition)
     {
-    	url = $scope.context+'/raceseries/'+$scope.raceSeriesId+'/exportPoints.json/'+competition.id;
+    	alreadyAdded = $scope.competitionsToExport.some(
+    			function(competitionToCheck)
+    			{
+    				return ( competition.id === competitionToCheck.id );
+    			});
+    	
+    	if ( !alreadyAdded )
+		{
+    		$scope.competitionsToExport.push(competition);
+		}
+    }
+    
+    $scope.clearCompetitionsToExport = function()
+    {
+    	$scope.competitionsToExport = [];
+    }
+    
+    $scope.exportCompetitions = function()
+    {
+    	if ( 	$scope.competitionsToExport == undefined 
+    			||
+    			$scope.competitionsToExport.length == 0 )
+		{
+    		return;
+		}
+    	
+    	competitionIds = "";
+    	
+    	$scope.competitionsToExport.forEach(
+    			function(competition)
+    			{
+    				if (competitionIds.length > 0 )
+					{
+    					competitionIds += ",";
+					}
+    				competitionIds += competition.id;
+    			});
+    	
+    	url = $scope.context+'/raceseries/'+$scope.raceSeriesId+'/exportPoints.json?competition='+competitionIds;
     	
     	$http.get(url).then(
     			function(response)
     			{
-			        var filename = competition.name+'.html';       
+			        var filename = 'ExportedCompetitions.html';       
 			        $scope.saveData(response.data,filename);
     			});
     }
