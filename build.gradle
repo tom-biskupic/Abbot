@@ -18,7 +18,7 @@ plugins
 {
   id 'net.saliman.cobertura' version '2.2.7'
   id "io.spring.dependency-management" version "1.0.6.RELEASE"
-  id 'com.palantir.docker' version "0.9.0"
+  id 'com.palantir.docker' version "0.21.0"
   id "de.undercouch.download" version "3.4.3"
 }
 
@@ -70,7 +70,7 @@ war
 docker
 {
 	name 'tombi/abbot'
-	dockerfile 'src/main/docker/abbot/Dockerfile'
+	dockerfile file('src/main/docker/abbot/Dockerfile')
 	dependsOn tasks.war, tasks.bootRepackage
 }
 
