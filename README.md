@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/tom-biskupic/Abbot.svg?branch=master)](https://travis-ci.com/tom-biskupic/Abbot)
+
 # Abbot
 
 Abbot is a a web application for managing sailing results. It was written to meet the specific needs of the Abbotsford 12 foot sailing club but could be used for other dinghy sailing races.
