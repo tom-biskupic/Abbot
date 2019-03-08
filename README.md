@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/tom-biskupic/Abbot.svg?branch=master)](https://travis-ci.com/tom-biskupic/Abbot)
+[![codecov](https://codecov.io/gh/tom-biskupic/Abbot/branch/master/graph/badge.svg)](https://codecov.io/gh/tom-biskupic/Abbot)
 
 # Abbot
 
