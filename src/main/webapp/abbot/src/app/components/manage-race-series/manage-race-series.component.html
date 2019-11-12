@@ -1,0 +1,41 @@
+<h1>Race Series</h1>
+
+<div class="btn-group float-right" role="group" aria-label="...">
+  <button type="button" class="btn" (click)="addRaceSeries()">
+    <fa-icon [icon]="faPlusSquare"></fa-icon>
+  </button>
+  <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+      <fa-icon [icon]="faSync"></fa-icon>
+  </button>
+</div>
+
+<table name="page.content" class="table table-striped" >
+  <thead>
+      <tr>
+          <td>Series Name</td>
+          <td>Type</td>
+          <td>Comment</td>
+          <td>Date Created</td>
+          <td>Date Last Updated</td>
+      </tr>
+  </thead>
+  <tbody>
+      <tr *ngFor="let raceSeries of getRaceSeries()">
+          <td>
+              <a href="javascript:void(0);" (click)="editRaceSeries(raceSeries)">{{raceSeries.name}} </a>
+              <a href="/raceseries/{{raceSeries.id}}"> <fa-icon [icon]="faExternalLink"></fa-icon></a>
+          </td>
+          <td>{{raceSeries.seriesType}}</td>
+          <td>{{raceSeries.comment}}</td>
+          <td>{{raceSeries.dateCreated | date:'medium'}}</td>
+          <td>{{raceSeries.lastUpdated | date:'medium'}}</td>
+      </tr>
+  </tbody>
+</table>
+
+<ngb-pagination
+  *ngIf="(numPages > 1)"
+  [(page)]="pageNumber"
+  [pageSize]="pageSize"
+  [collectionSize]="collectionSize"
+  (pageChange)="loadPage($event)"></ngb-pagination>

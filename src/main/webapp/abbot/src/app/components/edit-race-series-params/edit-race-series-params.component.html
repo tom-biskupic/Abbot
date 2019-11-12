@@ -1,0 +1,29 @@
+<form [formGroup]="raceSeriesForm" (ngSubmit)="ok()">
+  <div class="modal-header">
+      <h4 class="modal-title" id="myModalLabel">Race Series</h4>
+      <button type="button" class="close" data-dismiss="modal" (click)="cancel()">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+      </button>
+  </div>
+  <div class="modal-body">
+      <div class="form-group">
+          <label for="name">Name<span class="required">*</span></label>
+          <input class="form-control" formControlName="name"/>
+          <div *ngIf="submitted && fields.name.errors && fields.name.errors.required" class="help-inline">Name is required</div>
+      </div>
+      <div class="form-group">
+        <label for="seriesType">Race series type</label>
+        <select class="form-control" formControlName="seriesType">
+          <option *ngFor="let seriesType of raceSeriesTypes()" [value]="seriesType">{{seriesType}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+          <label for="comment">Yardstick</label>
+          <input class="form-control" formControlName="comment"/>
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary">OK</button>
+      <button class="btn btn-warning" type="reset" (click)="cancel()">Cancel</button>
+  </div>
+</form>

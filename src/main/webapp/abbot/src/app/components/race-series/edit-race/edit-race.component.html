@@ -1,0 +1,76 @@
+<form [formGroup]="raceForm" (ngSubmit)="ok()">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Authorized User</h4>
+        <button type="button" class="close" data-dismiss="modal" (click)="cancel()">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="name">Race Name<span class="required">*</span></label>
+            <input class="form-control" formControlName="name"/>
+            <div *ngIf="submitted && fields.name.errors && fields.name.errors.required" class="help-inline">Race name is required</div>
+        </div>
+        <div class="form-group">
+          <label for="name">Race Date<span class="required">*</span></label>
+          <div class="input-group">
+            <input class="form-control" formControlName="raceDate" ngbDatepicker #d="ngbDatepicker">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+            </div>
+          </div>
+          <div *ngIf="submitted && fields.raceDate.errors && fields.raceDate.errors.required" class="help-inline">Race date is required</div>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" formControlName="shortCourseRace"> Short Course Race
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="Fleet">Fleet</label>
+            <select class="form-control" formControlName="fleet" [compareWith]="compareFleetFunction" (ngModelChange)="onChangeFleet($event)">
+              <option *ngFor="let fleet of fleets" [ngValue]="fleet">{{fleet.fleetName}}</option>
+            </select>
+        </div>
+        <div class="card">
+            <div class="card-header">Competitions</div>
+            <div class="card-body">
+              <table class="table table-striped" >
+                  <thead>
+                      <tr>
+                          <th>Competition Name</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let competition of selectedCompetitions">
+                          <td>
+                              <button type="button" class="btn" (click)="removeCompetition(competition)" >
+                                  <fa-icon [icon]="faTrashAlt"></fa-icon>
+                              </button>
+                              {{competition.name}}
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+              <p class="help-block" *ngIf="(selectedCompetitions === undefined || selectedCompetitions.length == 0)">No competitions selected</p>
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-4">
+                      <select class="form-control" [(ngModel)]="competitionToAdd" [ngModelOptions]="{standalone: true}" >
+                        <option *ngFor="let competition of ( competitions | competitionsForFleet: fields.fleet.value)" [ngValue]="competition">{{competition.name}}</option>
+                      </select>
+                  </div>
+                  <div class="col-1">
+                      <button class="btn btn-secondary" type="button"(click)="addCompetition(competitionToAdd)">Add</button>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="submitted && (selectedCompetitions === undefined || selectedCompetitions.length == 0)" class="help-inline">At least one competition must be added</div>
+            </div>
+          </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary">OK</button>
+        <button class="btn btn-warning" type="reset" (click)="cancel()">Cancel</button>
+    </div>
+  </form>

@@ -1,0 +1,34 @@
+<h1>Race Series - {{raceSeries.name}}</h1>
+
+<ngb-tabset>
+  <ngb-tab title="Results">
+    <ng-template ngbTabContent>
+      <app-race-series-results [raceSeriesId]='raceSeriesId'></app-race-series-results>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Races">
+    <ng-template ngbTabContent>
+        <app-race-series-races [raceSeriesId]='raceSeriesId'></app-race-series-races>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Registered Boats">
+    <ng-template ngbTabContent>
+        <app-race-series-registered-boats [raceSeriesId]='raceSeriesId'></app-race-series-registered-boats>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Points">
+    <ng-template ngbTabContent>
+        <app-race-series-points [raceSeriesId]='raceSeriesId'></app-race-series-points>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Export">
+    <ng-template ngbTabContent>
+        <app-race-series-export [raceSeriesId]='raceSeriesId'></app-race-series-export>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Settings">
+    <ng-template ngbTabContent>
+        <app-race-series-settings [raceSeriesId]='raceSeriesId'></app-race-series-settings>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>

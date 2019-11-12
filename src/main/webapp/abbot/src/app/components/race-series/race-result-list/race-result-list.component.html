@@ -1,0 +1,75 @@
+<div *ngIf="race !== null" class='card'>
+  <div class='card-header border-0'>
+    <h5 class="card-title">{{race.fleet.fleetName}} - {{race.name}} {{race.raceDate | date:'dd/MM/yyyy'}}</h5>
+  </div>
+  <div class='card-body mb-0'>
+    <div class='btn-toolbar justify-content-between' role='toolbar'>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Status</span>
+        </div>
+        <input type="text" class="input-group-text" placeholder="Status" [(ngModel)]="race.raceStatus" disabled>
+      </div>
+      <div class="btn-group" role="group" aria-label="...">
+          <button type="button" class="btn btn-outline-secondary"
+                  ng-click="updateRaceStatus(race)">Update Race Status </button>
+          <button type="button" class="btn btn-outline-secondary"
+                  ng-click="addNonStarters(race)">Add Non-starters</button>
+      </div>
+      <div class="btn-group float-right" role="group" aria-label="...">
+        <button type="button" class="btn" (click)="addResult()">
+          <fa-icon [icon]="faPlusSquare"></fa-icon>
+        </button>
+        <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+            <fa-icon [icon]="faSync"></fa-icon>
+        </button>
+      </div>
+    </div>
+    <table class="table table-striped table-responsive table-condensed">
+      <thead>
+        <tr>
+          <th>Boat Name</th>
+          <th>Sail Number</th>
+          <th>Handicap</th>
+          <th>Result</th>
+          <th>Start Time</th>
+          <th>Finish Time</th>
+          <th>Sailing Time{{race.fleet.competeOnYardstick ? " (Adj)" : ""}}</th>
+          <th>Corrected Time</th>
+          <th>Handicap Place</th>
+          <th>Scratch Place</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let raceResult of results">
+          <td scope="row">
+            <span class="text-nowrap">
+              <button type="button" class="btn" (click)="deleteResult(raceResult)" >
+                  <fa-icon [icon]="faTrashAlt"></fa-icon>
+              </button>
+              <a href="javascript:void(0);" (click)="editResult(raceResult)">{{raceResult.boat.name}}</a>
+            </span>
+          </td>
+          <td>{{raceResult.boat.sailNumber}}</td>
+          <td>{{raceResult.handicap}}</td>
+          <td>{{raceResult.status}}</td>
+          <td>{{raceResultService.isStarted(raceResult.status) ? (raceResult.startTime | date:'hh:mm:ss') : ""}}</td>
+          <td>{{raceResultService.isFinished(raceResult.status) ? (raceResult.finishTime | date:'hh:mm:ss') : ""}}</td>
+          <td>{{raceResult.sailingTime | duration}}</td>
+          <td>{{raceResult.correctedTime | duration}}</td>
+          <td>{{raceResult.handicapPlace}}</td>
+          <td>{{raceResult.scratchPlace}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <ngb-pagination
+        *ngIf="(numPages > 1)"
+        [(page)]="pageNumber"
+        [pageSize]="pageSize"
+        [collectionSize]="collectionSize"
+        (pageChange)="loadPage($event)"></ngb-pagination>
+  </div>
+</div>
+<div *ngIf="race == null">
+  <p>No race selected</p>
+</div>

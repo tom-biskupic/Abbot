@@ -1,0 +1,68 @@
+<form [formGroup]="fleetForm" (ngSubmit)="ok()">
+  <div class="modal-header">
+    <h4 class="modal-title" id="myModalLabel">Fleet</h4>
+    <button type="button" class="close" data-dismiss="modal" (click)="cancel()">
+      <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+    </button>
+  </div>
+  <div class="modal-body" >
+    <div class="form-group">
+        <label for="fleetName">Fleet name<span class="required">*</span></label>
+        <input class="form-control" formControlName="fleetName"/>
+        <div *ngIf="submitted && fields.fleetName.errors && fields.fleetName.errors.required" class="help-inline">Fleet name is required</div>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" formControlName="competeOnYardstick">
+      <label class="form-check-label" for="competeOnYardstick"> Fleet competes on yardstick?</label>
+    </div>
+    <div class="card">
+      <div class="card-header">Classes in this Fleet</div>
+      <div class="card-body">
+        <table class="table table-striped" >
+            <thead>
+                <tr>
+                    <th>Boat Class</th>
+                    <th>Division</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let fleetSelector of getFleetClasses()">
+                    <td>
+                        <button type="button" class="btn" (click)="removeFleetSelector(fleetSelector)" >
+                            <fa-icon [icon]="faTrashAlt"></fa-icon>
+                        </button>
+                        {{fleetSelector.boatClass.name}}
+                    </td>
+                    <td>
+                        {{ fleetSelector.boatDivision ? fleetSelector.boatDivision.name : ""}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="help-block" *ngIf="(getFleetClasses() === undefined || getFleetClasses().length == 0)">No Boat classes selected</p>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-4">
+                <select class="form-control" [(ngModel)]="boatClassToAdd" [ngModelOptions]="{standalone: true}" >
+                  <option *ngFor="let boatClass of boatClasses" [ngValue]="boatClass">{{boatClass.name}}</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <select class="form-control" [(ngModel)]="divisionToAdd" [ngModelOptions]="{standalone: true}" >
+                  <option  *ngFor="let division of boatClassToAdd.divisions" [ngValue]="division">{{division.name}}</option>
+                </select>
+            </div>
+            <div class="col-1">
+                <button class="btn btn-secondary" type="button"(click)="addToFleet(boatClassToAdd,divisionToAdd)">Add</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="submitted && (getFleetClasses() === undefined || getFleetClasses().length == 0)" class="help-inline">At least one boat class must be added</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary">OK</button>
+      <button class="btn btn-warning" type="reset" (click)="cancel()">Cancel</button>
+  </div>
+</form>

@@ -1,0 +1,9 @@
+<ngb-accordion [closeOthers]='true'>
+  <ngb-panel *ngFor="let raceDay of raceDays" title="{{raceDay.day | date: 'shortDate'}}">
+    <ng-template ngbPanelContent>
+      <p *ngFor='let race of raceDay.races'><a class="race-link" href="javascript:void(0);" (click)="select(race)">
+        {{race.fleet.fleetName}} - {{race.name}}</a>
+      </p>
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>

@@ -1,0 +1,41 @@
+<div class="btn-group float-right" role="group" aria-label="...">
+  <button type="button" class="btn" (click)="addBoat()">
+    <fa-icon [icon]="faPlusSquare"></fa-icon>
+  </button>
+  <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+      <fa-icon [icon]="faSync"></fa-icon>
+  </button>
+</div>
+
+<table class="table table-striped" >
+  <thead>
+      <tr>
+          <td>Name</td>
+          <td>Sail number</td>
+          <td>Skipper</td>
+          <td>Boat class</td>
+          <td>Division</td>
+      </tr>
+  </thead>
+  <tbody>
+      <tr *ngFor="let boat of boats">
+          <td>
+              <button type="button" class="btn" (click)="deleteBoat(boat)" >
+                  <fa-icon [icon]="faTrashAlt"></fa-icon>
+              </button>
+              <a href="javascript:void(0);" (click)="editBoat(boat)">{{boat.name }}</a>
+          </td>
+          <td>{{boat.sailNumber}}</td>
+          <td>{{boat.skipper}}</td>
+          <td>{{boat.boatClass.name}}</td>
+          <td>{{boat.division !== null ? boat.division.name : ''}}</td>
+      </tr>
+  </tbody>
+</table>
+
+<ngb-pagination
+  *ngIf="(numPages > 1)"
+  [(page)]="pageNumber"
+  [pageSize]="pageSize"
+  [collectionSize]="collectionSize"
+  (pageChange)="loadPage($event)"></ngb-pagination>

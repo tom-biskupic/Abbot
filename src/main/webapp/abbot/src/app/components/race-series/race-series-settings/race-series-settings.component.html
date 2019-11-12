@@ -1,0 +1,27 @@
+<ngb-accordion #acc="ngbAccordion">
+    <ngb-panel title="Boat Classes">
+      <ng-template ngbPanelContent>
+        <app-manage-boat-classes [raceSeriesId]="raceSeriesId"></app-manage-boat-classes>
+      </ng-template>
+    </ngb-panel>
+    <ngb-panel title="Fleets">
+      <ng-template ngbPanelContent>
+        <app-manage-fleets [raceSeriesId]="raceSeriesId"></app-manage-fleets>
+      </ng-template>
+    </ngb-panel>
+    <ngb-panel title="Competitions">
+      <ng-template ngbPanelContent>
+        <app-manage-competitions [raceSeriesId]="raceSeriesId"></app-manage-competitions>
+      </ng-template>
+    </ngb-panel>
+    <ngb-panel title="Handicap">
+      <ng-template ngbPanelContent>
+          <app-manage-handicaps [raceSeriesId]="raceSeriesId"></app-manage-handicaps>
+      </ng-template>
+    </ngb-panel>
+    <ngb-panel title="Authorized Users">
+      <ng-template ngbPanelContent>
+          <app-manage-authorized-users [raceSeriesId]="raceSeriesId"></app-manage-authorized-users>
+      </ng-template>
+    </ngb-panel>
+</ngb-accordion>

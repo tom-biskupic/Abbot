@@ -1,0 +1,38 @@
+<div class="btn-group float-right" role="group" aria-label="...">
+    <button type="button" class="btn" (click)="addHandicapLimit()">
+      <fa-icon [icon]="faPlusSquare"></fa-icon>
+    </button>
+    <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+        <fa-icon [icon]="faSync"></fa-icon>
+    </button>
+  </div>
+
+  <p>Define the handicap limit for a fleet</p>
+
+  <table name="page.content" class="table table-striped" >
+    <thead>
+      <tr>
+        <th>Fleet Name</th>
+        <th>Limit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let handicapLimit of handicapLimits">
+        <td>
+          <button type="button" class="btn" (click)="deleteHandicapLimit(handicapLimit)" >
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+          </button>
+
+          <a href="javascript:void(0);" (click)="editHandicapLimit(handicapLimit)">{{handicapLimit.fleet.fleetName}}</a>
+        </td>
+        <td>{{handicapLimit.limit}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ngb-pagination
+    *ngIf="(numPages > 1)"
+    [(page)]="pageNumber"
+    [pageSize]="pageSize"
+    [collectionSize]="collectionSize"
+    (pageChange)="loadPage($event)"></ngb-pagination>

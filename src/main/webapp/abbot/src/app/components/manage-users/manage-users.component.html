@@ -1,0 +1,44 @@
+
+<h1>Users</h1>
+
+<div class="btn-group float-right" role="group" aria-label="...">
+  <button type="button" class="btn" (click)="addUser()">
+    <fa-icon [icon]="faPlusSquare"></fa-icon>
+  </button>
+  <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+      <fa-icon [icon]="faSync"></fa-icon>
+  </button>
+</div>
+
+<table name="page.content" class="table table-striped" >
+  <thead>
+      <tr>
+          <td>Email</td>
+          <td>Administrator</td>
+          <td>First Name</td>
+          <td>Last Name</td>
+          <td>Organisation</td>
+      </tr>
+  </thead>
+  <tbody>
+      <tr *ngFor="let user of getUsers()">
+          <td>
+              <a href="javascript:void(0);" (click)="editUser(user)">{{user.email}}</a>
+          </td>
+          <td>
+              <fa-icon  *ngIf="user.administrator" [icon]="faCheck"></fa-icon>
+              <fa-icon  *ngIf="!user.administrator" [icon]="faTimes"></fa-icon>
+          </td>
+          <td>{{user.firstName}}</td>
+          <td>{{user.lastName}}</td>
+          <td>{{user.organisation}}</td>
+      </tr>
+  </tbody>
+</table>
+
+<ngb-pagination
+  *ngIf="(numPages > 1)"
+  [(page)]="pageNumber"
+  [pageSize]="pageSize"
+  [collectionSize]="collectionSize"
+  (pageChange)="loadPage($event)"></ngb-pagination>

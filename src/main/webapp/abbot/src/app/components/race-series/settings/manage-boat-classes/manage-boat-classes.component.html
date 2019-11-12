@@ -1,0 +1,46 @@
+<div class="btn-group float-right" role="group" aria-label="...">
+  <button type="button" class="btn" (click)="addBoatClass()">
+    <fa-icon [icon]="faPlusSquare"></fa-icon>
+  </button>
+  <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+      <fa-icon [icon]="faSync"></fa-icon>
+  </button>
+</div>
+
+<p>Define the classes of sail boat that can sail in this race series</p>
+
+<table name="page.content" class="table table-striped" >
+  <thead>
+    <tr>
+        <th>Class Name</th>
+        <th>Divisions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let boatClass of getBoatClasses()">
+      <td>
+        <a href="javascript:void(0);" (click)="editBoatClass(boatClass)">{{boatClass.name}}</a>
+      </td>
+      <td>
+        <button type="button float-left" class="btn btn-default" (click)="newBoatDivision(boatClass)">
+            <fa-icon [icon]="faPlusSquare"></fa-icon>
+        </button>
+        <ul class="list-unstyled" *ngFor="let division of boatClass.divisions">
+          <li>
+            <button type="button" class="btn" (click)="deleteBoatDivision(boatClass,division)" >
+                <fa-icon [icon]="faTrashAlt"></fa-icon>
+            </button>
+            <a href="javascript:void(0);" (click)="editBoatDivision(boatClass,division)">{{division.name}}</a>
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ngb-pagination
+    *ngIf="(numPages > 1)"
+    [(page)]="pageNumber"
+    [pageSize]="pageSize"
+    [collectionSize]="collectionSize"
+    (pageChange)="loadPage($event)"></ngb-pagination>

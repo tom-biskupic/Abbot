@@ -1,0 +1,20 @@
+<form [formGroup]="authorizedUserForm" (ngSubmit)="ok()">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Authorized User</h4>
+        <button type="button" class="close" data-dismiss="modal" (click)="cancel()">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="name">Email address<span class="required">*</span></label>
+            <input class="form-control" formControlName="emailAddress"/>
+            <div *ngIf="submitted && fields.emailAddress.errors && fields.emailAddress.errors.required" class="help-inline">Email address is required</div>
+            <div *ngIf="submitted && fields.emailAddress.errors && fields.emailAddress.errors.email" class="help-inline">Valid email address required</div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary">OK</button>
+        <button class="btn btn-warning" type="reset" (click)="cancel()">Cancel</button>
+    </div>
+  </form>

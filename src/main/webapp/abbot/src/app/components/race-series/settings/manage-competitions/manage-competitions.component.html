@@ -1,0 +1,38 @@
+<div class="btn-group float-right" role="group" aria-label="...">
+  <button type="button" class="btn" (click)="addCompetition()">
+    <fa-icon [icon]="faPlusSquare"></fa-icon>
+  </button>
+  <button type="button" class="btn" (click)="loadPage(getPageNumber())">
+      <fa-icon [icon]="faSync"></fa-icon>
+  </button>
+</div>
+
+<p>Defines a competition that we can generate points tables for</p>
+
+<table name="page.content" class="table table-striped" >
+  <thead>
+    <tr>
+      <th>Competition Name</th>
+      <th>Fleet Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let competition of getCompetitions()">
+      <td>
+        <button type="button" class="btn" (click)="deleteCompetition(competition)" >
+          <fa-icon [icon]="faTrashAlt"></fa-icon>
+        </button>
+
+        <a href="javascript:void(0);" (click)="editCompetition(competition)">{{competition.name}}</a>
+      </td>
+      <td>{{competition.fleet.fleetName}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ngb-pagination
+  *ngIf="(numPages > 1)"
+  [(page)]="pageNumber"
+  [pageSize]="pageSize"
+  [collectionSize]="collectionSize"
+  (pageChange)="loadPage($event)"></ngb-pagination>
