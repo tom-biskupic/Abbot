@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
+import com.runcible.abbot.service.HandicapService;
 import com.runcible.abbot.service.RaceResultService;
 import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.exceptions.DuplicateResult;
@@ -122,7 +123,9 @@ public class RaceResultController
     {
         return  competitorStarted(raceResult)
                 &&
-                raceResult.getStatus() != ResultStatus.DNF;
+                raceResult.getStatus() != ResultStatus.DNF
+                &&
+                raceResult.getStatus() != ResultStatus.RDG;
     }
 
     private boolean competitorStarted(RaceResult raceResult)
@@ -187,6 +190,19 @@ public class RaceResultController
         return response;
     }
 
+    @RequestMapping(value="/raceseries/{raceSeriesId}/race/{raceid}/updatehandicaps.json",method= {RequestMethod.POST})
+    public @ResponseBody ValidationResponse updateRaceResultHandicaps(
+            @RequestBody                    String body,
+            @PathVariable("raceSeriesId")   Integer raceSeriesID,
+            @PathVariable("raceid")         Integer raceID ) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult, NoSuchFleet
+    {
+        ValidationResponse response = new ValidationResponse();
+        handicapService.updateHandicapsFromPreviousRace(raceID);
+        response.setStatus("SUCCESS");
+        return response;
+    }
+    
     @Autowired RaceResultService	raceResultService;
     @Autowired RaceSeriesService 	raceSeriesService;
+    @Autowired HandicapService      handicapService;
 }

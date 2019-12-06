@@ -8,9 +8,11 @@ import org.springframework.data.domain.Pageable;
 import com.runcible.abbot.model.Handicap;
 import com.runcible.abbot.model.HandicapLimit;
 import com.runcible.abbot.service.exceptions.InvalidUpdate;
+import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchHandicapLimit;
+import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -42,6 +44,17 @@ public interface HandicapService
      */
     public void updateHandicapsFromResults(Integer raceID) throws NoSuchUser, UserNotPermitted;
     
+    /**
+     * Update the handicaps for each result in this race from the previous race.
+     * @param raceId
+     * @throws UserNotPermitted 
+     * @throws NoSuchUser 
+     * @throws DuplicateResult 
+     * @throws NoSuchRaceResult 
+     * @throws NoSuchFleet 
+     */
+    public void updateHandicapsFromPreviousRace(Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult, NoSuchFleet;
+
     /**
      * Returns the handicap limit for the selected fleet
      * @param raceSeriesID Race series we are searching in
@@ -92,6 +105,6 @@ public interface HandicapService
      * @throws UserNotPermitted 
      * @throws NoSuchUser 
      */
-	public void removeHandicapLimit(Integer id) throws NoSuchHandicapLimit, NoSuchUser, UserNotPermitted;
+    public void removeHandicapLimit(Integer id) throws NoSuchHandicapLimit, NoSuchUser, UserNotPermitted;
 }
 

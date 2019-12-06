@@ -11,6 +11,11 @@
          <span class="help-inline" ng-show="hasError('name')">{{getError("name")}}</span>
      </div>
      <div class="form-group">
+        <label for="raceNumber">Race Number</label>
+        <input class="form-control" ng-model="object.raceNumber" />
+        <span class="help-inline" ng-show="hasError('raceNumber')">{{getError("raceNumber")}}</span>
+    </div>
+     <div class="form-group">
          <label for="raceDate">Race Date<span class="required">*</span></label>
          <div class="input-group" >
              <input  type="text" 

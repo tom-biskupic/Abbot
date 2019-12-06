@@ -85,14 +85,15 @@ public interface RaceService
 	public List<Race> getRacesForFleet(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted;
 	
 	/**
-	 * Returns the most recent finished race before the race provded.
+	 * Returns the most recent finished race before the race specified.
 	 * Used to find the previous race for handicap reasons.
-	 * @param race This is the race we are finding the previous race of
-	 * @param allowShortCourse Can it be a short course race?
+	 * 
+	 * @param raceSeriesID The ID of the race series we are looking in
+	 * @param raceID The ID of the race we are trying to find the previous race of
 	 * @return The previous race or NULL if there isn't one.
 	 * @throws NoSuchUser
 	 * @throws UserNotPermitted
 	 */
-	public Race findPreviousFinishedRace(Race race, boolean allowShortCourse) throws NoSuchUser, UserNotPermitted;
+	public Integer findPreviousFinishedRaceId(Integer raceID ) throws NoSuchUser, UserNotPermitted;
 }
 

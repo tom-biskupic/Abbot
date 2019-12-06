@@ -22,10 +22,19 @@ public interface RaceResultRepository extends PagingAndSortingRepository<RaceRes
 	@Query("select r from RaceResult r where r.raceId = :raceid order by r.finishTime NULLS LAST, r.status")
 	public List<RaceResult> findRaceResults(@Param("raceid") Integer raceid);
 	
-	@Query("select count(rs) from RaceResult rs where rs.boat.id = :boatId and rs.handicapPlace = 1 and rs.raceId in ( select r.id from Race r where r.raceDate < :thisDate and r.fleet.id = :fleetId and r.raceSeriesId = :raceSeriesId)")
+	@Query(    "select count(rs) from RaceResult rs where "+
+	           "rs.boat.id = :boatId and "+
+	           "rs.handicapPlace = 1 and "+
+	           "rs.raceId in "+
+	               "( select r.id from Race r where "+
+	               "r.raceDate < :thisDate and "+
+	               "r.fleet.id = :fleetId and "+
+	               "r.shortCourseRace = :shortCourse and "+
+	               "r.raceSeriesId = :raceSeriesId)")
 	public int getWinsForBoat(
 	        @Param("raceSeriesId") Integer raceSeriesId,
 	        @Param("boatId")       Integer boatid,
 	        @Param("fleetId")      Integer fleetid,
-	        @Param("thisDate")     Date    thisDate );
+	        @Param("thisDate")     Date    thisDate,
+	        @Param("shortCourse")  boolean shortCourse);
 }

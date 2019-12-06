@@ -125,7 +125,7 @@ public interface RaceResultService
             Integer         raceId, 
             ResultStatus    result) throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat;
     
-    
+   
     /**
      * Returns the number of times this boat has won before now
      * @param raceSeriesId
@@ -138,5 +138,6 @@ public interface RaceResultService
             Integer raceSeriesId,
             Integer fleetId,
             Integer boatId,
-            Date    thisRaceDate );
+            Date    thisRaceDate,
+            boolean shortCourse);
 }

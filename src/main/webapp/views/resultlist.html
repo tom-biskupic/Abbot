@@ -15,9 +15,11 @@
         	<input type="text" class="form-control" name="status" placeholder="Status" ng-model="selectedRace.raceStatus" disabled>
         	</div>
 			<button type="button" class="btn btn-default"
-	        		ng-click="updateRaceStatus(selectedRace)">Update Race Status </button>
+	        		ng-click="updateRaceStatus(selectedRace)">Update<br \>Race Status </button>
 			<button type="button" class="btn btn-default"
-	        		ng-click="addNonStarters(selectedRace)">Add Non-starters</button>
+	        		ng-click="addNonStarters(selectedRace)">Add<br \>Non-starters</button>
+	        <button type="button" class="btn btn-default"
+	        		ng-click="updateHandicaps(selectedRace)">Update<br \>Handicaps</button>
       	</form>
 	  	<div class="btn-group pull-right" role="group" aria-label="...">
 	    	<button type="button" class="btn btn-default" ng-click="newObject()">

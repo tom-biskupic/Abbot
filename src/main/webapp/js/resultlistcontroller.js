@@ -179,6 +179,15 @@ angular.module("abbot").controller("resultListController",function($scope,$http,
         			$scope.loadPage($scope.page.number);
         		});
     }
+    
+    $scope.updateHandicaps = function (race)
+    {
+        $http.post('/Abbot3'+'/raceseries/'+$scope.raceSeriesID+'/race/'+race.id+'/updatehandicaps.json','{}').then(
+                function(response)
+                {
+                	$scope.loadPage($scope.page.number);
+                });
+    }
 });
 
 lastStartTime = null;
@@ -261,15 +270,7 @@ angular.module("abbot").controller("raceResultDialogInstanceController",function
 		{
 			if ( $scope.handicaps[i].boatID == boatId )
 			{
-				// Urgh... This is horrible. Fix me...
-				if ( $scope.race.shortCourseRace )
-				{
-					return $scope.handicaps[i].value/2.0;
-				}
-				else
-				{
-					return $scope.handicaps[i].value;
-				}
+				return $scope.handicaps[i].value;
 			}
 		}
 		return 0;

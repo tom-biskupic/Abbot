@@ -22,9 +22,11 @@ import com.runcible.abbot.repository.HandicapRepository;
 import com.runcible.abbot.service.exceptions.InvalidUpdate;
 import com.runcible.abbot.service.audit.AuditEventType;
 import com.runcible.abbot.service.audit.AuditService;
+import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchHandicapLimit;
+import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.service.points.RaceResultComparator;
@@ -40,19 +42,31 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             Integer     raceID ) throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
         List<Handicap> handicaps = new ArrayList<Handicap>();
+
+        //
+        //  Find the previous race and then find the handicaps for all the boats
+        //  in the fleet after that race
+        //
+        Integer previousRaceId = this.raceService.findPreviousFinishedRaceId(raceID);
+        
         List<Boat> boats = boatService.getAllBoatsInFleetForSeries(raceSeriesID, fleetId);
         
         for(Boat boat : boats)
         {
-            Handicap found = handicapRepo.findByBoatID(boat.getId());
-            
-            if (found == null )
+            Handicap foundHandicap = null;
+
+            if ( previousRaceId != null )
             {
-                handicaps.add(new Handicap(null,boat.getId(),0.0f));
+                foundHandicap = handicapRepo.findByBoatAndRace(boat.getId(),previousRaceId);
+            }
+            
+            if (foundHandicap == null )
+            {
+                handicaps.add(new Handicap(null,boat.getId(),raceID,0.0f));
             }
             else
             {
-                handicaps.add(found);
+                handicaps.add(foundHandicap);
             }
         }
         
@@ -65,16 +79,6 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         Race thisRace = raceService.getRaceByID(raceID);
 
         //
-        //  For now, if this is a short course race it doesn't affect the handicap
-        //  The second race of the day will need to be done manually.
-        //  TODO: Make handicaps work for short course.
-        //
-        if ( thisRace.isShortCourseRace() )
-        {
-            return;
-        }
-        
-        //
         //  Handicap adjustments are only made to boats that competed in the race
         //
         List<RaceResult> raceResults = raceResultService.findAll(raceID);
@@ -83,7 +87,6 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //  Get the handicap limit. Round to an int value for this handicap scheme
         //
         Float limit = getHandicapLimit(raceID);
-        
         
         //
         //  For each result, go see if any have won three times before. If so 
@@ -98,13 +101,12 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 raceResults,
                 new RaceResultComparator(ResultType.HANDICAP_RESULT));
 
-        
         //
         //  The pushout is the amount of time we have to add to everybody's
         //  handicap. This happens if the reduction of a handicap would take
         //  a competitor below zero
         //
-        Float pushOut = findPushOut(raceResults,thirdWinMap);
+        Float pushOut = findPushOut(raceResults,thirdWinMap,thisRace.isShortCourseRace());
         
         int place = 1;
         
@@ -117,10 +119,11 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 adjustedHandicap -= handicapUpdateForResult(
                         place,
                         result,
-                        thirdWinMap.get(result.getBoat().getId()));
+                        thirdWinMap.get(result.getBoat().getId()),
+                        thisRace.isShortCourseRace());
                 
                 place++;
-            }
+            } 
             
             if ( result.getStatus().isStarted() )
             {
@@ -131,9 +134,15 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                     adjustedHandicap = limit;
                 }
                 
-                updateHandicap(result.getBoat(),adjustedHandicap);
+                updateHandicap(result.getBoat(),raceID,adjustedHandicap);
             }
-            
+            else
+            {
+                //
+                //  Just carry the previous handicap forward with no adjustment
+                //
+                updateHandicap(result.getBoat(),raceID,result.getHandicap());
+            }
         }
         
         audit.auditEventFreeForm(
@@ -142,7 +151,44 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 "Handicaps as a result of the race "+thisRace.getName());
     }
 
-    private Map<Integer, Boolean> findThirdWinBoats(
+    public void updateHandicapsFromPreviousRace(Integer raceId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult, NoSuchFleet
+    {
+        //
+        // This will throw if we are not permitted to manage this race
+        //
+        Race race = raceService.getRaceByID(raceId);
+        List<Handicap> handicaps = getHandicapsForFleet(race.getRaceSeriesId(),race.getFleet().getId(),raceId);
+        
+        List<RaceResult> existingResults = raceResultService.findAll(raceId);
+
+        for(RaceResult result : existingResults)
+        {
+            if ( ! result.getOverrideHandicap() )
+            {
+                Float handicapFromPreviousRace = findHandicap(result.getBoat(),handicaps);
+                if ( handicapFromPreviousRace != result.getHandicap() )
+                {
+                    result.setHandicap(handicapFromPreviousRace);
+                    raceResultService.updateResult(result);
+                }
+            }
+        }
+    }
+
+    private Float findHandicap(Boat boat, List<Handicap> handicaps)
+    {
+        for(Handicap handicap : handicaps)
+        {
+            if ( handicap.getBoatID().equals(boat.getId()) )
+            {
+                return handicap.getValue();
+            }
+        }
+        
+        return 0.0f;
+    }
+
+    private Map<Integer, Boolean> findThirdWinBoats( 
             List<RaceResult> raceResults, Race thisRace)
     {
         Map<Integer,Boolean> thirdWinMap = new HashMap<Integer,Boolean>();
@@ -155,7 +201,8 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                         thisRace.getRaceSeriesId(), 
                         thisRace.getFleet().getId(), 
                         nextResult.getBoat().getId(), 
-                        thisRace.getRaceDate());
+                        thisRace.getRaceDate(),
+                        thisRace.isShortCourseRace());
             
                 thirdWinMap.put(nextResult.getBoat().getId(),(wins >= 2));
             }
@@ -185,7 +232,17 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         //
         if ( limit != null )
         {
-            return limit.getLimit();
+            //
+            //  If this is a short course race then the limit is half the specified limit
+            //
+            if ( race.isShortCourseRace() )
+            {
+                return limit.getLimit()/2.0f;
+            }
+            else
+            {
+                return limit.getLimit();
+            }
         }
         else
         {
@@ -283,21 +340,26 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
 
     }
     
-    private void updateHandicap(Boat boat, Float adjustedHandicap)
+    private void updateHandicap(Boat boat, Integer raceID, Float adjustedHandicap)
     {
-        Handicap handicap = handicapRepo.findByBoatID(boat.getId());
+        Handicap handicap = handicapRepo.findByBoatAndRace(boat.getId(),raceID);
+        
         if ( handicap == null )
         {
-            handicap = new Handicap(null,boat.getId(),adjustedHandicap);
+            handicap = new Handicap(null,boat.getId(),raceID,adjustedHandicap);
         }
         else
         {
             handicap.setValue(adjustedHandicap);
         }
+        
         handicapRepo.save(handicap);
     }
 
-    private Float findPushOut(List<RaceResult> raceResults, Map<Integer, Boolean> thirdWinMap)
+    private Float findPushOut(
+            List<RaceResult>        raceResults, 
+            Map<Integer, Boolean>   thirdWinMap,
+            boolean                 shortCourse )
     {
         Float maxPushOut = 0.0f;
         
@@ -310,7 +372,11 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
                 break;
             }
             
-            Float adjustment = handicapUpdateForResult(i+1,nextResult,thirdWinMap.get(nextResult.getBoat().getId()));
+            Float adjustment = handicapUpdateForResult(
+                    i+1,
+                    nextResult,
+                    thirdWinMap.get(nextResult.getBoat().getId()),
+                    shortCourse);
             Float pushOut=0.0f;
             
             if ( adjustment > nextResult.getHandicap() )
@@ -327,7 +393,11 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         return maxPushOut;
     }
 
-    private Float handicapUpdateForResult(int place, RaceResult result, Boolean hadThreeWins)
+    private Float handicapUpdateForResult(
+            int         place, 
+            RaceResult  result, 
+            Boolean     hadThreeWins,
+            Boolean     shortCourse)
     {
         Float adjust=0.0f;
         if ( result.getStatus().isFinished() )
@@ -353,7 +423,14 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
             }
         }
         
-        return adjust;
+        if ( shortCourse )
+        {
+            return adjust/2.0f;
+        }
+        else
+        {
+            return adjust;
+        }
     }
     
     private static final String HANDICAP_OBJECT_NAME="Handicap";

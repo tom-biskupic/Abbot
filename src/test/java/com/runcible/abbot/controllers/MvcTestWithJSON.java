@@ -50,7 +50,8 @@ public class MvcTestWithJSON
                 TEST_RACE_NAME,
                 testFleet,
                 false,
-                competitionSet);
+                competitionSet,
+                0);
         
 		testRaceDayList.add(new RaceDay(testRaceTime));
 		
@@ -146,8 +147,8 @@ public class MvcTestWithJSON
             TEST_RESULT_TYPE,
             testFleet);
             
-    protected Integer TEST_RACE_ID = 1212;
-    protected String  TEST_RACE_NAME="The Muppet's Trophy";
+    protected static final Integer TEST_RACE_ID = 1212;
+    protected static final String  TEST_RACE_NAME="The Muppet's Trophy";
 
     protected Set<Competition> competitionSet = new HashSet<Competition>();
     
@@ -166,7 +167,7 @@ public class MvcTestWithJSON
     protected static final Integer  TEST_HANDICAP_ID = 999;
     protected static final Float    TEST_HANDICAP_VALUE = 1.0f;
     protected static final Handicap testHandicap 
-        = new Handicap(TEST_HANDICAP_ID,TEST_BOAT_ID,TEST_HANDICAP_VALUE);
+        = new Handicap(TEST_HANDICAP_ID,TEST_BOAT_ID,TEST_RACE_ID,TEST_HANDICAP_VALUE);
     
     protected List<Handicap> testHandicapList = new ArrayList<Handicap>();
     

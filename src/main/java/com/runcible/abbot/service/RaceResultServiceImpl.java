@@ -199,6 +199,7 @@ public class RaceResultServiceImpl implements RaceResultService
         }
     }
     
+    
     private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus)
     {
         return new RaceResult(raceID,boat,0.0f,false,null,null,resultStatus);
@@ -275,9 +276,10 @@ public class RaceResultServiceImpl implements RaceResultService
             Integer raceSeriesId,
             Integer fleetId,
             Integer boatId,
-            Date    thisRaceDate )
+            Date    thisRaceDate,
+            boolean shortCourse)
     {
-        return raceResultRepo.getWinsForBoat(raceSeriesId, boatId, fleetId, thisRaceDate);
+        return raceResultRepo.getWinsForBoat(raceSeriesId, boatId, fleetId, thisRaceDate, shortCourse);
     }
 
 	private void checkAuthorized(Integer raceId) throws NoSuchUser, UserNotPermitted 

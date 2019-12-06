@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.runcible.abbot.model.Race;
+import com.runcible.abbot.model.RaceStatus;
 
 @Repository
 public interface RaceRespository extends PagingAndSortingRepository<Race, Integer>
@@ -31,5 +32,19 @@ public interface RaceRespository extends PagingAndSortingRepository<Race, Intege
             @Param("seriesid") Integer seriesid,
             @Param("fleetid") Integer fleetid);
 
-//    public Race findTopOneByRaceDateLessThanOrderBy
+     @Query(
+             nativeQuery=true,
+             value=     "select RACE_ID from RACE where "+
+                        "raceSeriesId = :raceSeriesId and "+
+                        "FLEET = :fleetId and "+
+                        "shortCourseRace = :shortCourse and "+
+                        "RACE_STATUS = 1 and "+ // 1 == Completed Needs to be constant expr
+                        "(RACE_DATE < :raceDate or (RACE_DATE = :raceDate and RACE_NUMBER < :raceNumber)) "+
+                        "ORDER by RACE_DATE DESC, RACE_NUMBER DESC LIMIT 1")
+     public Integer findPreviousRaceID(
+             @Param("raceSeriesId") Integer     raceSeriesId,
+             @Param("raceDate")     Date        raceDate,
+             @Param("raceNumber")   Integer     raceNumber,
+             @Param("fleetId")      Integer     fleetId,
+             @Param("shortCourse")  Integer     shortCourse );
 }

@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import org.springframework.stereotype.Component;
 
 /**
- * Models the current handicap of a boat in a competition.
+ * Models the handicap of a boat after a given race.
  */
 @Entity
 @Table(name="HANDICAP")
@@ -20,11 +20,12 @@ public class Handicap
     {
     }
     
-    public Handicap(Integer id, Integer boatID, Float value)
+    public Handicap(Integer id, Integer boatID, Integer raceID, Float value)
     {
         super();
         this.id = id;
         this.boatID = boatID;
+        this.raceID = raceID;
         this.value = value;
     }
 
@@ -59,7 +60,27 @@ public class Handicap
     {
         this.boatID = boatID;
     }
+
+    /**
+     * Returns the ID of the race this handicap was set (so the
+     * handicap is the outcome of this race)
+     * @return The race this handicap applies to
+     */
+    @Column(name="RACE_ID")
+    public Integer getRaceID()
+    {
+        return raceID;
+    }
     
+    /**
+     * Sets the race this handicap applies to
+     * @param raceID the ID of the race this handicap was set
+     */
+    public void setRaceID(Integer raceID)
+    {
+        this.raceID = raceID;
+    }
+
     /**
      * Returns the current handicap value. This could be minutes or
      * could be a proportion depending on the handicap system in use
@@ -102,6 +123,7 @@ public class Handicap
 
     private Integer     id;
     private Integer     boatID;
+    private Integer     raceID;
     private Float       value = 0.0f;
     private Integer     numberOfWins = 0;
 }

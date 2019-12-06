@@ -39,7 +39,7 @@ public class Race implements ModelWithId
             boolean                 shortCourse,
             Set<Competition> 		competitions)
     {
-        this(null,raceSeriesId,raceDate,name,fleet,shortCourse,competitions);
+        this(null,raceSeriesId,raceDate,name,fleet,shortCourse,competitions,1);
     }
 
     public Race(    
@@ -49,7 +49,8 @@ public class Race implements ModelWithId
             String                  name,
             Fleet                   fleet,
             boolean                 shortCourse,
-            Set<Competition> competitions)
+            Set<Competition>        competitions,
+            Integer                 raceNumber)
     {
         this();
         
@@ -120,6 +121,7 @@ public class Race implements ModelWithId
         this.fleet = fleet;
     }
 
+    @Column(name="RACE_STATUS")
     public RaceStatus getRaceStatus()
     {
         return raceStatus;
@@ -130,6 +132,17 @@ public class Race implements ModelWithId
         this.raceStatus = raceStatus;
     }
     
+    @Column(name="RACE_NUMBER")
+    public Integer getRaceNumber()
+    {
+        return this.raceNumber;
+    }
+
+    public void setRaceNumber(Integer value)
+    {
+        this.raceNumber = value;
+    }
+
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinColumn(name="COMPETITION")
     public Set<Competition> getCompetitions()
@@ -215,4 +228,5 @@ public class Race implements ModelWithId
     private   Set<Competition>              competitions;
     
     private   boolean                       shortCourseRace;
+    private   Integer                       raceNumber;
 }

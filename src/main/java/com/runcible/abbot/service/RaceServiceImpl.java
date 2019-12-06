@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.runcible.abbot.model.Competition;
@@ -112,13 +113,18 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
     }
 
     @Override
-    public Race findPreviousFinishedRace(
-            Race    race,
-            boolean allowShortCourse ) throws NoSuchUser, UserNotPermitted
+    public Integer findPreviousFinishedRaceId(
+            Integer raceID ) throws NoSuchUser, UserNotPermitted
     {
-        return null;
+        Race thisRace = this.getRaceByID(raceID);
+
+        return raceRepo.findPreviousRaceID(
+                thisRace.getRaceSeriesId(),
+                thisRace.getRaceDate(),
+                thisRace.getRaceNumber() != null ? thisRace.getRaceNumber() : 0,
+                thisRace.getFleet().getId(),
+                thisRace.isShortCourseRace() ? 1 : 0);
     }
-        
 
     private boolean sameDay(Date raceDate, Date day) 
     {
