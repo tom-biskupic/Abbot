@@ -25,6 +25,10 @@
 	    <![endif]-->
     </head>
     <body ng-app="abbot" ng-controller="loggedOnUserController" >
+	    <div id="busy-overlay">
+	    	<img src="img/Ajax-loader.gif" class="ajax-loader"/>
+		</div>
+    
 		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 		  <div class="container">
 		    <div class="navbar-header">
@@ -88,5 +92,9 @@
 		<script src="/Abbot3/js/pointscontroller.js"></script>
 		<script src="/Abbot3/js/handicapsettingscontroller.js"></script>
 		<script src="/Abbot3/js/exportcontroller.js"></script>
+		
+		<script>
+			$('#busy-overlay').hide(); 
+		</script>
     </body>
 </html>

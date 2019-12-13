@@ -60,3 +60,46 @@ angular.module('abbot').run(function ($rootScope, $location)
 		}
 	});
 });
+
+var BUSY_DELAY = 500;
+angular.module("abbot").config(function ($httpProvider) {
+	  $httpProvider.interceptors.push('busyHttpInterceptor');
+	})
+	  .factory('busyHttpInterceptor', ['$q', '$timeout', function ($q, $timeout) {
+	    var counter = 0;
+	    return {
+	      request: function (config) {
+	        counter += 1;
+	        $timeout(
+	          function () {
+	            if (counter !== 0) {
+	              angular.element('#busy-overlay').show();
+	            }
+	          },
+	          BUSY_DELAY);
+	        return config;
+	      },
+	      response: function (response) {
+	        counter -= 1;
+	        if (counter === 0) {
+	          angular.element('#busy-overlay').hide();
+	        }
+	        return response;
+	      },
+	      requestError: function (rejection) {
+	        counter -= 1;
+	        if (counter === 0) {
+	          angular.element('#busy-overlay').hide();
+	        }
+	        return rejection;
+	      },
+	      responseError: function (rejection) {
+	        counter -= 1;
+	        if (counter === 0) {
+	          angular.element('#busy-overlay').hide();
+	        }
+	        return rejection;
+	      }
+	    }
+	  }]);
+
