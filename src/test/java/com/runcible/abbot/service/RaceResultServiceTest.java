@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -21,6 +22,7 @@ import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.BoatClass;
 import com.runcible.abbot.model.BoatDivision;
 import com.runcible.abbot.model.Fleet;
+import com.runcible.abbot.model.Handicap;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
@@ -29,6 +31,7 @@ import com.runcible.abbot.service.audit.AuditEventType;
 import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.DuplicateResult;
 import com.runcible.abbot.service.exceptions.NoSuchBoat;
+import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
@@ -206,6 +209,38 @@ public class RaceResultServiceTest
         verifyAudit(AuditEventType.DELETED);
     }
     
+    @Test
+    public void testAddNonStarters() throws NoSuchUser, UserNotPermitted, NoSuchFleet, NoSuchBoat
+    {
+        setupRaceMock(false);
+        List<Handicap> testHandicapList = new ArrayList<Handicap>();
+        testHandicapList.add(new Handicap(null,testBoatID,testRaceID,123.0f));
+        
+        when(mockHandicapService.getHandicapsForFleet(testRaceSeriesId,testFleetId,testRaceID)).thenReturn(testHandicapList);
+        
+        List<Boat> testBoatsInSeries = new ArrayList<Boat>();
+        testBoatsInSeries.add(new Boat(testBoatID,testRaceSeriesId,"","",mockBoatClass,null,false,"",""));
+        testBoatsInSeries.add(new Boat(testBoatID2,testRaceSeriesId,"","",mockBoatClass,null,false,"",""));
+        
+        when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesId,testFleetId)).thenReturn(testBoatsInSeries);
+        
+        //
+        //  There is only a result for boat 2
+        //
+        when(mockBoat2.getId()).thenReturn(testBoatID2);
+        List<RaceResult> testResults = new ArrayList<RaceResult>();
+        testResults.add(new RaceResult(testRaceID,mockBoat2,333.0f,false,new Date(),new Date(),ResultStatus.FINISHED));
+        when(mockRaceResultRepo.findRaceResults(testRaceID)).thenReturn(testResults);
+        when(mockBoatService.getBoatByID(testBoatID)).thenReturn(mockBoat);
+        
+        fixture.addNonStartersToRace(testRaceID,ResultStatus.DNS);
+        ArgumentCaptor<RaceResult> raceResultCaptor = ArgumentCaptor.forClass(RaceResult.class);
+        verify(mockRaceResultRepo).save(raceResultCaptor.capture());
+        RaceResult resultAdded = raceResultCaptor.getValue();
+        assertEquals(mockBoat,resultAdded.getBoat());
+        assertEquals(new Float(123.0f),resultAdded.getHandicap());
+    }
+    
     private void verifyCalculations(boolean calculationsExpected, boolean adjustedForYardstick)
     {
         Integer correctedTime = null;
@@ -300,18 +335,22 @@ public class RaceResultServiceTest
         when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         when(mockRace.getFleet()).thenReturn(mockFleet);
         when(mockFleet.getFleetName()).thenReturn(testFleetName);
+        when(mockFleet.getId()).thenReturn(testFleetId);
         when(mockFleet.getCompeteOnYardstick()).thenReturn(yardstickFleet);
         when(mockRace.getName()).thenReturn(testRaceName);
         when(mockRace.getRaceSeriesId()).thenReturn(testRaceSeriesId);
+        when(mockRace.getId()).thenReturn(testRaceID);
     }
 
  
     private static final Integer    testRaceID = 1233;
     private static final Integer    testRaceResultID = 4556;
     private static final Integer    testBoatID = 111;
+    private static final Integer    testBoatID2 = 112;
     private static final Integer    testSailingDuration = 2345;
     private static final Float      testHandicap = 5.0f;
     private static final String     testFleetName = "Lasers";
+    private static final Integer    testFleetId = 3351;
     private static final String     testRaceName = "The muppet's trophy";
     private static final String     testBoatName = "Boaty McBoatface";
     private static final Integer    testRaceSeriesId = 111;
@@ -320,12 +359,14 @@ public class RaceResultServiceTest
     private @Mock RaceService           mockRaceService;
     private @Mock BoatService           mockBoatService;
     private @Mock RaceResultRepository  mockRaceResultRepo;
-
+    private @Mock HandicapService       mockHandicapService;
+    
     private @Mock Pageable                  mockPageable;
     private @Mock Page<RaceResult>          mockRaceResultsPage;
     private @Mock RaceResult                mockRaceResult;
     private @Mock RaceResult                mockExistingRaceResult;
     private @Mock Boat                      mockBoat;
+    private @Mock Boat                      mockBoat2;
     private @Mock Date                      mockStartTime;
     private @Mock Date                      mockFinishTime;
     private @Mock RaceResultPlaceUpdater    mockRaceResultPlaceUpdater;

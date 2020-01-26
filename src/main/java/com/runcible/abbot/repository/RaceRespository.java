@@ -16,18 +16,18 @@ import com.runcible.abbot.model.RaceStatus;
 @Repository
 public interface RaceRespository extends PagingAndSortingRepository<Race, Integer>
 {
-    @Query("select r from Race r where r.raceSeriesId = :seriesid")
+    @Query("select r from Race r where r.raceSeriesId = :seriesid order by r.raceDate, r.raceNumber")
     public Page<Race> findByRaceSeries(@Param("seriesid") Integer seriesid, Pageable pageable);
     
-    @Query("select r from Race r where r.raceSeriesId = :seriesid order by r.raceDate")
+    @Query("select r from Race r where r.raceSeriesId = :seriesid order by r.raceDate, r.raceNumber")
     public List<Race> findRacesOrderByDate(@Param("seriesid") Integer seriesid);
     
-    @Query("select r from Race r join r.competitions c where c.id = :competitionid and r.raceSeriesId = :seriesid order by r.raceDate asc")
+    @Query("select r from Race r join r.competitions c where c.id = :competitionid and r.raceSeriesId = :seriesid order by r.raceDate asc, r.raceNumber asc")
     public List<Race> findRacesInCompetition(
             @Param("seriesid") Integer seriesid,
             @Param("competitionid") Integer competitionid);
 
-    @Query("select r from Race r where r.fleet.id = :fleetid and r.raceSeriesId = :seriesid order by r.raceDate asc")
+    @Query("select r from Race r where r.fleet.id = :fleetid and r.raceSeriesId = :seriesid order by r.raceDate asc, r.raceNumber asc")
     public List<Race> findRacesForFleet(
             @Param("seriesid") Integer seriesid,
             @Param("fleetid") Integer fleetid);

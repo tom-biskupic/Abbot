@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.Boat;
+import com.runcible.abbot.model.Handicap;
 import com.runcible.abbot.model.Race;
 import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
@@ -191,18 +193,43 @@ public class RaceResultServiceImpl implements RaceResultService
         // This will throw if we are not permitted to manage this race
         //
         Race race = raceService.getRaceByID(raceID);
-
+        List<Handicap> handicaps = this.handicapService.getHandicapsForFleet(
+                race.getRaceSeriesId(),race.getFleet().getId(),race.getId());
+        
         List<Boat> boats = findBoatsNotInRace(race);
         for(Boat boat : boats)
         {
-            addResultInternal(makeResult(boat,raceID,resultStatus));
+            Float boatHandicap = findHandicapForBoat(boat,handicaps);
+            
+            logger.info("Adding non-starter result with handicap for boat "+boat.getName()+" set to "+boatHandicap);
+            
+            RaceResult newNonStarterResult = makeResult(boat,raceID,resultStatus,boatHandicap);
+            addResultInternal(newNonStarterResult);
+            auditEvent(newNonStarterResult, race, AuditEventType.CREATED);
         }
     }
     
     
-    private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus)
+    private Float findHandicapForBoat(Boat boat, List<Handicap> handicaps)
     {
-        return new RaceResult(raceID,boat,0.0f,false,null,null,resultStatus);
+        for(Handicap nextHandicap : handicaps)
+        {
+            if ( nextHandicap.getBoatID().equals(boat.getId()) )
+            {
+                return nextHandicap.getValue();
+            }
+        }
+        
+        //
+        //  We don't have this guy for some reason - maybe new addition
+        //  Just make a zero handicap
+        //
+        return 0.0f;
+    }
+
+    private RaceResult makeResult(Boat boat,Integer raceID,ResultStatus resultStatus, Float handicap)
+    {
+        return new RaceResult(raceID,boat,handicap,false,null,null,resultStatus);
     }
 
     private boolean haveResultForBoat(List<RaceResult> raceResults, Boat nextBoat)
@@ -306,6 +333,8 @@ public class RaceResultServiceImpl implements RaceResultService
     }
 
 	private static final String RESULT_OBJECT_NAME = "Race result";
+
+	private static final Logger logger = Logger.getLogger(RaceResultServiceImpl.class);
 	
 	@Autowired private RaceService            raceService;
 	@Autowired private BoatService            boatService;
@@ -313,4 +342,5 @@ public class RaceResultServiceImpl implements RaceResultService
 	@Autowired private TimeService            timeService;
 	@Autowired private RaceResultPlaceUpdater raceResultPlaceUpdater;
 	@Autowired private AuditService           audit;
+	@Autowired private HandicapService        handicapService;
 }
