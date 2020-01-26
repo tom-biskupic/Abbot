@@ -44,13 +44,13 @@ repositories
 
 task downloadZipFile(type: Download) {
     src 'https://github.com/nickperkinslondon/angular-bootstrap-nav-tree/archive/master.zip'
-    dest new File(buildDir, '/downloads/angular-bootstrap-nav-tree.zip')
+    dest new File(buildDir, 'downloads/angular-bootstrap-nav-tree.zip')
 	onlyIfModified true
 }
 
 task downloadAndUnzipFile(dependsOn: downloadZipFile, type: Copy) {
     from zipTree(downloadZipFile.dest)
-    into new File(buildDir, '/downloads')
+    into new File(buildDir, 'downloads')
 }
 
 war 
