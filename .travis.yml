@@ -1,6 +1,6 @@
 language: java
 script:
-  - ./gradlew build --scan -s
+  - ./gradlew build --scan -s --debug
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 before_cache:
