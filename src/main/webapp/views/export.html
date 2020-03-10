@@ -29,7 +29,7 @@
 				<button type="button" class="btn btn-default"
 						ng-click="addCompetitionToExport(competition)">Add</button>
 				<button type="button" class="btn btn-default"
-						ng-click="exportCompetitions()">Export</button>
+						ng-click="exportCompetitions()">Export Points</button>
 				<button type="button" class="btn btn-default"
 						ng-click="clearCompetitionsToExport()">Clear</button>
 			</form>
@@ -49,6 +49,28 @@
 		         </select>
 				<button type="button" class="btn btn-default"
 						ng-click="exportRaces(selectedfleet)">Export</button>
+				<button type="button" class="btn btn-default"
+						ng-click="exportHandicapTable(selectedfleet)">Export Handicap Table</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+	    <div class="panel-heading">Export Handicap Tables</div>
+	    <div class="panel-body">
+			<form class="navbar-form navbar-left">
+				<label for="competition">Choose a fleet</label>
+		         <select name="fleet" 
+		             class="form-control" 
+		             ng-model="selectedHandicapExportfleet" 
+		             ng-options="fleet.fleetName for fleet in fleets track by fleet.id"
+		             required>
+		         </select>
+				<button type="button" class="btn btn-default"
+						ng-click="exportHandicapTable(selectedHandicapExportfleet,false)">Export Long Course</button>
+				<button type="button" class="btn btn-default"
+						ng-click="exportHandicapTable(selectedHandicapExportfleet,true)">Export Short Course</button>
+						
 			</form>
 		</div>
 	</div>

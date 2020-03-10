@@ -42,4 +42,19 @@ public interface ExportService
      * @throws NoSuchFleet          If the fleet associated with the 
      */
     public String exportRaces(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted, NoSuchFleet;
+    
+    /**
+     * Exports a handicap table for each boat in each race over the series.
+     * 
+     * @param raceSeriesId
+     * @param fleetID
+     * @return
+     * @throws UserNotPermitted 
+     * @throws NoSuchUser 
+     * @throws NoSuchFleet 
+     */
+    public String exportHandicapTable(
+            Integer raceSeriesId, 
+            Integer fleetID,
+            boolean shortCourse ) throws NoSuchUser, UserNotPermitted, NoSuchFleet;
 }

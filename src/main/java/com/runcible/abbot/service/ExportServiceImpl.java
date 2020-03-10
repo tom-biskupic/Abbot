@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
@@ -8,7 +9,11 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.runcible.abbot.model.Boat;
+import com.runcible.abbot.model.BoatHandicaps;
+import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.Fleet;
+import com.runcible.abbot.model.HandicapTable;
 import com.runcible.abbot.model.PointsForBoat;
 import com.runcible.abbot.model.PointsTable;
 import com.runcible.abbot.model.Race;
@@ -34,13 +39,13 @@ public class ExportServiceImpl implements ExportService
         
         for(Integer competitionId : competitionIds )
         {
-            result += exportCompetitions(raceSeriesID,competitionId);
+            result += exportCompetition(raceSeriesID,competitionId);
         }
         
         return result;
     }
     
-    private String exportCompetitions(Integer raceSeriesID,Integer competitionID) 
+    private String exportCompetition(Integer raceSeriesID,Integer competitionID) 
             throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
     {
         PointsTable pointsTable = pointsService.generatePointsTable(raceSeriesID, competitionID);
@@ -179,6 +184,49 @@ public class ExportServiceImpl implements ExportService
         }
     }
 
+    @Override
+    public String exportHandicapTable(
+            Integer raceSeriesId, 
+            Integer fleetID,
+            boolean shortCourse ) throws NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        HandicapTable handicapTable = handicapTableService.getHandicapTable(raceSeriesId, fleetID, shortCourse);
+        String name = handicapTable.getFleet().getFleetName();
+        StringBuffer result = new StringBuffer();
+        result.append("<h1>"+name+"</h1>");
+        result.append("<table class=\"results-table\">\n");
+        result.append(indent(1,"<tr>\n"));
+        result.append(indent(2,makeTH("Boat Name")));
+        result.append(indent(2,makeTH("Handicap")));
+        for(Race race : handicapTable.getRaces() )
+        {
+            result.append(indent(2,makeTH(pointsTableHeadingDateFormat.format(race.getRaceDate()))));
+        }
+        result.append(indent(1,"</tr>\n"));
+        
+        for(BoatHandicaps boatHandicaps : handicapTable.getBoatHandicaps() )
+        {
+            result.append(indent(1,"<tr>\n"));
+            result.append(indent(2,makeTD(boatHandicaps.getBoat().getName())));
+            for( Float handicap : boatHandicaps.getHandicaps())
+            {
+                result.append(indent(2,makeTD(new Float(handicap).toString())));
+            }
+            
+            result.append(indent(1,"\t</tr>\n"));
+        }
+        result.append("</table>\n");
+
+        audit.auditEvent(
+                AuditEventType.EXPORTED, 
+                raceSeriesId, 
+                "Handicap Table", 
+                name );
+        
+        return result.toString();
+    }
+
+
     private String toTime(Integer sailingTime)
     {
         int hours = (int) Math.floor(sailingTime/3600);
@@ -228,7 +276,7 @@ public class ExportServiceImpl implements ExportService
         raceDateFormat.setTimeZone(timeZone);
         raceTimeFormat.setTimeZone(timeZone);
     }
-    
+
     @Autowired
     private PointsService pointsService;
     
@@ -243,5 +291,9 @@ public class ExportServiceImpl implements ExportService
 
     @Autowired
     private AuditService audit;
+    
+    @Autowired
+    private HandicapTableService handicapTableService;
+
 }
 

@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  abbot-mysql:
+    image: "mysql:5.6.37"
+    ports:
+      - 3306:3306
+    networks:
+      - todo_net
+    volumes:
+      - type: volume
+        source: AbbotDB
+        target: /var/lib/mysql 
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=AbbotDB
+      - MYSQL_USER=AbbotUser
+      - MYSQL_PASSWORD=password
+  abbot:
+    image: "tombi/abbot"
+    ports:
+      - 8080:8080
+    networks:
+      - todo_net
+    links:
+      - abbot-mysql
+volumes:
+  AbbotDB:
+
+networks:
+  todo_net:

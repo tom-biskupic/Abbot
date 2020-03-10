@@ -45,6 +45,26 @@ public class ExportController
         return makeResponseEntity(pointsAsHTML.getBytes());
     }
 
+    @RequestMapping(value="/raceseries/{raceSeriesId}/exportHandicaps.json/{fleetId}",method=GET)
+    public ResponseEntity<ByteArrayResource> exportHandicapsHTML(
+                @PathVariable("raceSeriesId") Integer   raceSeriesID,
+                @PathVariable("fleetId") Integer        fleetID ) 
+                        throws NoSuchUser, UserNotPermitted, NoSuchCompetition, NoSuchFleet
+    {
+        String pointsAsHTML = exportService.exportHandicapTable(raceSeriesID, fleetID, false);
+        return makeResponseEntity(pointsAsHTML.getBytes());
+    }
+
+    @RequestMapping(value="/raceseries/{raceSeriesId}/exportShortCourseHandicaps.json/{fleetId}",method=GET)
+    public ResponseEntity<ByteArrayResource> exportShortCourseHandicapsHTML(
+                @PathVariable("raceSeriesId") Integer   raceSeriesID,
+                @PathVariable("fleetId") Integer        fleetID ) 
+                        throws NoSuchUser, UserNotPermitted, NoSuchCompetition, NoSuchFleet
+    {
+        String pointsAsHTML = exportService.exportHandicapTable(raceSeriesID, fleetID, true);
+        return makeResponseEntity(pointsAsHTML.getBytes());
+    }
+
     private ResponseEntity<ByteArrayResource> makeResponseEntity(byte[] asBytes)
     {
         ByteArrayResource resource = new ByteArrayResource(asBytes);

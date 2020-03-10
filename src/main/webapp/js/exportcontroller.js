@@ -45,17 +45,7 @@ angular.module("abbot").controller("exportController",function($scope,$http,$con
     		return;
 		}
     	
-    	competitionIds = "";
-    	
-    	$scope.competitionsToExport.forEach(
-    			function(competition)
-    			{
-    				if (competitionIds.length > 0 )
-					{
-    					competitionIds += ",";
-					}
-    				competitionIds += competition.id;
-    			});
+    	competitionIds = $scope.makeCompetitionIdList();
     	
     	url = $scope.context+'/raceseries/'+$scope.raceSeriesId+'/exportPoints.json?competition='+competitionIds;
     	
@@ -67,6 +57,34 @@ angular.module("abbot").controller("exportController",function($scope,$http,$con
     			});
     }
 
+    $scope.makeCompetitionIdList = function()
+    {
+    	competitionIds = "";
+
+    	$scope.competitionsToExport.forEach(
+    			function(competition)
+    			{
+    				if (competitionIds.length > 0 )
+					{
+    					competitionIds += ",";
+					}
+    				competitionIds += competition.id;
+    			});
+    	return competitionIds;
+    }
+    
+    $scope.exportHandicapTable = function(fleet,shortCourse)
+    {
+    	url = $scope.context+'/raceseries/'+$scope.raceSeriesId+(shortCourse ? '/exportShortCourseHandicaps.json' : '/exportHandicaps.json/')+fleet.id;
+    	
+    	$http.get(url).then(
+    			function(response)
+    			{
+			        var filename = fleet.fleetName+'.html';       
+			        $scope.saveData(response.data,filename);
+    			});
+    }
+    
     $scope.exportRaces = function(fleet)
     {
     	url = $scope.context+'/raceseries/'+$scope.raceSeriesId+'/exportRaces.json/'+fleet.id;
