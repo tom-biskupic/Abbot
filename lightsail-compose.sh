@@ -1,22 +1,14 @@
 #!/bin/bash
 
-#
-# Update everything
-#
-yum update -y
+# install latest version of docker the lazy way
+curl -sSL https://get.docker.com | sh
 
-#
-# Install docker and add the default user (ec2-user) to the docker group
-#
-yum install -y docker
-usermod -aG docker ec2-user
+# make it so you don't need to sudo to run docker commands
+usermod -aG docker ubuntu
 
-#
-# Install and setup docker-compose
-#
-curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-`uname -s`-`uname -m` | sudo tee /usr/local/bin/docker-compose > /dev/null
+# install docker-compose
+curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 # 
 #	Copy the dockerfile into /srv/docker 
