@@ -43,7 +43,7 @@ repositories
 }
 
 task downloadZipFile(type: Download) {
-    src 'https://github.com/nickperkinslondon/angular-bootstrap-nav-tree/archive/master.zip'
+    src 'https://codeload.github.com/nickperkinslondon/angular-bootstrap-nav-tree/zip/master'
     dest new File(buildDir, 'downloads/master.zip')
 	onlyIfModified true
 }
