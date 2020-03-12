@@ -85,7 +85,8 @@ docker
 
 cobertura
 {
-    coverageExcludes = ["com.runcible.controllers.*"];
+    coverageExcludes = ["com.runcible.controllers.*"]
+    coverageFormats = [ "XML", "HTML" ]
 }
 
 dependencyManagement 
