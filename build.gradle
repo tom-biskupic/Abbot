@@ -5,6 +5,8 @@ buildscript
 		mavenLocal()
 	    mavenCentral()
 	    jcenter()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+	    
 	}
 
   	dependencies {
@@ -12,11 +14,16 @@ buildscript
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
         classpath 'de.undercouch:gradle-download-task:4.0.3'
   	}
+  	
+  	dependencies {
+        classpath "net.saliman:gradle-cobertura-plugin:3.0.0"
+    }
 }
 
 plugins 
 {
-  id 'net.saliman.cobertura' version '2.5.4'
+//  id 'net.saliman.cobertura' version '2.5.4'
+  id 'net.saliman.cobertura' version '3.0.0'
   id "io.spring.dependency-management" version "1.0.6.RELEASE"
   id 'com.palantir.docker' version "0.21.0"
   id "de.undercouch.download" version "3.4.3"
@@ -76,6 +83,11 @@ docker
 	files tasks.war.outputs, 'Abbot3.war'
 }
 
+cobertura
+{
+    coverageExcludes = ["com.runcible.controllers.*"];
+}
+
 dependencyManagement 
 {
   imports 
@@ -86,6 +98,8 @@ dependencyManagement
 
 dependencies 
 {
+//    classpath "net.saliman:gradle-cobertura-plugin:3.0.0"
+    
 	compile 'org.springframework:spring-context:4.3.11.RELEASE'
 	compile 'org.springframework:spring-core:4.3.11.RELEASE'
 	compile 'org.springframework:spring-webmvc:4.3.11.RELEASE'
@@ -143,6 +157,6 @@ dependencies
 }
 
 
-// test.finalizedBy(project.tasks.coberturaReport)
+test.finalizedBy(project.tasks.coberturaReport)
 
 
