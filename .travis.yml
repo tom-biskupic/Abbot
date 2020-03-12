@@ -1,7 +1,7 @@
 language: java
 install: true
 script:
-  - gradle build --scan -s --debug
+  - gradle build --scan -s 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 before_cache:
