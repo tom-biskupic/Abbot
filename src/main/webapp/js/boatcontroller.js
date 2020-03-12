@@ -5,7 +5,7 @@ angular.module("abbot").controller("boatController",function($scope,$http,$contr
 	$scope.raceSeriesID = $rootScope.seriesID;
 
     $scope.init(
-    		'/Abbot3',
+    		'',
     		'/raceseries/'+$scope.raceSeriesID+'/boatlist.json',
     		'/raceseries/'+$scope.raceSeriesID+'/boat.json',
     		'views/boatform.html',

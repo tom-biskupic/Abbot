@@ -14,7 +14,7 @@ angular.module("abbot").controller("raceSeriesListController",function($scope,$h
     angular.extend(this,$controller('listController', {$scope: $scope}));
     
     $scope.init(
-    		'/Abbot3',
+    		'',
     		'/raceserieslist.json',
     		'/raceseries.json',
     		'views/raceseriesform.html',

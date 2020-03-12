@@ -1,7 +1,7 @@
 angular.module("abbot").controller("exportController",function($scope,$http,$controller,$rootScope)
 {
     $scope.raceSeriesId = $rootScope.seriesID;
-    $scope.context = '/Abbot3';
+    $scope.context = '';
     $scope.competitionsToExport = [];
     
     

@@ -4,6 +4,6 @@ angular.module("abbot").controller("authorizedUsersController",function($scope,$
 	
 	$scope.raceSeriesID = $rootScope.seriesID;
 
-	$scope.init('/Abbot3','/raceseries/'+$scope.raceSeriesID+'/authorizeduserlist.json','/raceseries/'+$scope.raceSeriesID+'/authorizeduser.json','views/authorizeduserform.html')
+	$scope.init('','/raceseries/'+$scope.raceSeriesID+'/authorizeduserlist.json','/raceseries/'+$scope.raceSeriesID+'/authorizeduser.json','views/authorizeduserform.html')
 	
 });

@@ -51,28 +51,28 @@ repositories
 
 task downloadZipFile(type: Download) {
     src 'https://codeload.github.com/nickperkinslondon/angular-bootstrap-nav-tree/zip/master'
-    dest new File(buildDir, 'downloads/master.zip')
+    dest new File(buildDir, 'master.zip')
 	onlyIfModified true
 }
 
 task downloadAndUnzipFile(dependsOn: downloadZipFile, type: Copy) {
     from zipTree(downloadZipFile.dest)
-    into new File(buildDir, 'downloads')
+    into buildDir
 }
 
 war 
 {
 		
-    from( "${buildDir}/downloads/angular-bootstrap-nav-tree-master/dist" ) {
+    from( "${buildDir}/angular-bootstrap-nav-tree-master/dist" ) {
     	include('abn_tree.css')
     	into('css') }
 
-    from( "${buildDir}/downloads/angular-bootstrap-nav-tree-master/dist" ) {
+    from( "${buildDir}/angular-bootstrap-nav-tree-master/dist" ) {
     	include('abn_tree_directive.js')
     	into('js') }
     	
     dependsOn downloadAndUnzipFile
-	baseName = 'Abbot3'
+	baseName = 'ROOT'
 }
 
 docker
@@ -80,7 +80,7 @@ docker
 	name 'tombi/abbot'
 	dockerfile file('src/main/docker/abbot/Dockerfile')
 	dependsOn tasks.war, tasks.bootRepackage
-	files tasks.war.outputs, 'Abbot3.war'
+	files tasks.war.outputs, 'ROOT.war'
 }
 
 cobertura

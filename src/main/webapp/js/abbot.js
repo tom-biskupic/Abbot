@@ -21,15 +21,19 @@ angular.module("abbot",
 	$routeProvider.when(
 			'/loginform',
 			{
-				templateUrl: 	'/Abbot3/views/loginform.html',
+				templateUrl: 	'views/loginform.html',
 				controller: 	'loggedOnUserController'
 			}).when(
 			'/',
 			{
-				templateUrl: 	'/Abbot3/views/welcome.html',
+				templateUrl: 	'views/welcome.html',
+				controller: 	'loggedOnUserController'
+			}).when(
+			'/contact',
+			{
+				templateUrl: 	'views/contact.html',
 				controller: 	'loggedOnUserController'
 			});
-
 });
 
 angular.module('abbot').run(function ($rootScope, $location) 

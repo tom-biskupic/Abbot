@@ -12,7 +12,7 @@ angular.module("abbot").controller("resultListController",function($scope,$http,
     
     $scope.loadRaces = function()
     {
-	    $http.get('/Abbot3'+'/raceseries/'+$scope.raceSeriesID+'/racedays.json').then(
+	    $http.get(''+'/raceseries/'+$scope.raceSeriesID+'/racedays.json').then(
 	            function(response)
 	            {
 	                $scope.raceDays = response.data;
@@ -75,7 +75,7 @@ angular.module("abbot").controller("resultListController",function($scope,$http,
     	{
     		$scope.selectedRace = _race;
         	$scope.init(
-        			'/Abbot3',
+        			'',
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/resultlist.json',
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/result.json/',
         			'views/raceresultform.html',
@@ -182,7 +182,7 @@ angular.module("abbot").controller("resultListController",function($scope,$http,
     
     $scope.updateHandicaps = function (race)
     {
-        $http.post('/Abbot3'+'/raceseries/'+$scope.raceSeriesID+'/race/'+race.id+'/updatehandicaps.json','{}').then(
+        $http.post(''+'/raceseries/'+$scope.raceSeriesID+'/race/'+race.id+'/updatehandicaps.json','{}').then(
                 function(response)
                 {
                 	$scope.loadPage($scope.page.number);

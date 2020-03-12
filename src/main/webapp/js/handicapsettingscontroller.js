@@ -4,7 +4,7 @@ angular.module("abbot").controller("handicapSettingsController",function($scope,
     
 	$scope.raceSeriesID = $rootScope.seriesID;
     $scope.init(
-    		'/Abbot3',
+    		'',
     		'/raceseries/'+$scope.raceSeriesID+'/handicaplimitlist.json',
     		'/raceseries/'+$scope.raceSeriesID+'/handicaplimit.json',
     		'views/handicaplimitform.html',

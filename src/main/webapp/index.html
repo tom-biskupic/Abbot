@@ -7,17 +7,17 @@
 	    <meta name="description" content="">
 	    <meta name="author" content="">
 	
-	    <link rel='stylesheet' href='/Abbot3/webjars/bootstrap/3.3.7/css/bootstrap.min.css'>
-	    <link rel='stylesheet' href='/Abbot3/css/abn_tree.css'>
+	    <link rel='stylesheet' href='/webjars/bootstrap/3.3.7/css/bootstrap.min.css'>
+	    <link rel='stylesheet' href='/css/abn_tree.css'>
 	    
-	    <link href="/Abbot3/css/abbot.css" rel="stylesheet">
+	    <link href="/css/abbot.css" rel="stylesheet">
 	    
 	    <!--  <link href="${pageContext.request.contextPath}/font-awesome-4.6.2/css/font-awesome.min.css" rel="stylesheet"> -->
 	    
 	    <style>
 	    </style>
 	    
-	    <!--  <link href="/Abbot3/css/bootstrap-responsive.css" rel="stylesheet"> -->
+	    <!--  <link href="/css/bootstrap-responsive.css" rel="stylesheet"> -->
 	
 	    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 	    <!--[if lt IE 9]>
@@ -43,7 +43,6 @@
 		    <div id="navbar" class="navbar-collapse collapse">
 		        <ul class="nav navbar-nav">
 	                <li class="active"><a href="#!/">Home</a></li>
-		            <li class="active"><a href="#!/about">About</a></li>
 		            <li class="active"><a href="#!/contact">Contact</a></li>
 		            <li class="active" ng-show='authenticated'><a href="#!/manageraceseries">My Race Series</a></li>
 	                <li class="active" ng-show="userIsAdmin()"><a href="#!/manageusers">Manager Users</a></li>
@@ -59,39 +58,46 @@
         <div class="container" ng-view>
         </div> <!-- /container -->
 
-        <script src="/Abbot3/webjars/jquery/3.3.1-2/jquery.min.js"></script>
-		<script src="/Abbot3/webjars/jquery-validation/1.13.0/jquery.validate.min.js"></script>
-		<script src="/Abbot3/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>     
-		<script src="/Abbot3/webjars/angular/1.7.5/angular.min.js"></script>
-		<script src="/Abbot3/webjars/angular-animate/1.7.5/angular-animate.min.js"></script>
-		<script src="/Abbot3/webjars/angular-touch/1.7.5/angular-touch.min.js"></script>
-		<script src="/Abbot3/webjars/angular-route/1.7.5/angular-route.min.js"></script>
+		<script type="text/javascript">
+		    function gen_mail_to_link(lhs,rhs,subject) {
+		        document.write("<a href=\"mailto");
+		        document.write(":" + lhs + "@");
+		        document.write(rhs + "?subject=" + subject + "\">" + lhs + "@" + rhs + "<\/a>");
+		    }
+		</script>
+        <script src="/webjars/jquery/3.3.1-2/jquery.min.js"></script>
+		<script src="/webjars/jquery-validation/1.13.0/jquery.validate.min.js"></script>
+		<script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>     
+		<script src="/webjars/angular/1.7.5/angular.min.js"></script>
+		<script src="/webjars/angular-animate/1.7.5/angular-animate.min.js"></script>
+		<script src="/webjars/angular-touch/1.7.5/angular-touch.min.js"></script>
+		<script src="/webjars/angular-route/1.7.5/angular-route.min.js"></script>
 				       
-		<script src="/Abbot3/js/ui-bootstrap-tpls-2.3.1.min.js"></script>
-		<script src="/Abbot3/js/abn_tree_directive.js"></script>
+		<script src="/js/ui-bootstrap-tpls-2.3.1.min.js"></script>
+		<script src="/js/abn_tree_directive.js"></script>
 		
-		<script src="/Abbot3/js/abbot.js"></script>
-		<script src="/Abbot3/js/confirmservice.js"></script>
-		<script src="/Abbot3/js/listcontroller.js"></script>
-        <script src="/Abbot3/js/form.js"></script>
-		<script src="/Abbot3/js/dialog.js"></script>
-		<script src="/Abbot3/js/utils.js"></script>
-		<script src="/Abbot3/js/loggedonusercontroller.js"></script>        
-		<script src="/Abbot3/js/manageuserscontroller.js"></script>
-		<script src="/Abbot3/js/raceserieslistcontroller.js"></script>
-		<script src="/Abbot3/js/raceseriescontroller.js"></script>
-		<script src="/Abbot3/js/racecontroller.js"></script>
-		<script src="/Abbot3/js/boatcontroller.js"></script>
-		<script src="/Abbot3/js/boatclasscontroller.js"></script>
-		<script src="/Abbot3/js/fleetcontroller.js"></script>
-		<script src="/Abbot3/js/competitioncontroller.js"></script>
-		<script src="/Abbot3/js/authorizeduserscontroller.js"></script>
-		<script src="/Abbot3/js/registercontroller.js"></script>
-		<script src="/Abbot3/js/registersuccessfulcontroller.js"></script>
-		<script src="/Abbot3/js/resultlistcontroller.js"></script>
-		<script src="/Abbot3/js/pointscontroller.js"></script>
-		<script src="/Abbot3/js/handicapsettingscontroller.js"></script>
-		<script src="/Abbot3/js/exportcontroller.js"></script>
+		<script src="/js/abbot.js"></script>
+		<script src="/js/confirmservice.js"></script>
+		<script src="/js/listcontroller.js"></script>
+        <script src="/js/form.js"></script>
+		<script src="/js/dialog.js"></script>
+		<script src="/js/utils.js"></script>
+		<script src="/js/loggedonusercontroller.js"></script>        
+		<script src="/js/manageuserscontroller.js"></script>
+		<script src="/js/raceserieslistcontroller.js"></script>
+		<script src="/js/raceseriescontroller.js"></script>
+		<script src="/js/racecontroller.js"></script>
+		<script src="/js/boatcontroller.js"></script>
+		<script src="/js/boatclasscontroller.js"></script>
+		<script src="/js/fleetcontroller.js"></script>
+		<script src="/js/competitioncontroller.js"></script>
+		<script src="/js/authorizeduserscontroller.js"></script>
+		<script src="/js/registercontroller.js"></script>
+		<script src="/js/registersuccessfulcontroller.js"></script>
+		<script src="/js/resultlistcontroller.js"></script>
+		<script src="/js/pointscontroller.js"></script>
+		<script src="/js/handicapsettingscontroller.js"></script>
+		<script src="/js/exportcontroller.js"></script>
 		
 		<script>
 			$('#busy-overlay').hide(); 

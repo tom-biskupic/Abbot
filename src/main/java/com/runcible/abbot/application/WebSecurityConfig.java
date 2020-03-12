@@ -31,6 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                         "/views/welcome.html",
                         "/views/registerform.html",
                         "/views/registersuccessful.html",
+                        "/views/contact.html",
                         "/register",
                         "/user",
                         "/webjars/**",

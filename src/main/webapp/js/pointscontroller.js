@@ -1,7 +1,7 @@
 angular.module("abbot").controller("pointsController",function($scope,$http,$controller,$rootScope)
 {
     $scope.raceSeriesId = $rootScope.seriesID;
-    $scope.context = '/Abbot3';
+    $scope.context = '';
     
     $http.get($scope.context+'/raceseries/'+$scope.raceSeriesId+'/competitionlist.json/all').then(
             function(response) 

@@ -17,7 +17,7 @@ angular.module("abbot").controller("raceSeriesController",function($scope,$http,
 	//
 	$rootScope.seriesID = $routeParams.seriesID;
 	
-    $http.get('/Abbot3/raceseries.json/'+$routeParams.seriesID).then(function(response)
+    $http.get('/raceseries.json/'+$routeParams.seriesID).then(function(response)
     {
     	$scope.raceSeries = response.data;
     });

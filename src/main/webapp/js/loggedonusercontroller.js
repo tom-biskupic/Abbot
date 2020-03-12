@@ -7,7 +7,7 @@ angular.module("abbot").controller("loggedOnUserController",function($scope,$con
 	
 	var authenticate = function(callback) 
 	{
-		$http.get('/Abbot3/user').then(function(response) 
+		$http.get('/user').then(function(response) 
 		{
 			$rootScope.isAdmin=false;
 	
@@ -39,7 +39,7 @@ angular.module("abbot").controller("loggedOnUserController",function($scope,$con
 	$scope.credentials = {};
 	$scope.login = function() 
 	{
-		$http.post('/Abbot3/login', $.param($scope.credentials), 
+		$http.post('/login', $.param($scope.credentials), 
 		{
 	      headers : 
 	      {

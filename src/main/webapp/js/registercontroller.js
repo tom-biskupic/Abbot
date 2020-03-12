@@ -13,7 +13,7 @@ angular.module("abbot").controller("registerController",function($scope,$control
 {
 	$scope.object = { }
 	
-    angular.extend(this,$controller('formController', {$scope: $scope, object : $scope.object, context: '/Abbot3', resource: '/register' }));
+    angular.extend(this,$controller('formController', {$scope: $scope, object : $scope.object, context: '', resource: '/register' }));
     
 	$scope.submit = function()
 	{

@@ -5,7 +5,7 @@ angular.module("abbot").controller("competitionController",function($scope,$http
     
 	$scope.raceSeriesID = $rootScope.seriesID;
     $scope.init(
-    		'/Abbot3','/raceseries/'+$scope.raceSeriesID+'/competitionlist.json',
+    		'','/raceseries/'+$scope.raceSeriesID+'/competitionlist.json',
     		'/raceseries/'+$scope.raceSeriesID+'/competition.json',
     		'views/competitionform.html',
     		'Competition');
