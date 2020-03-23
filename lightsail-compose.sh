@@ -18,6 +18,11 @@ mkdir /srv/docker
 curl -o /srv/docker/docker-compose.yml https://raw.githubusercontent.com/tom-biskupic/Abbot/master/docker-compose.yml
 
 #
+#	Add lets encrypt
+#
+git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+
+#
 # Copy in the script required to make docker compose a daemon
 #
 curl -o /etc/systemd/system/docker-compose-app.service https://raw.githubusercontent.com/tom-biskupic/Abbot/master/docker-compose-app.service
