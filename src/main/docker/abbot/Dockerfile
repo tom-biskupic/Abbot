@@ -8,6 +8,8 @@ ENV JPDA_ADDRESS=8000
 RUN rm -rf webapps/ROOT
 ADD ROOT.war webapps/
 
+ADD server.xml conf/server.xml
+
 RUN mkdir -p /opt/Abbot
 
 CMD ["catalina.sh", "run"]
