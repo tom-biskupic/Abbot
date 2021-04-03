@@ -16,7 +16,7 @@ buildscript
   	}
   	
   	dependencies {
-        classpath "net.saliman:gradle-cobertura-plugin:3.0.0"
+        classpath "net.saliman:gradle-cobertura-plugin:3.0.1-SNAPSHOT"
     }
 }
 

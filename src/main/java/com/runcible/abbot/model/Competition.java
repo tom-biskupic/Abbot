@@ -177,7 +177,7 @@ public class Competition implements ModelWithId
     private PointsSystem        pointsSystem = PointsSystem.LOW_POINTS;
     private Fleet          		fleet = null;
     
-    @DecimalMin(value="1",message="The number of drops must be selected")
+    @DecimalMin(value="0",message="The number of drops must be selected")
     private Integer             drops = 0;
     
     @DecimalMin(value="1",message="The fleet size must be selected")

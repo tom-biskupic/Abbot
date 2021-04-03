@@ -27,11 +27,8 @@ services:
       - dbpassword=password
       - dbname=AbbotDB
       - dbuser=AbbotUser
-      - serverport=8080
       - dbhostname=abbot-mysql
-      - require_ssl=false
-      - ssl_key_store=
-      - ssl_password=
+      - serverport=8080
 volumes:
   AbbotDB:
 
