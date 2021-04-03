@@ -128,6 +128,7 @@ public class ExportServiceImpl implements ExportService
         else
         {
             buffer.append("<table class=\"results-table\">\n");
+            buffer.append(indent(1,makeTH("#")));
             buffer.append(indent(1,makeTH("Boat")));
             buffer.append(indent(1,makeTH("Number")));
             buffer.append(indent(1,makeTH("H'Cap")));
@@ -144,6 +145,7 @@ public class ExportServiceImpl implements ExportService
                 boolean finished = result.getStatus().isFinished();
                 boolean started = result.getStatus().isStarted();
                 
+                buffer.append(indent(1,makeTD(finished ? result.getScratchPlace().toString() : "" )));
                 buffer.append(indent(1,makeTD(result.getBoat().getName())));
                 buffer.append(indent(1,makeTD(result.getBoat().getSailNumber())));
                 buffer.append(indent(1,makeTD(result.getHandicap().toString())));
