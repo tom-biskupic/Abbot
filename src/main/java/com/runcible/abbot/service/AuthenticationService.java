@@ -3,7 +3,8 @@ package com.runcible.abbot.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.User;
 
-import javassist.bytecode.stackmap.TypeData.ClassName;
-
 @Component
 public class AuthenticationService implements AuthenticationProvider
 {
@@ -25,7 +24,7 @@ public class AuthenticationService implements AuthenticationProvider
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String USER_ROLE = "ROLE_USER";
 
-    final static Logger logger = Logger.getLogger(AuthenticationService.class);
+    final static Logger logger = LogManager.getLogger(AuthenticationService.class);
     
     @Override
     public Authentication authenticate(Authentication authentication)

@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -61,31 +62,31 @@ public class CompetitionServiceImpl extends AuthorizedService implements Competi
     @Override
     public Competition getCompetitionByID(Integer competitionId) throws NoSuchCompetition, NoSuchUser, UserNotPermitted
     {
-        Competition found = competitionRepo.findOne(competitionId);
-        if ( found == null )
+        Optional<Competition> found = competitionRepo.findById(competitionId);
+        if ( ! found.isPresent())
         {
             throw new NoSuchCompetition();
         }
         
-        throwIfUserNotPermitted(found.getRaceSeriesId());
+        throwIfUserNotPermitted(found.get().getRaceSeriesId());
         
-        return found;
+        return found.get();
     }
     
     @Override
     public void removeCompetition(Integer competitionId) throws NoSuchCompetition, NoSuchUser, UserNotPermitted
     {
-        Competition found = competitionRepo.findOne(competitionId);
-        if ( found == null )
+        Optional<Competition> found = competitionRepo.findById(competitionId);
+        if ( ! found.isPresent() )
         {
             throw new NoSuchCompetition();
         }
     
-        throwIfUserNotPermitted(found.getRaceSeriesId());
+        throwIfUserNotPermitted(found.get().getRaceSeriesId());
 
-        competitionRepo.delete(competitionId);
+        competitionRepo.deleteById(competitionId);
         
-        auditEvent(found, AuditEventType.DELETED);
+        auditEvent(found.get(), AuditEventType.DELETED);
     }
 
     private void auditEvent(

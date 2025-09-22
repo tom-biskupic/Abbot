@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -261,15 +262,15 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     @Override
     public HandicapLimit getHandicapLimit(Integer raceSeriesID, Integer id) throws NoSuchUser, UserNotPermitted
     {
-    	HandicapLimit limit = handicapLimitsRepo.findOne(id);
+    	Optional<HandicapLimit> limit = handicapLimitsRepo.findById(id);
     	
-    	throwIfUserNotPermitted(limit.getRaceSeriesID());
-    	if ( raceSeriesID != limit.getRaceSeriesID() )
+    	throwIfUserNotPermitted(limit.get().getRaceSeriesID());
+    	if ( raceSeriesID != limit.get().getRaceSeriesID() )
     	{
     		throw new UserNotPermitted();
     	}
     	
-    	return limit;
+    	return limit.get();
     }
 
     @Override
@@ -296,10 +297,10 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     public void updateHandicapLimit(HandicapLimit limit) throws NoSuchUser, UserNotPermitted, InvalidUpdate
     {
         throwIfUserNotPermitted(limit.getRaceSeriesID());
-        HandicapLimit foundLimit = handicapLimitsRepo.findOne(limit.getId());
-        if ( 	foundLimit.getFleet().getId() != limit.getFleet().getId() 
+        Optional<HandicapLimit> foundLimit = handicapLimitsRepo.findById(limit.getId());
+        if ( 	foundLimit.get().getFleet().getId() != limit.getFleet().getId() 
         		||
-        		foundLimit.getRaceSeriesID() != limit.getRaceSeriesID() )
+        		foundLimit.get().getRaceSeriesID() != limit.getRaceSeriesID() )
         {
         	throw new InvalidUpdate();
         }
@@ -323,20 +324,21 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
     @Override
     public void removeHandicapLimit(Integer id) throws NoSuchHandicapLimit, NoSuchUser, UserNotPermitted
     {
-        HandicapLimit limit = handicapLimitsRepo.findOne(id);
-        if ( limit == null )
+        Optional<HandicapLimit> limit = handicapLimitsRepo.findById(id);
+        if ( limit.isEmpty() )
         {
         	throw new NoSuchHandicapLimit();
         }
-        throwIfUserNotPermitted(limit.getRaceSeriesID());
+
+        throwIfUserNotPermitted(limit.get().getRaceSeriesID());
     	
-    	handicapLimitsRepo.delete(id);
+    	handicapLimitsRepo.deleteById(id);
     	
         audit.auditEvent(
                 AuditEventType.DELETED, 
-                limit.getRaceSeriesID(), 
+                limit.get().getRaceSeriesID(), 
                 HANDICAP_LIMIT_OBJECT_NAME, 
-                limit.getFleet().getFleetName() );
+                limit.get().getFleet().getFleetName() );
 
     }
     

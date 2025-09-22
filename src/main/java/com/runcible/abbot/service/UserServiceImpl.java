@@ -1,5 +1,7 @@
 package com.runcible.abbot.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,14 +73,14 @@ public class UserServiceImpl implements UserService
     @Override
     public User findByID(Integer id) throws NoSuchUser
     {
-        User user = userRepo.findOne(id);
+        Optional<User> user = userRepo.findById(id);
         
-        if (user == null)
+        if (!user.isPresent())
         {
             throw new NoSuchUser();
         }
         
-        return user;
+        return user.get();
     }
 
     @Override

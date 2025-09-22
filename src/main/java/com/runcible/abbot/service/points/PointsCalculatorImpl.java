@@ -33,7 +33,7 @@ public class PointsCalculatorImpl implements PointsCalculator
     {
         if ( pointsSystem == PointsSystem.LOW_POINTS )
         {
-            return new Float(place);
+            return Float.valueOf(place);
         }
         else
         {
@@ -49,7 +49,7 @@ public class PointsCalculatorImpl implements PointsCalculator
                 //
                 //  So seventh place is 13, 8th is 14 an so on
                 //
-                return new Float(place+6); 
+                return Float.valueOf(place+6); 
             }
         }
     }

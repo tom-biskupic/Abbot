@@ -89,7 +89,7 @@ public class RaceSeriesAuthorizationServiceImpl implements RaceSeriesAuthorizati
 			userList.add(new UserSummary(rsu.getUser(),currentlyLoggedOn));
         }
         
-        Pageable newPage = new PageRequest(usersPage.getNumber(),usersPage.getSize());
+        Pageable newPage = PageRequest.of(usersPage.getNumber(),usersPage.getSize());
         Page<UserSummary> result = new PageImpl<UserSummary>(userList,newPage,usersPage.getTotalPages());
         return result;
     }

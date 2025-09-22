@@ -1,6 +1,8 @@
 package com.runcible.abbot.service.audit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -93,7 +95,7 @@ public class AuditServiceImpl implements AuditService
                         objectType,name ));
     }
 
-    private static final Logger logger = Logger.getLogger(AuditService.class);
+    private static final Logger logger = LogManager.getLogger(AuditService.class);
     
     @Autowired LoggedOnUserService  loggedOnUserService;
     @Autowired RaceSeriesService    raceSeriesService;

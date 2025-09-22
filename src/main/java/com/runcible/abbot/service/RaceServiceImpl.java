@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.runcible.abbot.model.Competition;
@@ -32,7 +32,7 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
     }
 
     @Override
-    public void addRace(Integer raceSeriesId,Race race) throws NoSuchUser, UserNotPermitted
+    public void addRace(Integer raceSeriesId, Race race) throws NoSuchUser, UserNotPermitted
     {
         throwIfUserNotPermitted(raceSeriesId);
         race.setRaceSeriesId(raceSeriesId);
@@ -52,18 +52,18 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
     @Override
     public Race getRaceByID(Integer raceID) throws NoSuchUser, UserNotPermitted
     {
-        Race found = raceRepo.findOne(raceID);
-        throwIfUserNotPermitted(found.getRaceSeriesId());
-        return found;
+        Optional<Race> found = raceRepo.findById(raceID);
+        throwIfUserNotPermitted(found.get().getRaceSeriesId());
+        return found.get();
     }
 
     @Override
     public void removeRace(Integer raceID) throws NoSuchUser, UserNotPermitted
     {
-        Race found = raceRepo.findOne(raceID);
-        throwIfUserNotPermitted(found.getRaceSeriesId());
-        raceRepo.delete(found);
-        auditEvent(found, AuditEventType.DELETED);
+        Optional<Race> found = raceRepo.findById(raceID);
+        throwIfUserNotPermitted(found.get().getRaceSeriesId());
+        raceRepo.deleteById(found.get().getId());
+        auditEvent(found.get(), AuditEventType.DELETED);
     }
 
     @Override

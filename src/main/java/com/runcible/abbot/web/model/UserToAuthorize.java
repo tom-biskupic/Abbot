@@ -1,8 +1,8 @@
 package com.runcible.abbot.web.model;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Email;
+import jakarta.validation.constraints.Email;
 
 public class UserToAuthorize
 {

@@ -2,6 +2,7 @@ package com.runcible.abbot.service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,10 +32,10 @@ public class RaceSeriesServiceImpl extends AuthorizedService implements RaceSeri
     @Override
     public RaceSeries findByID(Integer id) throws NoSuchUser, UserNotPermitted
     {
-        RaceSeries foundRaceSeries = raceSeriesRepo.findOne(id);
+        Optional<RaceSeries> foundRaceSeries = raceSeriesRepo.findById(id);
         
         throwIfUserNotPermitted(id);
-        return foundRaceSeries;
+        return foundRaceSeries.get();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,115 +63,115 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
     @Override
     public void removeBoatClass(Integer boatClassId) throws NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
-        BoatClass foundClass = boatClassRepo.findOne(boatClassId);
-        if ( foundClass == null )
+        Optional<BoatClass> foundClass = boatClassRepo.findById(boatClassId);
+        if ( !foundClass.isPresent() )
         {
             throw new NoSuchBoatClass();
         }
         
-        throwIfUserNotPermitted(foundClass.getRaceSeriesId());
+        throwIfUserNotPermitted(foundClass.get().getRaceSeriesId());
 
-        boatClassRepo.delete(boatClassId);
+        boatClassRepo.deleteById(boatClassId);
         
-        auditEvent(foundClass, AuditEventType.DELETED);
+        auditEvent(foundClass.get(), AuditEventType.DELETED);
     }
 
     @Override
     public BoatClass getBoatClassByID(Integer boatClassId) throws NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
-        BoatClass boatClass = boatClassRepo.findOne(boatClassId); 
-        if ( boatClass == null )
+        Optional<BoatClass> boatClass = boatClassRepo.findById(boatClassId); 
+        if ( !boatClass.isPresent() )
         {
             throw new NoSuchBoatClass();
         }
         
-        throwIfUserNotPermitted(boatClass.getRaceSeriesId());
+        throwIfUserNotPermitted(boatClass.get().getRaceSeriesId());
 
-        return boatClass;
+        return boatClass.get();
     }
     
     @Override
     public void addDivision(Integer boatClassId, BoatDivision division) throws DuplicateDivision, NoSuchUser, UserNotPermitted, NoSuchBoatClass
     {
-        BoatClass boatClass = boatClassRepo.findOne(boatClassId);
+        Optional<BoatClass> boatClass = boatClassRepo.findById(boatClassId);
 
-        if ( boatClass == null )
+        if ( ! boatClass.isPresent() )
         {
             throw new NoSuchBoatClass();
         }
         
-        if ( boatClass.getDivision(division.getName()) != null)
+        if ( boatClass.get().getDivision(division.getName()) != null)
         {
             throw new DuplicateDivision();
         }
 
-        throwIfUserNotPermitted(boatClass.getRaceSeriesId());
+        throwIfUserNotPermitted(boatClass.get().getRaceSeriesId());
 
-        boatClass.addDivision(division);
-        boatClassRepo.save(boatClass);
+        boatClass.get().addDivision(division);
+        boatClassRepo.save(boatClass.get());
 
-        auditEvent(division, boatClass, AuditEventType.CREATED);
+        auditEvent(division, boatClass.get(), AuditEventType.CREATED);
     }
 
     @Override
     public void updateDivision(Integer boatClassId, BoatDivision division) 
             throws DuplicateDivision, NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
-        BoatClass boatClass = boatClassRepo.findOne(boatClassId);
+        Optional<BoatClass> boatClass = boatClassRepo.findById(boatClassId);
 
         if ( boatClass == null )
         {
             throw new NoSuchBoatClass();
         }
         
-        throwIfUserNotPermitted(boatClass.getRaceSeriesId());
+        throwIfUserNotPermitted(boatClass.get().getRaceSeriesId());
 
-        BoatDivision foundDivision = boatClass.getDivision(division.getName()); 
+        BoatDivision foundDivision = boatClass.get().getDivision(division.getName()); 
         if ( foundDivision != null && foundDivision.getId() != division.getId() )
         {
             throw new DuplicateDivision();
         }
 
-        foundDivision = boatClass.getDivision(division.getId());
+        foundDivision = boatClass.get().getDivision(division.getId());
         
         if ( foundDivision == null )
         {
             throw new NoSuchDivision();
         }
         
-        boatClass.removeDivision(foundDivision);
-        boatClass.addDivision(division);
+        boatClass.get().removeDivision(foundDivision);
+        boatClass.get().addDivision(division);
 
-        boatClassRepo.save(boatClass);
+        boatClassRepo.save(boatClass.get());
         
-        auditEvent(division, boatClass, AuditEventType.UPDATED);
+        auditEvent(division, boatClass.get(), AuditEventType.UPDATED);
     }
     
     @Override
     public void removeDivision(Integer boatClassId, Integer divisionId) 
             throws NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
-        BoatClass boatClass = boatClassRepo.findOne(boatClassId);
+        Optional<BoatClass> boatClass = boatClassRepo.findById(boatClassId);
 
-        if ( boatClass == null )
+        if ( ! boatClass.isPresent() )
         {
             throw new NoSuchBoatClass();
         }
 
-        throwIfUserNotPermitted(boatClass.getRaceSeriesId());
+        throwIfUserNotPermitted(boatClass.get().getRaceSeriesId());
         
-        BoatDivision foundDivision = boatClass.getDivision(divisionId);
+        BoatDivision foundDivision = boatClass.get().getDivision(divisionId);
         
         if ( foundDivision == null )
         {
             throw new NoSuchDivision();
         }
         
-        boatClass.removeDivision(foundDivision);
+        boatClass.get().removeDivision(foundDivision);
         
-        boatClassRepo.save(boatClass);
+        boatClassRepo.save(boatClass.get());
         
-        auditEvent(foundDivision, boatClass, AuditEventType.DELETED);
+        auditEvent(foundDivision, boatClass.get(), AuditEventType.DELETED);
     }
 
     private void auditEvent(

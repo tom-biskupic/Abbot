@@ -3,8 +3,11 @@ package com.runcible.abbot.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,15 +51,15 @@ public class RaceResultServiceImpl implements RaceResultService
 	@Override
 	public RaceResult getResultByID(Integer resultId) throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
 	{
-		RaceResult result = raceResultRepo.findOne(resultId);
-		if ( result == null )
+		Optional<RaceResult> result = raceResultRepo.findById(resultId);
+		if ( ! result.isPresent() )
 		{
 			throw new NoSuchRaceResult();
 		}
 		
-		checkAuthorized(result.getRaceId());
+		checkAuthorized(result.get().getRaceId());
 		
-		return result;
+		return result.get();
 	}
 	
 	@Override
@@ -109,7 +112,7 @@ public class RaceResultServiceImpl implements RaceResultService
 	public void updateResult(RaceResult result) 
 	        throws NoSuchUser, UserNotPermitted, NoSuchRaceResult, DuplicateResult 
 	{
-		if ( raceResultRepo.findOne(result.getId()) == null )
+		if ( ! raceResultRepo.findById(result.getId()).isPresent())
 		{
 			throw new NoSuchRaceResult();
 		}
@@ -127,19 +130,19 @@ public class RaceResultServiceImpl implements RaceResultService
 
 	public void removeResult(Integer resultId) throws NoSuchRaceResult, NoSuchUser, UserNotPermitted
 	{
-        RaceResult found = raceResultRepo.findOne(resultId);
-        if ( found == null )
+        Optional<RaceResult> found = raceResultRepo.findById(resultId);
+        if ( ! found.isPresent() )
         {
             throw new NoSuchRaceResult();
         }
         
-        Race race = raceService.getRaceByID(found.getRaceId());
+        Race race = raceService.getRaceByID(found.get().getRaceId());
         
-	    raceResultRepo.delete(found);
+	    raceResultRepo.deleteById(found.get().getId());
 	    
 	    try
 	    {
-	        updateRacePlaces(found.getRaceId(), null);
+	        updateRacePlaces(found.get().getRaceId(), null);
 	    }
 	    catch(DuplicateResult e)
 	    {
@@ -148,7 +151,7 @@ public class RaceResultServiceImpl implements RaceResultService
 	        //
 	    }
 
-	    auditEvent(found, race, AuditEventType.DELETED);
+	    auditEvent(found.get(), race, AuditEventType.DELETED);
 	}
 	
 	//
@@ -334,7 +337,7 @@ public class RaceResultServiceImpl implements RaceResultService
 
 	private static final String RESULT_OBJECT_NAME = "Race result";
 
-	private static final Logger logger = Logger.getLogger(RaceResultServiceImpl.class);
+	private static final Logger logger = LogManager.getLogger(RaceResultServiceImpl.class);
 	
 	@Autowired private RaceService            raceService;
 	@Autowired private BoatService            boatService;

@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,33 +63,33 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
     @Override
     public Fleet getFleetByID(Integer fleetId) throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
-        Fleet found = fleetRepo.findOne(fleetId);
+        Optional<Fleet> found = fleetRepo.findById(fleetId);
         
-        if ( found == null )
+        if ( ! found.isPresent() )
         {
             throw new NoSuchFleet();
         }
 
-        throwIfUserNotPermitted(found.getRaceSeriesId());
+        throwIfUserNotPermitted(found.get().getRaceSeriesId());
 
-        return found;
+        return found.get();
     }
     
     @Override
     public void removeFleet(Integer fleetId) throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
-        Fleet found = fleetRepo.findOne(fleetId);
+        Optional<Fleet> found = fleetRepo.findById(fleetId);
         
-        if ( found == null )
+        if ( ! found.isPresent() )
         {
             throw new NoSuchFleet();
         }
 
-        throwIfUserNotPermitted(found.getRaceSeriesId());
+        throwIfUserNotPermitted(found.get().getRaceSeriesId());
 
-        fleetRepo.delete(fleetId);
+        fleetRepo.deleteById(fleetId);
         
-        auditEvent(found, AuditEventType.DELETED);
+        auditEvent(found.get(), AuditEventType.DELETED);
     }
 
     private void auditEvent(Fleet fleet, AuditEventType eventType)

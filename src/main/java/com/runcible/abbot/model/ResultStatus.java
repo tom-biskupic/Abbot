@@ -1,6 +1,6 @@
 package com.runcible.abbot.model;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 public enum ResultStatus 
 {

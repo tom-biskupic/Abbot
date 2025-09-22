@@ -68,10 +68,10 @@ public class ExportServiceImpl implements ExportService
         {
             result.append(indent(1,"<tr>\n"));
             result.append(indent(2,makeTD(pointsForBoat.getBoat().getName())));
-            result.append(indent(2,makeTD(new Integer(pointsForBoat.getPlace()).toString())));
+            result.append(indent(2,makeTD(Integer.valueOf(pointsForBoat.getPlace()).toString())));
             for( Float points : pointsForBoat.getPoints())
             {
-                result.append(indent(2,makeTD(new Float(points).toString())));
+                result.append(indent(2,makeTD(Float.valueOf(points).toString())));
             }
             
             ;
@@ -152,7 +152,7 @@ public class ExportServiceImpl implements ExportService
                 
                 if ( finished )
                 {
-                    buffer.append(indent(1,makeTD(new Integer(result.getHandicapPlace()).toString())));
+                    buffer.append(indent(1,makeTD(Integer.valueOf(result.getHandicapPlace()).toString())));
                 }
                 else
                 {
@@ -212,7 +212,7 @@ public class ExportServiceImpl implements ExportService
             result.append(indent(2,makeTD(boatHandicaps.getBoat().getName())));
             for( Float handicap : boatHandicaps.getHandicaps())
             {
-                result.append(indent(2,makeTD(new Float(handicap).toString())));
+                result.append(indent(2,makeTD(Float.valueOf(handicap).toString())));
             }
             
             result.append(indent(1,"\t</tr>\n"));

@@ -37,7 +37,7 @@ public class PointsTotalCalculatorImpl implements PointsTotalCalculator
 
     private Float sumList(List<Float> floats)
     {
-        Float total = new Float(0.0f);
+        Float total = Float.valueOf(0.0f);
 
         for(Float points : floats)
         {
