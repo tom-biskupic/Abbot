@@ -1,16 +1,17 @@
 package com.runcible.abbot.service.points;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.BoatClass;
@@ -18,10 +19,10 @@ import com.runcible.abbot.model.RaceResult;
 import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResultSorterTest
 {
-    @Before
+    @BeforeEach
     public void setUp()
     {
         raceResults.add(resultBoat1);

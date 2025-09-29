@@ -1,16 +1,18 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,7 +26,7 @@ import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FleetServiceTest
 {
     @Test
@@ -42,14 +44,14 @@ public class FleetServiceTest
         verifiyAudit(AuditEventType.CREATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testAddFleetNotPermitted() throws NoSuchRaceSeries, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-
-        fixture.addFleet(TEST_RACE_SERIES_ID, fleetMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.addFleet(TEST_RACE_SERIES_ID, fleetMock);
+        });
     }
 
     @Test
@@ -62,13 +64,14 @@ public class FleetServiceTest
         assertEquals(fleetPageMock,result);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetAllFleetsForSeriesNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        when(fleetRepoMock.findByRaceSeries(TEST_RACE_SERIES_ID, pageableMock)).thenReturn(fleetPageMock);
-        fixture.getAllFleetsForSeries(TEST_RACE_SERIES_ID, pageableMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getAllFleetsForSeries(TEST_RACE_SERIES_ID, pageableMock);
+        });
     }
     
     @Test
@@ -98,31 +101,32 @@ public class FleetServiceTest
     {
         setupCheckPermissionsMocks(true);
 
-        when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(fleetMock);
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         
         Fleet result = fixture.getFleetByID(TEST_FLEET_ID);
         assertEquals(fleetMock,result);
     }
 
-    @Test(expected=NoSuchFleet.class)
+    @Test
     public void testGetFleetByIdNoSuchFleet() throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
-        setupCheckPermissionsMocks(true);
-
-        when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(null);
-        fixture.getFleetByID(TEST_FLEET_ID);
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchFleet.class, () -> {
+            fixture.getFleetByID(TEST_FLEET_ID);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetFleetByIdUserNotPermitted() throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(fleetMock);
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        
-        fixture.getFleetByID(TEST_FLEET_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getFleetByID(TEST_FLEET_ID);
+        });
     }
 
     @Test
@@ -130,34 +134,35 @@ public class FleetServiceTest
     {
         setupCheckPermissionsMocks(true);
 
-        when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(fleetMock);
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         when(fleetMock.getFleetName()).thenReturn(TEST_NAME);
         
         fixture.removeFleet(TEST_FLEET_ID);
-        verify(fleetRepoMock).delete(TEST_FLEET_ID);
+        verify(fleetRepoMock).deleteById(TEST_FLEET_ID);
         
         verifiyAudit(AuditEventType.DELETED);
     }
 
-    @Test(expected=NoSuchFleet.class)
+    @Test
     public void testRemoveFleetNoSuchFleet() throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
-        setupCheckPermissionsMocks(true);
-
-        when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(null);
-        fixture.removeFleet(TEST_FLEET_ID);
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchFleet.class, () -> {
+            fixture.removeFleet(TEST_FLEET_ID);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testRemoveFleetUserNotPermitted() throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        when(fleetRepoMock.findOne(TEST_FLEET_ID)).thenReturn(fleetMock);
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
         when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        
-        fixture.removeFleet(TEST_FLEET_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.removeFleet(TEST_FLEET_ID);
+        });
     }
     
     private void setupCheckPermissionsMocks(boolean permitted) throws NoSuchUser

@@ -1,10 +1,12 @@
 package com.runcible.abbot.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,10 +15,13 @@ import com.runcible.abbot.repository.UserRepository;
 import com.runcible.abbot.service.exceptions.DuplicateUserException;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest
 {
     @Test
@@ -62,13 +67,14 @@ public class UserServiceTest
         verify(mockUser).setAdministrator(true);
     }
 
-    @Test(expected=DuplicateUserException.class)
+    @Test
     public void testAddUserDuplicate() throws DuplicateUserException
     {
         when(mockUser.getEmail()).thenReturn(testEmail);
         when(mockUserRepo.findByEmail(testEmail)).thenReturn(mockUser);
-        
-        fixture.addUser(mockUser);        
+        Assertions.assertThrows(DuplicateUserException.class, () -> {
+            fixture.addUser(mockUser);
+        });
     }
     
     @Test
@@ -88,29 +94,33 @@ public class UserServiceTest
         fixture.updateUser(mockUser);
     }
 
-    @Test(expected=DuplicateUserException.class)
+    @Test
     public void testUpdateUserEmailDuplicate() throws DuplicateUserException
     {
         when(mockUser.getEmail()).thenReturn(testEmail);
         when(mockUserRepo.findByEmail(testEmail)).thenReturn(mockExistingUser);
         when(mockExistingUser.getId()).thenReturn(testID2);
         when(mockUser.getId()).thenReturn(testID);
-        fixture.updateUser(mockUser);
+        Assertions.assertThrows(DuplicateUserException.class, () -> {
+            fixture.updateUser(mockUser);
+        });
     }
 
     @Test
     public void testFindByID() throws NoSuchUser
     {
-        when(mockUserRepo.findOne(testID)).thenReturn(mockUser);
+        when(mockUserRepo.findById(testID)).thenReturn(Optional.of(mockUser));
         User user = fixture.findByID(testID);
         assertEquals(user,mockUser);
     }
 
-    @Test(expected=NoSuchUser.class)
+    @Test
     public void testFindByIDNoUser() throws NoSuchUser
     {
-        when(mockUserRepo.findOne(testID)).thenReturn(null);
-        fixture.findByID(testID);
+        when(mockUserRepo.findById(testID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchUser.class, () -> {
+            fixture.findByID(testID);
+        });
     }
 
     @Test
@@ -121,11 +131,13 @@ public class UserServiceTest
         assertEquals(mockUser,result);
     }
 
-    @Test(expected=NoSuchUser.class)
+    @Test
     public void testFindByEmailNoSuchUser() throws NoSuchUser
     {
         when(mockUserRepo.findByEmail(testEmail)).thenReturn(null);
-        fixture.findByEmail(testEmail);
+        Assertions.assertThrows(NoSuchUser.class, () -> {
+            fixture.findByEmail(testEmail);
+        });
     }
 
     @InjectMocks

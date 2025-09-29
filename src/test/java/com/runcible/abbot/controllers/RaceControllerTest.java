@@ -7,28 +7,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import com.runcible.abbot.service.BoatService;
+import com.runcible.abbot.service.HandicapService;
+import com.runcible.abbot.service.RaceResultService;
+import com.runcible.abbot.service.RaceSeriesService;
 import com.runcible.abbot.service.RaceService;
+import com.runcible.abbot.web.controllers.RaceController;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration("file:src/test/java/com/runcible/abbot/controllers/TestApplicationContext.xml")
+@WebMvcTest(controllers = RaceController.class)
 public class RaceControllerTest extends MvcTestWithJSON
 {
-    @Before
+    @BeforeEach
     public void setup()
     {
         MockitoAnnotations.initMocks(this);
-        setupMockMVC();
     }
 
     @Test
@@ -54,6 +53,18 @@ public class RaceControllerTest extends MvcTestWithJSON
             .andExpect(jsonPath("$[0].day",is(testRaceDayList.get(0).getDay().getTime())));
     }
 
-    @Autowired
+    @MockitoBean
     private RaceService raceService;
+
+    @MockitoBean
+    private RaceSeriesService raceSeriesService;
+
+    @MockitoBean
+    private RaceResultService raceResultService;
+
+    @MockitoBean
+    private HandicapService handicapService;
+    
+    @Autowired
+    private MockMvc mockMvc;
 }

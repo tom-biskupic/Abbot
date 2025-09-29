@@ -2,16 +2,16 @@ package com.runcible.abbot.application;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebConfig extends WebMvcConfigurerAdapter 
+public class WebConfig implements WebMvcConfigurer 
 {
     @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) 
+    public void addResourceHandlers(ResourceHandlerRegistry registry) 
     {
         registry.addResourceHandler("/webjars/**")
-        .addResourceLocations("/webjars/")
-        .resourceChain(false);
+                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+                .resourceChain(false);
     }
 }

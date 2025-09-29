@@ -119,7 +119,7 @@ public class BoatClassServiceImpl extends AuthorizedService implements BoatClass
     {
         Optional<BoatClass> boatClass = boatClassRepo.findById(boatClassId);
 
-        if ( boatClass == null )
+        if ( ! boatClass.isPresent() )
         {
             throw new NoSuchBoatClass();
         }

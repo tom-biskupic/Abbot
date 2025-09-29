@@ -1,19 +1,17 @@
 package com.runcible.abbot.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RaceModelTest extends ValidationTest
 {
-
-    @Before
+    @BeforeEach
     public void setup() 
     {
         setupValidation();

@@ -1,8 +1,8 @@
 package com.runcible.abbot.controllers;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -16,35 +16,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.runcible.abbot.model.User;
 import com.runcible.abbot.service.UserService;
 import com.runcible.abbot.service.exceptions.DuplicateUserException;
+import com.runcible.abbot.web.controllers.UserController;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration("file:src/test/java/com/runcible/abbot/controllers/TestApplicationContext.xml")
+@WebMvcTest(controllers = UserController.class)
 public class UserControllerTest extends MvcTestWithJSON 
 {
-    @Before
+    @BeforeEach
     public void setup()
     {
-        MockitoAnnotations.initMocks(this);
-        setupMockMVC();
         reset(userService);
         
         User[] users = new User[1];
@@ -175,6 +169,9 @@ public class UserControllerTest extends MvcTestWithJSON
 	@Autowired
     private UserService userService;
     
+	@Autowired
+    private MockMvc mockMvc;
+	
     private static final Integer ID=1234;
     private static final String FIRST_NAME="Fred";
     private static final String LAST_NAME="Bloggs";

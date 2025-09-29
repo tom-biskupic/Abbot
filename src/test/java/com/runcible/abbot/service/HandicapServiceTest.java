@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,15 +10,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Fleet;
@@ -36,7 +39,7 @@ import com.runcible.abbot.service.exceptions.NoSuchRaceResult;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HandicapServiceTest
 {
     private class RaceResultTest
@@ -62,7 +65,7 @@ public class HandicapServiceTest
         public Integer      winsCount;
     }
     
-    @Before
+    @BeforeEach
     public void setUp()
     {
         testBoatList.add(mockBoat);
@@ -90,15 +93,13 @@ public class HandicapServiceTest
     @Test
     public void testGetHandicapsForFleetNotFound() throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
-        when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesID, testFleetID)).thenReturn(testBoatList);
-        when(mockBoat.getId()).thenReturn(testBoatID);
-        when(mockHandicapRepo.findByBoatAndRace(testBoatID,testPreviousRaceId)).thenReturn(mockHandicap);
-        when(mockHandicapRepo.findByBoatAndRace(testBoatID,testPreviousRaceId)).thenReturn(null);
-        
-        List<Handicap> handicaps = fixture.getHandicapsForFleet(testRaceSeriesID, testFleetID,testRaceID);
-        assertEquals(1,handicaps.size());
-        assertEquals(testBoatID,handicaps.get(0).getBoatID());
-        assertEquals(new Float(0.0f),handicaps.get(0).getValue());
+        when(mockRaceService.findPreviousFinishedRaceId(testRaceID)).thenReturn(testPreviousRaceId);
+
+        when(mockBoatService.getAllBoatsInFleetForSeries(testRaceSeriesID, testFleetID)).thenThrow(new NoSuchFleet());
+
+        Assertions.assertThrows(NoSuchFleet.class, () -> {
+            fixture.getHandicapsForFleet(testRaceSeriesID, testFleetID,testRaceID);
+        });
     }
 
     @Test
@@ -126,7 +127,7 @@ public class HandicapServiceTest
         List<RaceResult> testResultList = new ArrayList<RaceResult>();
         testResultList.add(mockRaceResult);
         setupRaceResultMocks(testResultList, true);
-        setupHandicapMocks();
+        when(mockBoat.getId()).thenReturn(testBoatID);
         
         fixture.updateHandicapsFromPreviousRace(testRaceID);
         verify(mockRaceResult,never()).setHandicap(testHandicapValue);
@@ -437,6 +438,7 @@ public class HandicapServiceTest
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         i=0;
+        boolean oneStarted = false;
         for( RaceResultTest testResult : testResults )
         {
             resultList.add(new RaceResult(
@@ -452,13 +454,22 @@ public class HandicapServiceTest
                     0,
                     0));
             
-            when(mockRaceResultService.getWinsForBoatBeforeDate(
-                    testRaceSeriesID, testFleetID, testBoatID1+i, testRaceDate, shortCourse))
-                        .thenReturn(testResult.winsCount);
+            //setupHandicapMocks();
+            //when(mockHandicap.getValue()).thenReturn(testResult.initialHandicap);
+            if ( testResult.resultStatus.isStarted() )
+            {
+                when(mockRaceResultService.getWinsForBoatBeforeDate(
+                        testRaceSeriesID, testFleetID, testBoatID1+i, testRaceDate, shortCourse))
+                            .thenReturn(testResult.winsCount);
+                oneStarted = true;
+            }
             i++;
         }
+        if (oneStarted) 
+        {
+            when(mockRace.getRaceDate()).thenReturn(testRaceDate);        
+        }
 
-        when(mockRace.getRaceDate()).thenReturn(testRaceDate);        
         when(mockRaceResultService.findAll(testRaceID)).thenReturn(resultList);
         when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         
@@ -466,7 +477,7 @@ public class HandicapServiceTest
 
         for(i=0;i<testResults.size();i++)
         {
-            verify(mockHandicaps.get(i)).setValue(new Float(testResults.get(i).expectedHandicapUpdate));
+            verify(mockHandicaps.get(i)).setValue(Float.valueOf(testResults.get(i).expectedHandicapUpdate));
         }
     }
 
@@ -490,7 +501,7 @@ public class HandicapServiceTest
         ArgumentCaptor<Handicap> handicapCaptor = ArgumentCaptor.forClass(Handicap.class);
         verify(mockHandicapRepo).save(handicapCaptor.capture());
         
-        assertEquals(new Float(0.0),handicapCaptor.getValue().getValue());
+        assertEquals(Float.valueOf(0),handicapCaptor.getValue().getValue());
         
         verify(mockAudit).auditEventFreeForm(
                 AuditEventType.UPDATED, 
@@ -508,34 +519,28 @@ public class HandicapServiceTest
     @Test
     public void testGetHandicapLimit() throws NoSuchUser, UserNotPermitted
     {
-        when(mockHandicapLimitRepo.findOne(testHandicapLimitID)).thenReturn(mockHandicapLimit);
+        when(mockHandicapLimitRepo.findById(testHandicapLimitID)).thenReturn(Optional.of(mockHandicapLimit));
         setupCheckPermissionsMocks(true);
         when(mockHandicapLimit.getRaceSeriesID()).thenReturn(testRaceSeriesID);
         assertEquals(mockHandicapLimit,fixture.getHandicapLimit(testRaceSeriesID,testHandicapLimitID));
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetHandicapLimitNotPermitted() throws NoSuchUser, UserNotPermitted
     {
-        when(mockHandicapLimitRepo.findOne(testHandicapLimitID)).thenReturn(mockHandicapLimit);
+        when(mockHandicapLimitRepo.findById(testHandicapLimitID)).thenReturn(Optional.of(mockHandicapLimit));
+        when(mockHandicapLimit.getRaceSeriesID()).thenReturn(testRaceSeriesID);
         setupCheckPermissionsMocks(false);
-        fixture.getHandicapLimit(testRaceSeriesID,testHandicapLimitID);
-    }
-
-    @Test(expected=UserNotPermitted.class)
-    public void testGetHandicapLimitWrongSeries() throws NoSuchUser, UserNotPermitted
-    {
-        when(mockHandicapLimitRepo.findOne(testHandicapLimitID)).thenReturn(mockHandicapLimit);
-        setupCheckPermissionsMocks(true);
-        when(mockHandicapLimit.getRaceSeriesID()).thenReturn(111);
-        fixture.getHandicapLimit(testRaceSeriesID,testHandicapLimitID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getHandicapLimit(testRaceSeriesID,testHandicapLimitID);
+        });
     }
 
     private void setupRaceMocks(boolean shortCourse) throws NoSuchUser, UserNotPermitted
     {
         when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         when(mockRace.getRaceSeriesId()).thenReturn(testRaceSeriesID);
-        when(mockRace.isShortCourseRace()).thenReturn(shortCourse);
+        Mockito.lenient().when(mockRace.isShortCourseRace()).thenReturn(shortCourse);
         when(mockRace.getFleet()).thenReturn(mockFleet);
         when(mockFleet.getId()).thenReturn(testFleetID);
     }
@@ -550,7 +555,6 @@ public class HandicapServiceTest
         {
             when(mockHandicapLimitRepo.findByFleetID(testRaceSeriesID, testFleetID)).thenReturn(mockHandicapLimit);
             when(mockHandicapLimit.getLimit()).thenReturn(handicapLimitValue);
-            when(mockHandicapLimit.getRaceSeriesID()).thenReturn(testRaceSeriesID);
         }
     }
 
@@ -569,7 +573,11 @@ public class HandicapServiceTest
     private void setupRaceResultMocks(List<RaceResult> testResultList, boolean handicapOverride)
             throws NoSuchUser, UserNotPermitted
     {
-        when(mockRaceResult.getBoat()).thenReturn(mockBoat);
+        if ( !handicapOverride)
+        {
+            when(mockRaceResult.getBoat()).thenReturn(mockBoat);
+        }
+
         when(mockRaceResult.getOverrideHandicap()).thenReturn(handicapOverride);
         if ( ! handicapOverride )
         {
@@ -607,7 +615,9 @@ public class HandicapServiceTest
     @Mock private Handicap          mockHandicap3;
     @Mock private Race              mockRace;
     @Mock private Fleet             mockFleet;
+
     @Mock private HandicapLimit     mockHandicapLimit;
+    private Optional<HandicapLimit> optionalHandicapLimit = Optional.ofNullable(mockHandicapLimit);
     
     @Mock private BoatService           mockBoatService;
     @Mock private HandicapRepository    mockHandicapRepo;

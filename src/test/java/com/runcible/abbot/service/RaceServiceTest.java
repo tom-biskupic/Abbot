@@ -1,20 +1,22 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,7 +28,7 @@ import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RaceServiceTest
 {
     @Test
@@ -39,11 +41,13 @@ public class RaceServiceTest
         verifyAuditEvent(AuditEventType.CREATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testAddRaceNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
-        fixture.addRace(TEST_RACE_SERIES_ID, raceMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.addRace(TEST_RACE_SERIES_ID, raceMock);
+        });
     } 
 
     @Test
@@ -56,30 +60,34 @@ public class RaceServiceTest
         verifyAuditEvent(AuditEventType.UPDATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testUpdateRaceNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         when(raceMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        fixture.updateRace(raceMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.updateRace(raceMock);
+        });
     }
 
     @Test
     public void testGetRaceByID() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
-        when(raceRepoMock.findOne(TEST_ID)).thenReturn(raceMock);
+        when(raceRepoMock.findById(TEST_ID)).thenReturn(Optional.of(raceMock));
         when(raceMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         assertEquals(fixture.getRaceByID(TEST_ID),raceMock);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetRaceByIDNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
-        when(raceRepoMock.findOne(TEST_ID)).thenReturn(raceMock);
+        when(raceRepoMock.findById(TEST_ID)).thenReturn(Optional.of(raceMock));
         when(raceMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        fixture.getRaceByID(TEST_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getRaceByID(TEST_ID);
+        });
     }
     
     @Test
@@ -90,12 +98,13 @@ public class RaceServiceTest
         assertEquals(pageMock,fixture.getAllRacesForSeries(TEST_RACE_SERIES_ID, pageableMock));
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testFindAllNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
-        when(raceRepoMock.findByRaceSeries(TEST_RACE_SERIES_ID, pageableMock)).thenReturn(pageMock);
-        fixture.getAllRacesForSeries(TEST_RACE_SERIES_ID, pageableMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getAllRacesForSeries(TEST_RACE_SERIES_ID, pageableMock);
+        });
     }
     
     @Test

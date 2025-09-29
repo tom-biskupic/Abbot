@@ -1,19 +1,21 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,7 +34,7 @@ import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BoatServiceTest 
 {
 
@@ -112,15 +114,17 @@ public class BoatServiceTest
     	when(boatRepoMock.findBoatByClass(TEST_RACE_SERIES_ID, TEST_BOAT_CLASS_ID)).thenReturn(boatListMock);
     	
     	List<Boat> returned = fixture.getAllBoatsInFleetForSeries(TEST_RACE_SERIES_ID, TEST_FLEET_ID);
+		
     	assertEquals(boatListMock,returned);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetAllBoatsInFleetUserNotPermitted() throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
         setupCheckPermissionsMocks(false);
-
-        fixture.getAllBoatsInFleetForSeries(TEST_RACE_SERIES_ID, TEST_FLEET_ID);
+		Assertions.assertThrows(UserNotPermitted.class, () -> {
+        	fixture.getAllBoatsInFleetForSeries(TEST_RACE_SERIES_ID, TEST_FLEET_ID);
+		});
     }
 
     @Test
@@ -132,11 +136,13 @@ public class BoatServiceTest
     	assertEquals(boatPageMock,boats);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetAllBoatsInSeriesUserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
     	setupCheckPermissionsMocks(false);
-    	fixture.getAllBoatsForSeries(TEST_RACE_SERIES_ID, pageableMock);
+		Assertions.assertThrows(UserNotPermitted.class, () -> {
+    		fixture.getAllBoatsForSeries(TEST_RACE_SERIES_ID, pageableMock);
+		});
     }
 
     @Test
@@ -152,11 +158,14 @@ public class BoatServiceTest
     	verifyAuditMock(AuditEventType.UPDATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testUpdateBoatUserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
     	setupCheckPermissionsMocks(false);
-    	fixture.updateBoat(boatMock);
+		when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
+		Assertions.assertThrows(UserNotPermitted.class, () -> {
+    		fixture.updateBoat(boatMock);
+		});
     }
 
     @Test
@@ -171,11 +180,13 @@ public class BoatServiceTest
     	verifyAuditMock(AuditEventType.CREATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testAddBoatUserNotPermitted() throws NoSuchRaceSeries, NoSuchUser, UserNotPermitted
     {
     	setupCheckPermissionsMocks(false);
-    	fixture.addBoat(TEST_RACE_SERIES_ID, boatMock);
+		Assertions.assertThrows(UserNotPermitted.class, () -> {
+    		fixture.addBoat(TEST_RACE_SERIES_ID, boatMock);
+		});
     }
 
     @Test
@@ -183,61 +194,65 @@ public class BoatServiceTest
     {
     	setupCheckPermissionsMocks(true);
 
-    	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(boatMock);
+    	when(boatRepoMock.findById(TEST_BOAT_ID)).thenReturn(Optional.of(boatMock));
     	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
     	Boat result = fixture.getBoatByID(TEST_BOAT_ID);
     	assertEquals(boatMock,result);
     }
 
-    @Test(expected=NoSuchBoat.class)
+    @Test
     public void testGetBoatByIdNotFound() throws NoSuchBoat, NoSuchUser, UserNotPermitted
     {
-    	setupCheckPermissionsMocks(true);
-
-    	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(null);
-    	fixture.getBoatByID(TEST_BOAT_ID);
+    	when(boatRepoMock.findById(TEST_BOAT_ID)).thenReturn(Optional.empty());
+		Assertions.assertThrows(NoSuchBoat.class, () -> {
+    		fixture.getBoatByID(TEST_BOAT_ID);
+		});
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetBoatByIdUserNotPermitted() throws NoSuchBoat, NoSuchUser, UserNotPermitted
     {
     	setupCheckPermissionsMocks(false);
 
-    	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(boatMock);
+    	when(boatRepoMock.findById(TEST_BOAT_ID)).thenReturn(Optional.of(boatMock));
     	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
-    	fixture.getBoatByID(TEST_BOAT_ID);
+		Assertions.assertThrows(UserNotPermitted.class, () -> {
+    		fixture.getBoatByID(TEST_BOAT_ID);
+		});
     }
 
     @Test
     public void testRemoveBoat() throws NoSuchUser, NoSuchCompetition, UserNotPermitted, NoSuchBoat
     {
     	setupCheckPermissionsMocks(true);
-    	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(boatMock);
+    	when(boatRepoMock.findById(TEST_BOAT_ID)).thenReturn(Optional.of(boatMock));
     	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
     	when(boatMock.getName()).thenReturn(TEST_BOAT_NAME);
+		when(boatMock.getId()).thenReturn(TEST_BOAT_ID);
     	
     	fixture.removeBoat(TEST_BOAT_ID);
-    	verify(boatRepoMock).delete(boatMock);
+    	verify(boatRepoMock).deleteById(TEST_BOAT_ID);
     	verifyAuditMock(AuditEventType.DELETED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testRemoveBoatUserNotPermitted() throws NoSuchUser, NoSuchCompetition, UserNotPermitted, NoSuchBoat
     {
     	setupCheckPermissionsMocks(false);
-    	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(boatMock);
+    	when(boatRepoMock.findById(TEST_BOAT_ID)).thenReturn(Optional.of(boatMock));
     	when(boatMock.getRaceSeriesID()).thenReturn(TEST_RACE_SERIES_ID);
-    	
-    	fixture.removeBoat(TEST_BOAT_ID);
+    	Assertions.assertThrows(UserNotPermitted.class, () -> {
+    		fixture.removeBoat(TEST_BOAT_ID);
+		});
     }
 
-    @Test(expected=NoSuchBoat.class)
+    @Test
     public void testRemoveBoatNoBoat() throws NoSuchUser, NoSuchCompetition, UserNotPermitted, NoSuchBoat
     {
-    	setupCheckPermissionsMocks(true);
-    	when(boatRepoMock.findOne(TEST_BOAT_ID)).thenReturn(null);
-    	
-    	fixture.removeBoat(TEST_BOAT_ID);
+    	when(boatRepoMock.findById(TEST_BOAT_ID)).thenReturn(Optional.empty());
+    	Assertions.assertThrows(NoSuchBoat.class, () -> {
+    		fixture.removeBoat(TEST_BOAT_ID);
+		});
     }
 
     private void setupCheckPermissionsMocks(boolean permitted) throws NoSuchUser

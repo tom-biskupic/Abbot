@@ -1,14 +1,17 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,7 +25,7 @@ import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CompetitionServiceTest
 {
     @Test
@@ -35,12 +38,13 @@ public class CompetitionServiceTest
         assertEquals(competitionPageMock,returned);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testGetAllCompetitionsForSeriesUserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
-        
-        fixture.getAllCompetitionsForSeries(TEST_ID, pageableMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getAllCompetitionsForSeries(TEST_RACE_SERIES_ID, pageableMock);
+        });
     }
 
     @Test
@@ -56,13 +60,15 @@ public class CompetitionServiceTest
         verifyAuditEvent(AuditEventType.UPDATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testUpdateCompetitionUserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         
-        fixture.updateCompetition(competitionMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.updateCompetition(competitionMock);
+        });
     }
 
     @Test
@@ -79,12 +85,14 @@ public class CompetitionServiceTest
         verifyAuditEvent(AuditEventType.CREATED);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testAddCompetitionUserNotPermitted() throws NoSuchRaceSeries, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         
-        fixture.addCompetition(TEST_RACE_SERIES_ID, competitionMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.addCompetition(TEST_RACE_SERIES_ID, competitionMock);
+        });
     }
     
     @Test
@@ -92,19 +100,21 @@ public class CompetitionServiceTest
     {
         setupCheckPermissionsMocks(true);
 
-        when(competitionRepoMock.findOne(TEST_COMPETITION_ID)).thenReturn(competitionMock);
+        when(competitionRepoMock.findById(TEST_COMPETITION_ID)).thenReturn(Optional.of(competitionMock));
         when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         
         Competition returned = fixture.getCompetitionByID(TEST_COMPETITION_ID);
         assertEquals(competitionMock,returned);
     }
 
-    @Test(expected=NoSuchCompetition.class)
+    @Test
     public void testGetCompetitionByIdNoSuchCompetition() throws NoSuchCompetition, NoSuchUser, UserNotPermitted
     {
-        when(competitionRepoMock.findOne(TEST_COMPETITION_ID)).thenReturn(null);
+        when(competitionRepoMock.findById(TEST_COMPETITION_ID)).thenReturn(Optional.empty());
         
-        fixture.getCompetitionByID(TEST_COMPETITION_ID);
+        Assertions.assertThrows(NoSuchCompetition.class, () -> {
+            fixture.getCompetitionByID(TEST_COMPETITION_ID);
+        });
     }
 
     @Test
@@ -112,33 +122,36 @@ public class CompetitionServiceTest
     {
         setupCheckPermissionsMocks(true);
 
-        when(competitionRepoMock.findOne(TEST_COMPETITION_ID)).thenReturn(competitionMock);
+        when(competitionRepoMock.findById(TEST_COMPETITION_ID)).thenReturn(Optional.of(competitionMock));
         when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         when(competitionMock.getName()).thenReturn(TEST_COMPETITION_NAME);
         
         fixture.removeCompetition(TEST_COMPETITION_ID);
-        verify(competitionRepoMock).delete(TEST_COMPETITION_ID);
+        verify(competitionRepoMock).deleteById(TEST_COMPETITION_ID);
         
         verifyAuditEvent(AuditEventType.DELETED);
     }
 
-    @Test(expected=NoSuchCompetition.class)
+    @Test
     public void testRemoveCompetitionNoSuchCompetition() throws NoSuchCompetition, NoSuchUser, UserNotPermitted
     {
-        setupCheckPermissionsMocks(true);
-        when(competitionRepoMock.findOne(TEST_COMPETITION_ID)).thenReturn(null);
-        fixture.removeCompetition(TEST_COMPETITION_ID);
+        when(competitionRepoMock.findById(TEST_COMPETITION_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchCompetition.class, () -> {
+            fixture.removeCompetition(TEST_COMPETITION_ID);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testRemoveCompetitionUserNotPermitted() throws NoSuchCompetition, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        when(competitionRepoMock.findOne(TEST_COMPETITION_ID)).thenReturn(competitionMock);
+        when(competitionRepoMock.findById(TEST_COMPETITION_ID)).thenReturn(Optional.of(competitionMock));
         when(competitionMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         
-        fixture.removeCompetition(TEST_COMPETITION_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.removeCompetition(TEST_COMPETITION_ID);
+        });
     }
     
     private void setupCheckPermissionsMocks(boolean permitted) throws NoSuchUser

@@ -1,12 +1,12 @@
 package com.runcible.abbot.service.points;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.PointsSystem;
@@ -15,7 +15,7 @@ import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.service.points.PointsCalculator;
 import com.runcible.abbot.service.points.PointsCalculatorImpl;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PointsCalculatorTest
 {
     enum FinishState { DNS, DNF, FINISHED };
@@ -25,9 +25,9 @@ public class PointsCalculatorTest
     {
         setupMocks(PointsSystem.LOW_POINTS, FinishState.FINISHED, 20);
         
-        assertEquals(new Float(1.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.FINISHED));
-        assertEquals(new Float(2.0f),fixture.calculatePoints(mockCompetition, 10, 2, ResultStatus.FINISHED));
-        assertEquals(new Float(10.0f),fixture.calculatePoints(mockCompetition, 10, 10, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(1.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(2.0f),fixture.calculatePoints(mockCompetition, 10, 2, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(10.0f),fixture.calculatePoints(mockCompetition, 10, 10, ResultStatus.FINISHED));
     }
 
     @Test
@@ -35,14 +35,14 @@ public class PointsCalculatorTest
     {
         setupMocks(PointsSystem.BONUS_POINTS, FinishState.FINISHED, 20);
         
-        assertEquals(new Float(0.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.FINISHED));
-        assertEquals(new Float(3.0f),fixture.calculatePoints(mockCompetition, 10, 2, ResultStatus.FINISHED));
-        assertEquals(new Float(5.7f),fixture.calculatePoints(mockCompetition, 10, 3, ResultStatus.FINISHED));
-        assertEquals(new Float(8.0f),fixture.calculatePoints(mockCompetition, 10, 4, ResultStatus.FINISHED));
-        assertEquals(new Float(10.0f),fixture.calculatePoints(mockCompetition, 10, 5, ResultStatus.FINISHED));
-        assertEquals(new Float(11.7f),fixture.calculatePoints(mockCompetition, 10, 6, ResultStatus.FINISHED));
-        assertEquals(new Float(13.0f),fixture.calculatePoints(mockCompetition, 10, 7, ResultStatus.FINISHED));
-        assertEquals(new Float(14.0f),fixture.calculatePoints(mockCompetition, 10, 8, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(0.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(3.0f),fixture.calculatePoints(mockCompetition, 10, 2, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(5.7f),fixture.calculatePoints(mockCompetition, 10, 3, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(8.0f),fixture.calculatePoints(mockCompetition, 10, 4, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(10.0f),fixture.calculatePoints(mockCompetition, 10, 5, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(11.7f),fixture.calculatePoints(mockCompetition, 10, 6, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(13.0f),fixture.calculatePoints(mockCompetition, 10, 7, ResultStatus.FINISHED));
+        assertEquals(Float.valueOf(14.0f),fixture.calculatePoints(mockCompetition, 10, 8, ResultStatus.FINISHED));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class PointsCalculatorTest
     {
         setupMocks(PointsSystem.LOW_POINTS,FinishState.DNS, 20);
         
-        assertEquals(new Float(21.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNS));
+        assertEquals(Float.valueOf(21.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNS));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class PointsCalculatorTest
         //
         //  Fleet size is 20 so result is 20+6+1
         //
-        assertEquals(new Float(27.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNS));
+        assertEquals(Float.valueOf(27.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNS));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class PointsCalculatorTest
         //
         //  Fleet size is 5 so result is 5+1 converted which is 
         //
-        assertEquals(new Float(11.7f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNS));
+        assertEquals(Float.valueOf(11.7f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNS));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class PointsCalculatorTest
     {
         setupMocks(PointsSystem.LOW_POINTS,FinishState.DNF, 20);
         
-        assertEquals(new Float(11.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNF));
+        assertEquals(Float.valueOf(11.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNF));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class PointsCalculatorTest
         //
         //  10 starters so result is 10+1+6
         //
-        assertEquals(new Float(17.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNF));
+        assertEquals(Float.valueOf(17.0f),fixture.calculatePoints(mockCompetition, 10, 1, ResultStatus.DNF));
     }
 
     @Test
@@ -102,13 +102,16 @@ public class PointsCalculatorTest
         //
         //  10 starters so result is 3+1 converted which is 11.7
         //
-        assertEquals(new Float(8.0f),fixture.calculatePoints(mockCompetition, 3, 1, ResultStatus.DNF));
+        assertEquals(Float.valueOf(8.0f),fixture.calculatePoints(mockCompetition, 3, 1, ResultStatus.DNF));
     }
 
     private void setupMocks(PointsSystem pointsSystem, FinishState finishState, int fleetSize)
     {
         when(mockCompetition.getPointsSystem()).thenReturn(pointsSystem);
-        when(mockCompetition.getFleetSize()).thenReturn(fleetSize);
+        if (finishState == FinishState.DNS)
+        {
+            when(mockCompetition.getFleetSize()).thenReturn(fleetSize);
+        }
     }
     
     

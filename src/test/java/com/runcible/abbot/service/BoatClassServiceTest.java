@@ -1,16 +1,18 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,7 +28,7 @@ import com.runcible.abbot.service.exceptions.NoSuchDivision;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BoatClassServiceTest
 {
     @Test
@@ -48,12 +50,14 @@ public class BoatClassServiceTest
         assertEquals(mockBoatList,returned);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void getAllBoatClassesForSeries2UserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        fixture.getAllBoatClassesForSeries(TEST_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getAllBoatClassesForSeries(TEST_RACE_SERIES_ID);
+        });
     }
 
     @Test
@@ -72,11 +76,13 @@ public class BoatClassServiceTest
                 TEST_BOAT_CLASS_NAME);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testAddBoatClassUserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
-        when(raceSeriesServiceMock.findByID(TEST_ID)).thenThrow(new UserNotPermitted());
-        fixture.addBoatClass(TEST_ID, boatClassMock);
+        setupCheckPermissionsMocks(false);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.addBoatClass(TEST_RACE_SERIES_ID, boatClassMock);
+        });
     }
 
     @Test
@@ -86,7 +92,6 @@ public class BoatClassServiceTest
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
         fixture.updateBoatClass(boatClassMock);
         verify(boatClassRepoMock).save(boatClassMock);
@@ -98,15 +103,15 @@ public class BoatClassServiceTest
                 TEST_BOAT_CLASS_NAME);
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testUpdateBoatClassUserNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
-        
-        fixture.updateBoatClass(boatClassMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.updateBoatClass(boatClassMock);
+        });
     }
     
     @Test
@@ -114,14 +119,13 @@ public class BoatClassServiceTest
     {
         setupCheckPermissionsMocks(true);
         
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
         fixture.removeBoatClass(TEST_BOAT_CLASS_ID);
-        verify(boatClassRepoMock).delete(TEST_BOAT_CLASS_ID);
+        verify(boatClassRepoMock).deleteById(TEST_BOAT_CLASS_ID);
         
         verify(auditServiceMock).auditEvent(
                 AuditEventType.DELETED, 
@@ -130,25 +134,26 @@ public class BoatClassServiceTest
                 TEST_BOAT_CLASS_NAME);
     }
 
-    @Test(expected=NoSuchBoatClass.class)
+    @Test
     public void testRemoveBoatClassInvalidBoatClass() throws NoSuchUser, NoSuchBoatClass, UserNotPermitted
     {
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(null);
-
-        fixture.removeBoatClass(TEST_BOAT_CLASS_ID);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchBoatClass.class, () -> {
+            fixture.removeBoatClass(TEST_BOAT_CLASS_ID);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testRemoveBoatClassUserNotPermitted() throws NoSuchUser, NoSuchBoatClass, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
-        
-        fixture.removeBoatClass(TEST_BOAT_CLASS_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.removeBoatClass(TEST_BOAT_CLASS_ID);
+        });
     }
 
     @Test
@@ -156,34 +161,36 @@ public class BoatClassServiceTest
     {
         setupCheckPermissionsMocks(true);
 
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
         BoatClass returned = fixture.getBoatClassByID(TEST_BOAT_CLASS_ID);
         assertEquals(boatClassMock,returned);
     }
 
-    @Test(expected=NoSuchBoatClass.class)
+    @Test
     public void testgetBoatClassByIdNoSuchBoatClass() throws NoSuchUser, NoSuchBoatClass, UserNotPermitted
     {
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(null);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.empty());
 
-        fixture.getBoatClassByID(TEST_BOAT_CLASS_ID);
+        Assertions.assertThrows(NoSuchBoatClass.class, () -> {
+            fixture.getBoatClassByID(TEST_BOAT_CLASS_ID);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testgetBoatClassByIdUserNotPermitted() throws NoSuchUser, NoSuchBoatClass, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
-        fixture.getBoatClassByID(TEST_BOAT_CLASS_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.getBoatClassByID(TEST_BOAT_CLASS_ID);
+        });
     }
 
     @Test
@@ -192,10 +199,10 @@ public class BoatClassServiceTest
         setupCheckPermissionsMocks(true);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
         when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
+        when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
         when(divisionMock.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(null);
         fixture.addDivision(TEST_ID, divisionMock);
@@ -210,33 +217,38 @@ public class BoatClassServiceTest
                 TEST_NAME);
     }
 
-    @Test(expected=DuplicateDivision.class)
+    @Test
     public void testAddDivisionDuplicate() throws DuplicateDivision, NoSuchUser, UserNotPermitted, NoSuchBoatClass
     {
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
         when(divisionMock.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(divisionMock2);
         
-        fixture.addDivision(TEST_ID, divisionMock);
+        Assertions.assertThrows(DuplicateDivision.class, () -> {
+            fixture.addDivision(TEST_ID, divisionMock);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testAddDivisionNotPermitted() throws DuplicateDivision, NoSuchUser, UserNotPermitted, NoSuchBoatClass
     {
         setupCheckPermissionsMocks(false);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
-        fixture.addDivision(TEST_ID, divisionMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.addDivision(TEST_ID, divisionMock);
+        });
     }
 
-    @Test(expected=NoSuchBoatClass.class)
+    @Test
     public void testAddDivisionNoSuchBoatClass() throws DuplicateDivision, NoSuchUser, UserNotPermitted, NoSuchBoatClass
     {
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(null);
-        fixture.addDivision(TEST_ID, divisionMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchBoatClass.class, () -> {
+            fixture.addDivision(TEST_ID, divisionMock);
+        });
     }
     
     @Test
@@ -245,12 +257,12 @@ public class BoatClassServiceTest
         setupCheckPermissionsMocks(true);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
 
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
+        when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+
         when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(divisionMock.getName()).thenReturn(TEST_NAME);
-        when(divisionMock2.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(divisionMock2);
         when(divisionMock.getId()).thenReturn(TEST_ID);
         when(divisionMock2.getId()).thenReturn(TEST_ID);
@@ -270,56 +282,61 @@ public class BoatClassServiceTest
 
     }
 
-    @Test(expected=DuplicateDivision.class)
+    @Test
     public void testUpdateDivisionDuplicate() throws DuplicateDivision, NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
 
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
         when(divisionMock.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(divisionMock2);
         when(divisionMock.getId()).thenReturn(TEST_ID);
         when(divisionMock2.getId()).thenReturn(99);
         
-        fixture.updateDivision(TEST_ID, divisionMock);
+        Assertions.assertThrows(DuplicateDivision.class, () -> {
+            fixture.updateDivision(TEST_ID, divisionMock);
+        });
     }
 
-    @Test(expected=NoSuchDivision.class)
+    @Test
     public void testUpdateDivisionNoDivision() throws DuplicateDivision, NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
 
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
+
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
         when(divisionMock.getName()).thenReturn(TEST_NAME);
         when(boatClassMock.getDivision(TEST_NAME)).thenReturn(null);
-        when(boatClassMock.getDivision(TEST_ID)).thenReturn(null);
         
-        fixture.updateDivision(TEST_ID, divisionMock);
+        Assertions.assertThrows(NoSuchDivision.class, () -> {
+            fixture.updateDivision(TEST_ID, divisionMock);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testUpdateDivisionNotPermitted() throws DuplicateDivision, NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
 
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.of(boatClassMock));
         
-        fixture.updateDivision(TEST_ID, divisionMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.updateDivision(TEST_ID, divisionMock);
+        });
     }
 
-    @Test(expected=NoSuchBoatClass.class)
+    @Test
     public void testUpdateDivisionNoSuchBoatClass() throws DuplicateDivision, NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
-        when(boatClassRepoMock.findOne(TEST_ID)).thenReturn(null);
-        fixture.updateDivision(TEST_ID, divisionMock);
+        when(boatClassRepoMock.findById(TEST_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchBoatClass.class, () -> {
+            fixture.updateDivision(TEST_ID, divisionMock);
+        });
     }
 
     @Test
@@ -327,12 +344,11 @@ public class BoatClassServiceTest
     {
         setupCheckPermissionsMocks(true);
         
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
         
         when(boatClassMock.getName()).thenReturn(TEST_BOAT_CLASS_NAME);
         when(boatClassMock.getDivision(TEST_ID)).thenReturn(divisionMock);
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
         when(divisionMock.getName()).thenReturn(TEST_NAME);
         fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
         verify(boatClassMock).removeDivision(divisionMock);
@@ -347,40 +363,42 @@ public class BoatClassServiceTest
 
     }
 
-    @Test(expected=NoSuchBoatClass.class)
+    @Test
     public void testRemoveDivisionNoSuchBoatClass() throws NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(null);
-        
-        fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchBoatClass.class, () -> {
+            fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
+        });
     }
 
-    @Test(expected=NoSuchDivision.class)
+    @Test
     public void testRemoveDivisionNoSuchDivision() throws NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(true);
         
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
         
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
 
         when(boatClassMock.getDivision(TEST_ID)).thenReturn(null);
-
-        fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
+        Assertions.assertThrows(NoSuchDivision.class, () -> {
+            fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
+        });
     }
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testRemoveDivisionUserNotPermitted() throws NoSuchDivision, NoSuchBoatClass, NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         
-        when(boatClassRepoMock.findOne(TEST_BOAT_CLASS_ID)).thenReturn(boatClassMock);
+        when(boatClassRepoMock.findById(TEST_BOAT_CLASS_ID)).thenReturn(Optional.of(boatClassMock));
         
         when(boatClassMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesMock.getId()).thenReturn(TEST_ID);
 
-        fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.removeDivision(TEST_BOAT_CLASS_ID, TEST_ID);
+        });
     }
     
     private void setupCheckPermissionsMocks(boolean permitted) throws NoSuchUser

@@ -1,11 +1,11 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.runcible.abbot.service.TimeService;
 import com.runcible.abbot.service.TimeServiceImpl;

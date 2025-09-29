@@ -1,8 +1,8 @@
 package com.runcible.abbot.controllers;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -18,19 +18,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.runcible.abbot.model.UserSummary;
@@ -38,18 +36,15 @@ import com.runcible.abbot.service.LoggedOnUserService;
 import com.runcible.abbot.service.RaceSeriesAuthorizationService;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
+import com.runcible.abbot.web.controllers.RaceSeriesController;
 import com.runcible.abbot.web.model.UserToAuthorize;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration("file:src/test/java/com/runcible/abbot/controllers/TestApplicationContext.xml")
+@WebMvcTest(controllers = RaceSeriesController.class)
 public class UserAuthorizationControllerTest extends MvcTestWithJSON
 {
-    @Before
+    @BeforeEach
     public void setup()
     {
-        MockitoAnnotations.initMocks(this);
-        setupMockMVC();
         reset(raceSeriesAuthService);
     }
 
@@ -58,7 +53,7 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
     {
         UserSummary testUser = new UserSummary(TEST_ID,TEST_NAME,TEST_EMAIL,true);
         List<UserSummary> testUserList = Arrays.asList(testUser);
-        Pageable page = new PageRequest(0,3);
+        Pageable page = PageRequest.of(0,3);
         Page<UserSummary> userSummaryPage = new PageImpl<UserSummary>(testUserList,page,1);
         
         when(raceSeriesAuthService.getAuthorizedUsers(eq(TEST_RACE_SERIES_ID),any(Pageable.class))).thenReturn(userSummaryPage);
@@ -167,6 +162,9 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
     @Autowired
     private RaceSeriesAuthorizationService raceSeriesAuthService;
     
+    @Autowired
+    private MockMvc mockMvc;
+
     @Autowired
     LoggedOnUserService loggedOnUserService;
 }

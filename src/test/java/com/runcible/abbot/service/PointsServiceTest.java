@@ -1,18 +1,19 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.BoatClass;
@@ -35,12 +36,11 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.service.points.PointsCalculator;
 import com.runcible.abbot.service.points.PointsSorter;
 import com.runcible.abbot.service.points.PointsTotalCalculator;
-import com.runcible.abbot.service.points.RaceResultSorter;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PointsServiceTest
 {
-	@Before
+	@BeforeEach
 	public void setUp()
 	{
 		raceResults.add(resultBoat1);
@@ -62,8 +62,6 @@ public class PointsServiceTest
 		setupCompetition();
 
 		setupDataFetchingMocks(raceResults);
-
-		when(mockRaceResultSorter.sortResults(raceResults,ResultType.SCRATCH_RESULT)).thenReturn(raceResults);
 		
 		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
 		when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
@@ -99,8 +97,6 @@ public class PointsServiceTest
 
         when(mockIncompleteRace.getRaceStatus()).thenReturn(RaceStatus.NOT_RUN);
 
-        when(mockRaceResultSorter.sortResults(raceResults,ResultType.SCRATCH_RESULT)).thenReturn(raceResults);
-        
         when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
         when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
         when(mockPointsCalculator.calculatePoints(mockCompetition, 3, 3, ResultStatus.FINISHED)).thenReturn(3.0f);
@@ -129,9 +125,6 @@ public class PointsServiceTest
 	    resultsWithMissingEntry.add(resultBoat2);
 	    
 	    setupDataFetchingMocks(resultsWithMissingEntry);
-
-	    when(mockRaceResultSorter.sortResults(
-	            resultsWithMissingEntry, ResultType.SCRATCH_RESULT)).thenReturn(resultsWithMissingEntry);
 	        
 	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 1, ResultStatus.FINISHED)).thenReturn(1.0f);
 	    when(mockPointsCalculator.calculatePoints(mockCompetition, 2, 2, ResultStatus.FINISHED)).thenReturn(2.0f);
@@ -170,7 +163,6 @@ public class PointsServiceTest
         when(mockCompetitionService.getCompetitionByID(testCompetitionID)).thenReturn(mockCompetition);
 		when(mockCompetition.getFleet()).thenReturn(mockFleet);
 		when(mockCompetition.getResultType()).thenReturn(ResultType.SCRATCH_RESULT);
-		when(mockCompetition.getPointsSystem()).thenReturn(PointsSystem.LOW_POINTS);
 		when(mockCompetition.getName()).thenReturn(TEST_COMPETITION_NAME);
     }
 
@@ -178,7 +170,7 @@ public class PointsServiceTest
     {
         PointsForBoat boatPoints = findBoatPoints(boat,pointsTable);
 		assertEquals(1,boatPoints.getPoints().size());
-		assertEquals(new Float(points),boatPoints.getPoints().get(0));
+		assertEquals(Float.valueOf(points),boatPoints.getPoints().get(0));
     }
 
 	private PointsForBoat findBoatPoints(Boat boat, PointsTable pointsTable)
@@ -230,7 +222,6 @@ public class PointsServiceTest
 	@Mock private BoatService mockBoatService;
 	@Mock private RaceResultService mockResultService;
 	@Mock private PointsCalculator mockPointsCalculator;
-	@Mock private RaceResultSorter mockRaceResultSorter;
 	@Mock private PointsTotalCalculator mockPointsTotalCalculator;
 	@Mock private PointsSorter mockPointsSorter;
 	@Mock private AuditService mockAudit;

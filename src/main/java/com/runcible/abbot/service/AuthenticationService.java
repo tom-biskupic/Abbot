@@ -13,39 +13,40 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.runcible.abbot.model.User;
+import com.runcible.abbot.service.exceptions.NoSuchUser;
 
 @Component
-public class AuthenticationService implements AuthenticationProvider
+public class AuthenticationService implements UserDetailsService
 {
-
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String USER_ROLE = "ROLE_USER";
 
     final static Logger logger = LogManager.getLogger(AuthenticationService.class);
     
     @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException 
     {
-        String email = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        
-        logger.info("Attempting login for "+email);
-        User user = userService.validateLogon(email, password);
-        
-        if ( user == null )
+        logger.info("Attempting login for "+username);
+        try
         {
-            logger.info("Login failed for "+email);
-            throw new BadCredentialsException("Authentication failed for " + email);
+            User user = userService.findByEmail(username);
+            List<GrantedAuthority> roles = this.getRoles(user);
+  
+                    logger.info("Login succeeded for "+username);
+            return new org.springframework.security.core.userdetails.User(
+                username, user.getPassword(), roles);
         }
-        
-        List<GrantedAuthority> roles = getRoles(user);
-        
-        logger.info("Login succeeded for "+email);
-        return new UsernamePasswordAuthenticationToken(email, password, roles);
+        catch( NoSuchUser e )
+        {
+            logger.info("Login failed for "+username);
+            throw new UsernameNotFoundException("No such user: " + username);
+        }
     }
 
     private List<GrantedAuthority> getRoles(User user)
@@ -62,12 +63,6 @@ public class AuthenticationService implements AuthenticationProvider
         roles.add(new SimpleGrantedAuthority(USER_ROLE));
         
         return roles;
-    }
-
-    @Override
-    public boolean supports(Class<?> authentication)
-    {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);    
     }
 
     @Autowired

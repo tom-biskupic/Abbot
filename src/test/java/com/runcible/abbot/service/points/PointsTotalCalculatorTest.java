@@ -1,18 +1,17 @@
 package com.runcible.abbot.service.points;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.model.PointsForBoat;
-import com.runcible.abbot.service.points.PointsTotalCalculatorImpl;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PointsTotalCalculatorTest
 {
 
@@ -23,12 +22,12 @@ public class PointsTotalCalculatorTest
         Competition competition = setupCompetition(1);
         
         fixture.updateTotals(competition, pointsForBoat);
-        assertEquals(new Float(6.0f),pointsForBoat.getTotal());
+        assertEquals(Float.valueOf(6.0f),pointsForBoat.getTotal());
         
         //
         //  Check the worse one got dropped
         //
-        assertEquals(new Float(1.0+2.0),pointsForBoat.getTotalWithDrops());
+        assertEquals(Float.valueOf(1.0f+2.0f),pointsForBoat.getTotalWithDrops());
     }
 
     @Test
@@ -38,9 +37,9 @@ public class PointsTotalCalculatorTest
         Competition competition = setupCompetition(5);
         
         fixture.updateTotals(competition, pointsForBoat);
-        assertEquals(new Float(6.0f),pointsForBoat.getTotal());
+        assertEquals(Float.valueOf(6.0f),pointsForBoat.getTotal());
         
-        assertEquals(new Float(0.0),pointsForBoat.getTotalWithDrops());
+        assertEquals(Float.valueOf(0.0f),pointsForBoat.getTotalWithDrops());
     }
 
     private Competition setupCompetition(int drops)

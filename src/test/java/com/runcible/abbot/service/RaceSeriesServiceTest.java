@@ -1,14 +1,18 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +24,7 @@ import com.runcible.abbot.service.audit.AuditService;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RaceSeriesServiceTest 
 {
     @Test
@@ -47,7 +51,7 @@ public class RaceSeriesServiceTest
 	{
 	    setupCheckPermissionsMocks(true);
 	    
-		when(raceSeriesRepoMock.findOne(TEST_ID)).thenReturn(raceSeriesMock);
+		when(raceSeriesRepoMock.findById(TEST_ID)).thenReturn(Optional.of(raceSeriesMock));
 		assertEquals(raceSeriesMock,fixture.findByID(TEST_ID));
 	}
 
@@ -62,22 +66,26 @@ public class RaceSeriesServiceTest
 	    auditEvent(AuditEventType.UPDATED);
 	}
 
-    @Test(expected=UserNotPermitted.class)
+    @Test
     public void testUpdateRaceSeriesNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         when(raceSeriesMock.getId()).thenReturn(TEST_ID);
-        fixture.update(raceSeriesMock);
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.update(raceSeriesMock);
+        });
     }
 	
  
-	@Test(expected=UserNotPermitted.class) 
+	@Test
     public void testFindByIdNotPermitted() throws NoSuchUser, UserNotPermitted
     {
         setupCheckPermissionsMocks(false);
         
-        when(raceSeriesRepoMock.findOne(TEST_ID)).thenReturn(raceSeriesMock);
-        assertEquals(raceSeriesMock,fixture.findByID(TEST_ID));
+        when(raceSeriesRepoMock.findById(TEST_ID)).thenReturn(Optional.of(raceSeriesMock));
+        Assertions.assertThrows(UserNotPermitted.class, () -> {
+            fixture.findByID(TEST_ID);
+        });
     }
 
 	
@@ -94,7 +102,6 @@ public class RaceSeriesServiceTest
 
     private static final Integer   TEST_ID=1234;
 	private static final Integer   TEST_USER_ID=3456;
-	private static final String	   TEST_NAME="Radial";
 	private static final String    RACE_SERIES_OBJECT_NAME = "Race series";
 	private static final String    TEST_SERIES_NAME = "2017/2017 Season";
 	

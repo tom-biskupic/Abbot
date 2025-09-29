@@ -3,16 +3,18 @@ package com.runcible.abbot.service.points;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
@@ -20,11 +22,11 @@ import com.runcible.abbot.model.ResultStatus;
 import com.runcible.abbot.model.ResultType;
 import com.runcible.abbot.service.exceptions.DuplicateResult;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RaceResultPlaceUpdaterTest
 {
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         testExistingResults = new ArrayList<RaceResult>();

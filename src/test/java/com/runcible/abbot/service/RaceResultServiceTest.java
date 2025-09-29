@@ -1,19 +1,23 @@
 package com.runcible.abbot.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockReset;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +41,7 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.service.points.RaceResultPlaceUpdater;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RaceResultServiceTest
 {
     private static final float testYardstick = 132.0f;
@@ -60,7 +64,7 @@ public class RaceResultServiceTest
     @Test
     public void testGetResultByID() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
     {
-        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        when(mockRaceResultRepo.findById(testRaceResultID)).thenReturn(Optional.of(mockRaceResult));
         when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
         
         RaceResult result = fixture.getResultByID(testRaceResultID);
@@ -128,7 +132,7 @@ public class RaceResultServiceTest
     {
         setupGeneralRaceResultMocks();
 
-        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        when(mockRaceResultRepo.findById(testRaceResultID)).thenReturn(Optional.of(mockRaceResult));
         
         setupCalculationMocks(ResultStatus.FINISHED,true, true);
         setupRaceMock(false);
@@ -152,7 +156,7 @@ public class RaceResultServiceTest
     {
         setupGeneralRaceResultMocks();
 
-        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        when(mockRaceResultRepo.findById(testRaceResultID)).thenReturn(Optional.of(mockRaceResult));
         setupRaceMock(false);
         
         setupCalculationMocks(ResultStatus.DNS,false, false);
@@ -174,10 +178,10 @@ public class RaceResultServiceTest
     {
         setupGeneralRaceResultMocks();
 
-        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        when(mockRaceResultRepo.findById(testRaceResultID)).thenReturn(Optional.of(mockRaceResult));
         setupRaceMock(false);
         
-        setupCalculationMocks(ResultStatus.DNF,true, false);
+        setupCalculationMocks(ResultStatus.DNF,false, false);
         
         List<RaceResult> resultList = new ArrayList<RaceResult>();
         setupUpdateRacePlacesMocks(resultList);
@@ -194,7 +198,7 @@ public class RaceResultServiceTest
     @Test
     public void testRemoveResult() throws NoSuchRaceResult, NoSuchUser, UserNotPermitted, DuplicateResult
     {
-        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(mockRaceResult);
+        when(mockRaceResultRepo.findById(testRaceResultID)).thenReturn(Optional.of(mockRaceResult));
         setupGeneralRaceResultMocks();
         setupRaceMock(false);
         
@@ -203,7 +207,7 @@ public class RaceResultServiceTest
         setupUpdateRacePlacesMocks(resultList);
 
         fixture.removeResult(testRaceResultID);
-        verify(mockRaceResultRepo).delete(mockRaceResult);
+        verify(mockRaceResultRepo).deleteById(testRaceResultID);
         verifyUpdateRacePlaces(resultList, true);
         
         verifyAudit(AuditEventType.DELETED);
@@ -238,7 +242,7 @@ public class RaceResultServiceTest
         verify(mockRaceResultRepo).save(raceResultCaptor.capture());
         RaceResult resultAdded = raceResultCaptor.getValue();
         assertEquals(mockBoat,resultAdded.getBoat());
-        assertEquals(new Float(123.0f),resultAdded.getHandicap());
+        assertEquals(Float.valueOf(123.0f),resultAdded.getHandicap());
     }
     
     private void verifyCalculations(boolean calculationsExpected, boolean adjustedForYardstick)
@@ -250,7 +254,7 @@ public class RaceResultServiceTest
         {
             if ( adjustedForYardstick )
             {
-                sailingDuration = (int)((float)testSailingDuration * targetYardstick/testYardstick);
+                sailingDuration = (int)((float)(testSailingDuration) * targetYardstick/testYardstick);
             }
             else
             {
@@ -267,8 +271,15 @@ public class RaceResultServiceTest
     {
         when(mockRaceResult.getStatus()).thenReturn(resultStatus);
         
-        when(mockRaceResult.getStartTime()).thenReturn(hasStartTime ? mockStartTime : null);
-        when(mockRaceResult.getFinishTime()).thenReturn(hasFinishTime ? mockFinishTime : null);
+        if ( hasStartTime )
+        {
+            when(mockRaceResult.getStartTime()).thenReturn(mockStartTime);
+        }
+
+        if ( hasFinishTime)
+        {
+            when(mockRaceResult.getFinishTime()).thenReturn(mockFinishTime);
+        }
         
         if ( resultStatus.isFinished() )
         {
@@ -277,11 +288,13 @@ public class RaceResultServiceTest
         }
     }
     
-    @Test(expected=NoSuchRaceResult.class)
+    @Test
     public void testGetResultByIDNoSuchRaceResult() throws NoSuchUser, UserNotPermitted, NoSuchRaceResult
     {
-        when(mockRaceResultRepo.findOne(testRaceResultID)).thenReturn(null);
-        fixture.getResultByID(testRaceResultID);
+        when(mockRaceResultRepo.findById(testRaceResultID)).thenReturn(Optional.ofNullable(null));
+        Assertions.assertThrows(NoSuchRaceResult.class, () -> {
+            fixture.getResultByID(testRaceResultID);
+        });
     }
 
     private void setupUpdateRacePlacesMocks(List<RaceResult> testResultList)
@@ -310,8 +323,8 @@ public class RaceResultServiceTest
 
     private void setupGeneralRaceResultMocks()
     {
-        when(mockRaceResult.getId()).thenReturn(testRaceResultID);
-        when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
+        Mockito.lenient().when(mockRaceResult.getId()).thenReturn(testRaceResultID);
+        Mockito.lenient().when(mockRaceResult.getRaceId()).thenReturn(testRaceID);
         when(mockRaceResult.getBoat()).thenReturn(mockBoat);
         when(mockBoat.getName()).thenReturn(testBoatName);
     }
@@ -335,11 +348,12 @@ public class RaceResultServiceTest
         when(mockRaceService.getRaceByID(testRaceID)).thenReturn(mockRace);
         when(mockRace.getFleet()).thenReturn(mockFleet);
         when(mockFleet.getFleetName()).thenReturn(testFleetName);
-        when(mockFleet.getId()).thenReturn(testFleetId);
-        when(mockFleet.getCompeteOnYardstick()).thenReturn(yardstickFleet);
+        Mockito.lenient().when(mockFleet.getCompeteOnYardstick()).thenReturn(yardstickFleet);
+        Mockito.lenient().when(mockFleet.getRaceSeriesId()).thenReturn(testRaceSeriesId);
+        Mockito.lenient().when(mockFleet.getId()).thenReturn(testFleetId);
         when(mockRace.getName()).thenReturn(testRaceName);
         when(mockRace.getRaceSeriesId()).thenReturn(testRaceSeriesId);
-        when(mockRace.getId()).thenReturn(testRaceID);
+        Mockito.lenient().when(mockRace.getId()).thenReturn(testRaceID);
     }
 
  
@@ -363,6 +377,7 @@ public class RaceResultServiceTest
     
     private @Mock Pageable                  mockPageable;
     private @Mock Page<RaceResult>          mockRaceResultsPage;
+    private Optional<RaceResult>            optionalmockRaceResult = Optional.ofNullable(this.mockRaceResult);
     private @Mock RaceResult                mockRaceResult;
     private @Mock RaceResult                mockExistingRaceResult;
     private @Mock Boat                      mockBoat;

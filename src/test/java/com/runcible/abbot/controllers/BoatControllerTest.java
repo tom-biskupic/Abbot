@@ -7,29 +7,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
 
 import com.runcible.abbot.service.BoatService;
+import com.runcible.abbot.service.RaceSeriesService;
+import com.runcible.abbot.web.controllers.BoatController;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration("file:src/test/java/com/runcible/abbot/controllers/TestApplicationContext.xml")
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+
+@WebMvcTest(controllers = BoatController.class)
 public class BoatControllerTest extends MvcTestWithJSON
 {
-    @Before
-    public void setup()
-    {
-        MockitoAnnotations.initMocks(this);
-        setupMockMVC();
-        //reset(userService);
-    }
 
     @Test
     public void testGetBoat() throws Exception
@@ -44,6 +37,12 @@ public class BoatControllerTest extends MvcTestWithJSON
             .andExpect(jsonPath("$.id",is(TEST_BOAT_ID)));
     }
     
-    @Autowired
+    @MockitoBean
     private BoatService boatService;
+
+    @MockitoBean
+    private RaceSeriesService raceSeriesService;
+
+    @Autowired
+    private MockMvc mockMvc;
 }

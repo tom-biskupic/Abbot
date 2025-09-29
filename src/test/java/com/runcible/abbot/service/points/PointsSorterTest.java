@@ -1,25 +1,25 @@
 package com.runcible.abbot.service.points;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.runcible.abbot.model.PointsForBoat;
 import com.runcible.abbot.model.PointsTable;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PointsSorterTest
 {
     @Test
     public void testSimple()
     {
         PointsForBoat testPoints1 = new PointsForBoat();
-        testPoints1.setTotalWithDrops(new Float(1.0));
+        testPoints1.setTotalWithDrops(Float.valueOf(1.0f));
         
         PointsForBoat testPoints2 = new PointsForBoat();
-        testPoints2.setTotalWithDrops(new Float(3.0));
+        testPoints2.setTotalWithDrops(Float.valueOf(3.0f));
         
         PointsTable table = new PointsTable(null);
         table.getPointsForBoat().add(testPoints1);
@@ -38,13 +38,13 @@ public class PointsSorterTest
     public void testTie()
     {
         PointsForBoat testPoints1 = new PointsForBoat();
-        testPoints1.setTotalWithDrops(new Float(1.0));
+        testPoints1.setTotalWithDrops(Float.valueOf(1.0f));
         
         PointsForBoat testPoints2 = new PointsForBoat();
-        testPoints2.setTotalWithDrops(new Float(1.0));
+        testPoints2.setTotalWithDrops(Float.valueOf(1.0f));
 
         PointsForBoat testPoints3 = new PointsForBoat();
-        testPoints3.setTotalWithDrops(new Float(2.0));
+        testPoints3.setTotalWithDrops(Float.valueOf(2.0f));
 
         PointsTable table = new PointsTable(null);
         table.getPointsForBoat().add(testPoints1);

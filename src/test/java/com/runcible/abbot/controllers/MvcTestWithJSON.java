@@ -65,11 +65,6 @@ public class MvcTestWithJSON
         return mapper.writeValueAsBytes(object);
     }
 
-    protected void setupMockMVC()
-    {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-
     protected MediaType contentType = new MediaType(
             MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -171,8 +166,4 @@ public class MvcTestWithJSON
     
     protected List<Handicap> testHandicapList = new ArrayList<Handicap>();
     
-    @Autowired
-    protected WebApplicationContext wac;
-
-    protected MockMvc mockMvc;
 }

@@ -2,7 +2,7 @@ package com.runcible.abbot.model;
 
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;

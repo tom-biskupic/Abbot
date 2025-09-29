@@ -2,9 +2,9 @@ package com.runcible.abbot.controllers;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
@@ -19,35 +19,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.runcible.abbot.model.HandicapLimit;
 import com.runcible.abbot.service.HandicapService;
+import com.runcible.abbot.service.RaceService;
 import com.runcible.abbot.service.exceptions.HandicapLimitAlreadyPresent;
 import com.runcible.abbot.service.exceptions.InvalidUpdate;
+import com.runcible.abbot.web.controllers.HandicapController;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration("file:src/test/java/com/runcible/abbot/controllers/TestApplicationContext.xml")
+@WebMvcTest(controllers = HandicapController.class)
 public class HandicapControllerTest extends MvcTestWithJSON
 {
-    @Before
+    @BeforeEach
     public void setup()
-    {
-        MockitoAnnotations.initMocks(this);
-        setupMockMVC();
-        
+    {        
         HandicapLimit[] handicapLimitArray = new HandicapLimit[1];
         handicapLimitArray[0] = testHandicapLimit;
         testHandicapLimitPage = new PageImpl<HandicapLimit>(Arrays.asList(handicapLimitArray));
@@ -197,8 +194,14 @@ public class HandicapControllerTest extends MvcTestWithJSON
                     is("A handicap limit has already been specified for this fleet")));
     }
 
-    @Autowired
+    @MockitoBean
     private HandicapService handicapService;
+
+    @MockitoBean
+    private RaceService raceService;
+
+    @Autowired
+    private MockMvc mockMvc;
     
     private Page<HandicapLimit> testHandicapLimitPage;
 }

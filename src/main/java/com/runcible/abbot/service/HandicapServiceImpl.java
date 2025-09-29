@@ -158,7 +158,8 @@ public class HandicapServiceImpl extends AuthorizedService implements HandicapSe
         // This will throw if we are not permitted to manage this race
         //
         Race race = raceService.getRaceByID(raceId);
-        List<Handicap> handicaps = getHandicapsForFleet(race.getRaceSeriesId(),race.getFleet().getId(),raceId);
+        List<Handicap> handicaps = getHandicapsForFleet(
+            race.getRaceSeriesId(),race.getFleet().getId(),raceId);
         
         List<RaceResult> existingResults = raceResultService.findAll(raceId);
 
