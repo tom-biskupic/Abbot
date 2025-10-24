@@ -1,8 +1,7 @@
 package com.runcible.abbot.web.controllers;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+
 
 import java.util.List;
 
@@ -11,13 +10,16 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.Handicap;
@@ -31,11 +33,11 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
+@RestController
 public class HandicapController
 {
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/fleet/{fleetid}/{raceid}/handicaplist.json",method=GET)
+    @GetMapping(value="/raceseries/{raceseriesid}/fleet/{fleetid}/{raceid}/handicaplist.json")
     public @ResponseBody List<Handicap> getHandicapsForFleet(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             @PathVariable("fleetid") Integer fleetID,
@@ -44,7 +46,7 @@ public class HandicapController
         return handicapService.getHandicapsForFleet(raceSeriesID, fleetID, raceID);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimitlist.json",method=GET)
+    @GetMapping(value="/raceseries/{raceseriesid}/handicaplimitlist.json")
     public @ResponseBody Page<HandicapLimit> getHandicapLimits(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             Pageable p ) 
@@ -52,7 +54,7 @@ public class HandicapController
         return handicapService.getHandicapLimits(raceSeriesID, p);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimit.json/{id}",method=GET)
+    @GetMapping(value="/raceseries/{raceseriesid}/handicaplimit.json/{id}")
     public @ResponseBody HandicapLimit getHandicapLimit(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             @PathVariable("id") Integer id) throws NoSuchUser, UserNotPermitted 
@@ -60,7 +62,7 @@ public class HandicapController
     	return handicapService.getHandicapLimit(raceSeriesID, id);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimit.json/{id}",method=DELETE)
+    @DeleteMapping(value="/raceseries/{raceseriesid}/handicaplimit.json/{id}")
     public @ResponseBody ValidationResponse deleteHandicapLimit(
             @PathVariable("raceseriesid") Integer raceSeriesID,
             @PathVariable("id") Integer id) throws NoSuchUser, UserNotPermitted, NoSuchHandicapLimit 
@@ -71,7 +73,7 @@ public class HandicapController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/handicaplimit.json",method=POST)
+    @PostMapping(value="/raceseries/{raceseriesid}/handicaplimit.json")
     public @ResponseBody ValidationResponse save(
             @Valid @RequestBody HandicapLimit       limit,
             BindingResult                   		result,

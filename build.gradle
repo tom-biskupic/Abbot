@@ -40,6 +40,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     runtimeOnly 'mysql:mysql-connector-java:8.0.33'
     testRuntimeOnly 'mysql:mysql-connector-java:8.0.33'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 test {

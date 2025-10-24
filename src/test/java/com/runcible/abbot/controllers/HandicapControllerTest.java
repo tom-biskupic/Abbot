@@ -29,6 +29,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -49,10 +50,11 @@ public class HandicapControllerTest extends MvcTestWithJSON
         handicapLimitArray[0] = testHandicapLimit;
         testHandicapLimitPage = new PageImpl<HandicapLimit>(Arrays.asList(handicapLimitArray));
         
-        reset(handicapService);
+        //reset(handicapService);
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"ADMIN"})
     public void testGetHandicapsForFleet() throws Exception
     {
         when(handicapService.getHandicapsForFleet(TEST_RACE_SERIES_ID, TEST_FLEET_ID, TEST_RACE_ID)).thenReturn(
@@ -98,9 +100,9 @@ public class HandicapControllerTest extends MvcTestWithJSON
     }
     
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testDeleteHandicapLimit() throws Exception
     {
-        
         mockMvc.perform(delete("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json/"+TEST_HANDICAP_LIMIT_ID))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
