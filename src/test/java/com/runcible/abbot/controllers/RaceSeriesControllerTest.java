@@ -21,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.runcible.abbot.model.HandicapLimit;
 import com.runcible.abbot.model.RaceSeries;
 
 import com.runcible.abbot.service.LoggedOnUserService;
@@ -40,10 +44,14 @@ public class RaceSeriesControllerTest extends MvcTestWithJSON
     {        
         RaceSeries[] raceSeriesArray = new RaceSeries[1];
         raceSeriesArray[0] = raceSeries;
-        testRaceSeriesPage = new PageImpl<RaceSeries>(Arrays.asList(raceSeriesArray));
+        testRaceSeriesPage = new PageImpl<RaceSeries>(
+            new java.util.ArrayList<>(Arrays.asList(raceSeriesArray)), 
+            PageRequest.of(0,1),
+            1);
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testGetPageableList() throws Exception
     {
     	when(loggedOnUserService.getLoggedOnUser()).thenReturn(user);
@@ -62,10 +70,10 @@ public class RaceSeriesControllerTest extends MvcTestWithJSON
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
 
-    @Autowired
+    @MockitoBean
     private RaceSeriesService raceSeriesService;
     
-    @Autowired
+    @MockitoBean
     private LoggedOnUserService loggedOnUserService;
     
     @Autowired

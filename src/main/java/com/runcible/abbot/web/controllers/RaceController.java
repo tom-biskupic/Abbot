@@ -14,13 +14,14 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.runcible.abbot.model.Race;
@@ -39,10 +40,10 @@ import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.web.model.RaceStatusUpdate;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
+@RestController
 public class RaceController
 {
-    @RequestMapping(value="/raceseries/{id}/racelist",method=GET)
+    @GetMapping(value="/raceseries/{id}/racelist")
     public ModelAndView showPage(@PathVariable("id") Integer raceSeriesId) throws NoSuchUser, UserNotPermitted
     {
     	ModelAndView mav = new ModelAndView("racelist");
@@ -50,7 +51,7 @@ public class RaceController
         return mav;
     }
 
-    @RequestMapping(value="/raceseries/{id}/racelist.json",method=GET)
+    @GetMapping(value="/raceseries/{id}/racelist.json")
     public @ResponseBody Page<Race> showList(
             @PathVariable("id") Integer raceSeriesId,
             Pageable                    p) throws NoSuchUser, UserNotPermitted
@@ -58,7 +59,7 @@ public class RaceController
         return raceService.getAllRacesForSeries(raceSeriesId, p);
     }
 
-    @RequestMapping(value="/raceseries/{id}/race.json",method=POST)
+    @PostMapping(value="/raceseries/{id}/race.json")
     public @ResponseBody ValidationResponse save(
                 @Valid @RequestBody Race        race,
                 BindingResult                   result,
@@ -85,7 +86,7 @@ public class RaceController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/race.json/{raceId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/race.json/{raceId}")
     public @ResponseBody Race getRace(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("raceId") Integer         raceId ) throws NoSuchUser, UserNotPermitted
@@ -93,7 +94,7 @@ public class RaceController
         return raceService.getRaceByID(raceId);
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/race.json/{raceId}",method={RequestMethod.DELETE})
+    @DeleteMapping(value="/raceseries/{raceSeriesId}/race.json/{raceId}")
     public @ResponseBody ValidationResponse removeRace(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("raceId") Integer         raceId) throws NoSuchUser, UserNotPermitted, NoSuchCompetition
@@ -104,7 +105,7 @@ public class RaceController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/racedays.json",method={RequestMethod.GET})
+    @GetMapping(value="/raceseries/{raceSeriesId}/racedays.json")
     public @ResponseBody List<RaceDay> getRaceDays(
                 @PathVariable("raceSeriesId") Integer raceSeriesId) throws NoSuchUser, UserNotPermitted
     {
@@ -112,7 +113,7 @@ public class RaceController
     	return raceDays;
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/racestatus.json/{raceId}",method= {RequestMethod.POST})
+    @PostMapping(value="/raceseries/{raceSeriesId}/racestatus.json/{raceId}")
     public @ResponseBody ValidationResponse updateRaceStatus(
             @RequestBody                    RaceStatusUpdate    statusUpdate,
             @PathVariable("raceSeriesId")   Integer             raceSeriesID,

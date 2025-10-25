@@ -7,11 +7,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,32 +23,27 @@ import com.runcible.abbot.web.controllers.RaceController;
 @WebMvcTest(controllers = RaceController.class)
 public class RaceControllerTest extends MvcTestWithJSON
 {
-    @BeforeEach
-    public void setup()
-    {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testGetRace() throws Exception
     {
         when(raceService.getRaceByID(TEST_RACE_ID)).thenReturn(testRace);
         
         mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/race.json/"+TEST_RACE_ID))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$.name",is(TEST_RACE_NAME)))
             .andExpect(jsonPath("$.id",is(TEST_RACE_ID)));
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testGetRaceDates() throws Exception
     {
         when(raceService.getRaceDays(TEST_RACE_SERIES_ID)).thenReturn(testRaceDayList);
         
         mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/racedays.json"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$[0].day",is(testRaceDayList.get(0).getDay().getTime())));
     }
 

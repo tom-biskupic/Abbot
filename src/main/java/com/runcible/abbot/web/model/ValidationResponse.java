@@ -1,11 +1,22 @@
 package com.runcible.abbot.web.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.validation.ObjectError;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ValidationResponse
 {
+    public ValidationResponse()
+    {
+        this.status = "SUCCESS";
+        this.errorMessageList = new ArrayList<ObjectError>();
+        this.generalErrorText = "";
+    }
+
     public String getStatus()
     {
         return status;

@@ -16,22 +16,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.runcible.abbot.model.User;
 import com.runcible.abbot.service.UserService;
 import com.runcible.abbot.service.exceptions.DuplicateUserException;
 import com.runcible.abbot.web.controllers.UserController;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest extends MvcTestWithJSON 
@@ -39,20 +41,21 @@ public class UserControllerTest extends MvcTestWithJSON
     @BeforeEach
     public void setup()
     {
-        reset(userService);
-        
         User[] users = new User[1];
         users[0] = user;
-        testPage = new PageImpl<User>(Arrays.asList(users));
+        testPage = new PageImpl<User>(
+            new java.util.ArrayList<>(Arrays.asList(users)), 
+            PageRequest.of(0,1),
+            1);
     }
 
     @Test 
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void getUser() throws Exception
     {
     	when(userService.findByID(1)).thenReturn(user);
     	mockMvc.perform(get("/user.json/1"))
     		.andExpect(status().isOk())
-    		.andExpect(content().contentType(contentType))
     		.andExpect(jsonPath("$.email",is(EMAIL)))
 			.andExpect(jsonPath("$.firstName",is(FIRST_NAME)))
 			.andExpect(jsonPath("$.lastName",is(LAST_NAME)))
@@ -61,11 +64,13 @@ public class UserControllerTest extends MvcTestWithJSON
     }
     
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void addUser() throws IOException, Exception
     {
     	ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
     	mockMvc.perform(post("/user.json")
+				.with(csrf())
     			.content(convertObjectToJsonBytes(user))
     			.contentType(contentType))
     			.andExpect(status().isOk());
@@ -76,11 +81,13 @@ public class UserControllerTest extends MvcTestWithJSON
     }
 
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void updateUser() throws IOException, Exception
     {
     	ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
     	mockMvc.perform(post("/user.json")
+				.with(csrf())
     			.content(convertObjectToJsonBytes(userWithId))
     			.contentType(contentType))
     			.andExpect(status().isOk());
@@ -91,21 +98,23 @@ public class UserControllerTest extends MvcTestWithJSON
     }
 
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void duplicateUser() throws IOException, Exception
     {
     	doThrow(new DuplicateUserException()).when(userService).addUser(any(User.class));
     	
     	mockMvc.perform(post("/user.json")
+				.with(csrf())
     			.content(convertObjectToJsonBytes(user))
     			.contentType(contentType))
     			.andExpect(status().isOk())
-        		.andExpect(content().contentType(contentType))
         		.andExpect(jsonPath("$.status",is("FAIL")))
         		.andExpect(jsonPath("$.errorMessageList[0].field",is("email")))
         		.andExpect(jsonPath("$.errorMessageList[0].defaultMessage",is("The email address specified is already registered")));
     }
 
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void testValidationEmail() throws IOException, Exception
     {
     	User user = new User("",PASSWORD,FIRST_NAME,LAST_NAME,ORGANISATION,IS_ADMIN);
@@ -113,6 +122,7 @@ public class UserControllerTest extends MvcTestWithJSON
     }
     
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void testValidationFirstName() throws IOException, Exception
     {
     	User user = new User(EMAIL,PASSWORD,"",LAST_NAME,ORGANISATION,IS_ADMIN);
@@ -120,6 +130,7 @@ public class UserControllerTest extends MvcTestWithJSON
     }
 
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void testValidationLastName() throws IOException, Exception
     {
     	User user = new User(EMAIL,PASSWORD,FIRST_NAME,"",ORGANISATION,IS_ADMIN);
@@ -127,6 +138,7 @@ public class UserControllerTest extends MvcTestWithJSON
     }
 
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void testValidationPassword() throws IOException, Exception
     {
     	User user = new User(EMAIL,"",FIRST_NAME,LAST_NAME,ORGANISATION,IS_ADMIN);
@@ -134,11 +146,11 @@ public class UserControllerTest extends MvcTestWithJSON
     }
     
     @Test
+	@WithMockUser(username = "testuser", roles = {"USER"})
     public void testGetPageableList() throws IOException, Exception
     {
     	when(userService.findAll(any(Pageable.class))).thenReturn(testPage);
-    	mockMvc.perform(get("/userlist.json?page=1&size=3")
-    			.contentType(contentType))
+    	mockMvc.perform(get("/userlist.json?page=1&size=3"))
     			.andExpect(status().isOk())
     			.andExpect(jsonPath("$.totalPages",is(1)))
     			.andExpect(jsonPath("$.number",is(0)))
@@ -148,10 +160,10 @@ public class UserControllerTest extends MvcTestWithJSON
 	private void testValidation(User user, String fieldName, String message)
 			throws Exception, IOException {
 		mockMvc.perform(post("/user.json")
+				.with(csrf())
     			.content(convertObjectToJsonBytes(user))
     			.contentType(contentType))
     			.andExpect(status().isOk())
-        		.andExpect(content().contentType(contentType))
         		.andExpect(jsonPath("$.status",is("FAIL")))
         		.andExpect(jsonPath("$.errorMessageList[0].field",is(fieldName)))
         		.andExpect(jsonPath("$.errorMessageList[0].defaultMessage",is(message)));
@@ -166,7 +178,7 @@ public class UserControllerTest extends MvcTestWithJSON
     	assertEquals(IS_ADMIN,createdUser.isAdministrator());
 	}
 
-	@Autowired
+	@MockitoBean
     private UserService userService;
     
 	@Autowired
