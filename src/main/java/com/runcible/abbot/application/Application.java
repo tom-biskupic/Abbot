@@ -30,7 +30,7 @@ public class Application extends org.springframework.boot.web.servlet.support.Sp
     public ObjectMapper jsonObjectMapper()
     {
         return Jackson2ObjectMapperBuilder.json()
-                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .modules(new JavaTimeModule())
                 .build();
     }

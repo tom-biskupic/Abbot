@@ -1,6 +1,7 @@
 plugins {
 	id("org.springframework.boot") version("3.4.3")
 	id("java")
+    id("com.bmuschko.docker-remote-api") version "9.4.0"
 }
 
 version = '1.0.2'
@@ -13,6 +14,7 @@ java {
 }
 
 repositories {
+    gradlePluginPortal()
 	mavenCentral()
 }
 
@@ -41,6 +43,18 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java:8.0.33'
     testRuntimeOnly 'mysql:mysql-connector-java:8.0.33'
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'com.bmuschko.docker-remote-api:com.bmuschko.docker-remote-api.gradle.plugin:9.4.0'
+}
+
+task buildDockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage) {
+        dependsOn assemble // Ensure your application is built first
+        inputDir = file('src/main/docker/abbot') // Or the directory containing your Dockerfile
+        images.add('your-dockerhub-username/your-application-name:latest')
+}
+
+jar {
+    enabled = false
+    archiveFileName = bootJar.archiveFileName
 }
 
 test {
