@@ -35,24 +35,6 @@ public class WebSecurityConfig {
         this.authService = authService;
     }
 
-    // @Bean
-    // public DaoAuthenticationProvider authenticationProvider() {
-    //     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    //     authProvider.setUserDetailsService(authService);
-    //     return authProvider;
-    // }
-    // @Bean
-    // public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-    //     return authenticationConfiguration.getAuthenticationManager();
-    // }
-    
-//     @Bean
-//     public AuthenticationManager authenticationManager() throws Exception {
-//         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//         logger.info("Setting authentication provider's user details service "+(authService == null ? "null" : "not null"));
-//         authProvider.setUserDetailsService(authService);
-//         return new ProviderManager(authProvider);
-//  }
 
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity http) throws Exception 
@@ -68,7 +50,7 @@ public class WebSecurityConfig {
     }
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CsrfDebugFilter debugFilter) throws Exception 
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception 
     {
         CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         tokenRepository.setHeaderName("X-XSRF-TOKEN");
@@ -114,10 +96,6 @@ public class WebSecurityConfig {
                 .invalidateHttpSession(true)
                 .permitAll()
             );
-
-            //.userDetailsService(authService); // Use AuthenticationService for user authentication
-
-            http.addFilterBefore(debugFilter, CsrfFilter.class);
 
         return http.build();
     }

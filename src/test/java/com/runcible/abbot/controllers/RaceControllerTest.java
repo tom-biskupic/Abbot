@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,7 +30,9 @@ public class RaceControllerTest extends MvcTestWithJSON
     {
         when(raceService.getRaceByID(TEST_RACE_ID)).thenReturn(testRace);
         
-        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/race.json/"+TEST_RACE_ID))
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/race.json/"+TEST_RACE_ID)
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name",is(TEST_RACE_NAME)))
             .andExpect(jsonPath("$.id",is(TEST_RACE_ID)));
@@ -41,7 +44,9 @@ public class RaceControllerTest extends MvcTestWithJSON
     {
         when(raceService.getRaceDays(TEST_RACE_SERIES_ID)).thenReturn(testRaceDayList);
         
-        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/racedays.json"))
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/racedays.json")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].day",is(testRaceDayList.get(0).getDay().getTime())));
     }

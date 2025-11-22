@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,7 +55,9 @@ public class UserControllerTest extends MvcTestWithJSON
     public void getUser() throws Exception
     {
     	when(userService.findByID(1)).thenReturn(user);
-    	mockMvc.perform(get("/user.json/1"))
+    	mockMvc.perform(get("/user.json/1")
+				.contentType(contentType)
+				.accept(MediaType.APPLICATION_JSON))
     		.andExpect(status().isOk())
     		.andExpect(jsonPath("$.email",is(EMAIL)))
 			.andExpect(jsonPath("$.firstName",is(FIRST_NAME)))
@@ -72,7 +75,8 @@ public class UserControllerTest extends MvcTestWithJSON
     	mockMvc.perform(post("/user.json")
 				.with(csrf())
     			.content(convertObjectToJsonBytes(user))
-    			.contentType(contentType))
+    			.contentType(contentType)
+				.accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isOk());
 
     	verify(userService).addUser(userCaptor.capture());
@@ -89,7 +93,8 @@ public class UserControllerTest extends MvcTestWithJSON
     	mockMvc.perform(post("/user.json")
 				.with(csrf())
     			.content(convertObjectToJsonBytes(userWithId))
-    			.contentType(contentType))
+    			.contentType(contentType)
+				.accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isOk());
 
     	verify(userService).updateUser(userCaptor.capture());
@@ -106,7 +111,8 @@ public class UserControllerTest extends MvcTestWithJSON
     	mockMvc.perform(post("/user.json")
 				.with(csrf())
     			.content(convertObjectToJsonBytes(user))
-    			.contentType(contentType))
+    			.contentType(contentType)
+				.accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isOk())
         		.andExpect(jsonPath("$.status",is("FAIL")))
         		.andExpect(jsonPath("$.errorMessageList[0].field",is("email")))
@@ -150,7 +156,9 @@ public class UserControllerTest extends MvcTestWithJSON
     public void testGetPageableList() throws IOException, Exception
     {
     	when(userService.findAll(any(Pageable.class))).thenReturn(testPage);
-    	mockMvc.perform(get("/userlist.json?page=1&size=3"))
+    	mockMvc.perform(get("/userlist.json?page=1&size=3")
+				.contentType(contentType)
+				.accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isOk())
     			.andExpect(jsonPath("$.totalPages",is(1)))
     			.andExpect(jsonPath("$.number",is(0)))
@@ -162,7 +170,8 @@ public class UserControllerTest extends MvcTestWithJSON
 		mockMvc.perform(post("/user.json")
 				.with(csrf())
     			.content(convertObjectToJsonBytes(user))
-    			.contentType(contentType))
+    			.contentType(contentType)
+				.accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isOk())
         		.andExpect(jsonPath("$.status",is("FAIL")))
         		.andExpect(jsonPath("$.errorMessageList[0].field",is(fieldName)))

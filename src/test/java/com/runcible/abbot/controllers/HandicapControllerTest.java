@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,7 +61,9 @@ public class HandicapControllerTest extends MvcTestWithJSON
         when(handicapService.getHandicapsForFleet(TEST_RACE_SERIES_ID, TEST_FLEET_ID, TEST_RACE_ID)).thenReturn(
                 testHandicapList);
         
-        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/fleet/"+TEST_FLEET_ID+"/"+ TEST_RACE_ID + "/handicaplist.json"))
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/fleet/"+TEST_FLEET_ID+"/"+ TEST_RACE_ID + "/handicaplist.json")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id", is(TEST_HANDICAP_ID)))
             .andExpect(jsonPath("$[0].boatID", is(TEST_BOAT_ID)))
@@ -76,7 +79,9 @@ public class HandicapControllerTest extends MvcTestWithJSON
         
         mockMvc.perform(
             get("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimitlist.json?page=1&size=3")
-            .with(csrf()))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.totalPages",is(1)))
             .andExpect(jsonPath("$.number",is(0)))
@@ -93,7 +98,9 @@ public class HandicapControllerTest extends MvcTestWithJSON
         when(handicapService.getHandicapLimit(TEST_RACE_SERIES_ID, TEST_HANDICAP_LIMIT_ID))
             .thenReturn(testHandicapLimit);
         
-        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json/"+TEST_HANDICAP_LIMIT_ID))
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json/"+TEST_HANDICAP_LIMIT_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id",is(TEST_HANDICAP_LIMIT_ID)))
                 .andExpect(jsonPath("$.fleet.id",is(TEST_FLEET_ID)))
@@ -106,7 +113,9 @@ public class HandicapControllerTest extends MvcTestWithJSON
     {
         mockMvc.perform(
             delete("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json/"+TEST_HANDICAP_LIMIT_ID)
-            .with(csrf()))
+                .with(csrf())
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status",is("SUCCESS")));
         
@@ -119,7 +128,9 @@ public class HandicapControllerTest extends MvcTestWithJSON
     {
         mockMvc.perform(
             post("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json")
-            .with(csrf())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
             .content(convertObjectToJsonBytes(testHandicapLimit))
             .contentType(contentType))
             .andExpect(status().isOk());
@@ -140,9 +151,10 @@ public class HandicapControllerTest extends MvcTestWithJSON
         HandicapLimit newLimit = new HandicapLimit(null,TEST_RACE_SERIES_ID,testFleet,TEST_HANDICAP_LIMIT_VALUE);
         
         mockMvc.perform(post("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json")
-            .with(csrf())
-            .content(convertObjectToJsonBytes(newLimit))
-            .contentType(contentType))
+                .with(csrf())
+                .content(convertObjectToJsonBytes(newLimit))
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         
         ArgumentCaptor<HandicapLimit> limitCaptor = ArgumentCaptor.forClass(HandicapLimit.class);
@@ -161,9 +173,10 @@ public class HandicapControllerTest extends MvcTestWithJSON
         HandicapLimit newLimit = new HandicapLimit(null,TEST_RACE_SERIES_ID,testFleet,0.0f);
         
         mockMvc.perform(post("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json")
-            .with(csrf())
-            .content(convertObjectToJsonBytes(newLimit))
-            .contentType(contentType))
+                .with(csrf())
+                .content(convertObjectToJsonBytes(newLimit))
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is("FAIL")))
             .andExpect(jsonPath("$.errorMessageList[0].field",is("limit")))
@@ -197,9 +210,10 @@ public class HandicapControllerTest extends MvcTestWithJSON
             throws Exception, IOException
     {
         mockMvc.perform(post("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json")
-            .with(csrf())
-            .content(convertObjectToJsonBytes(newLimit))
-            .contentType(contentType))
+                .with(csrf())
+                .content(convertObjectToJsonBytes(newLimit))
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is("FAIL")))
             .andExpect(jsonPath("$.errorMessageList[0].field",is("fleet")))

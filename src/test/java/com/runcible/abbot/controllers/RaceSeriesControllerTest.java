@@ -56,7 +56,8 @@ public class RaceSeriesControllerTest extends MvcTestWithJSON
     	when(raceSeriesService.findAll(any(Pageable.class),eq(user))).thenReturn(testRaceSeriesPage);
     	
     	mockMvc.perform(get("/raceserieslist.json?page=1&size=3")
-    			.contentType(contentType))
+                    .contentType(contentType)
+                    .accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isOk())
     			.andExpect(jsonPath("$.totalPages",is(1)))
     			.andExpect(jsonPath("$.number",is(0)))

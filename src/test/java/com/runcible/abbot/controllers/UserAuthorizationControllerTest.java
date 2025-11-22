@@ -4,21 +4,18 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,7 +54,9 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
         
         when(raceSeriesAuthService.getAuthorizedUsers(eq(TEST_RACE_SERIES_ID),any(Pageable.class))).thenReturn(userSummaryPage);
         
-        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduserlist.json"))
+        mockMvc.perform(get("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduserlist.json")
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content[0].emailAddress",is(TEST_EMAIL)))
         .andExpect(jsonPath("$.content[0].name",is(TEST_NAME)))
@@ -74,6 +74,7 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
         mockMvc.perform(
                 post("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json")
                     .with(csrf())
+                    .accept(MediaType.APPLICATION_JSON)
                     .content(convertObjectToJsonBytes(userToAuth))
                     .contentType(contentType))
                     .andExpect(status().isOk())
@@ -92,7 +93,8 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
                 post("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json")
                     .with(csrf())
                     .content(convertObjectToJsonBytes(userToAuth))
-                    .contentType(contentType))
+                    .contentType(contentType)
+                    .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status",is("FAIL")))
                     .andExpect(jsonPath("$.errorMessageList[0].field",is("emailAddress")))
@@ -111,7 +113,8 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
                 post("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json")
                     .with(csrf())
                     .content(convertObjectToJsonBytes(userToAuth))
-                    .contentType(contentType))
+                    .contentType(contentType)
+                    .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status",is("FAIL")))
                     .andExpect(jsonPath("$.errorMessageList[0].field",is("emailAddress")))
@@ -132,7 +135,8 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
                 post("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json")
                     .with(csrf())
                     .content(convertObjectToJsonBytes(userToAuth))
-                    .contentType(contentType))
+                    .contentType(contentType)
+                    .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status",is("FAIL")))
                     .andExpect(jsonPath("$.errorMessageList[0].field",is("emailAddress")))
@@ -146,7 +150,8 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
         mockMvc.perform(
                 delete("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json/"+TEST_ID)
                     .with(csrf())
-                    .contentType(contentType))
+                    .contentType(contentType)
+                    .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         
         verify(raceSeriesAuthService).deAuthorizeUserForRaceSeries(TEST_RACE_SERIES_ID, TEST_ID);
@@ -161,7 +166,8 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
         mockMvc.perform(
                 delete("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json/"+TEST_ID)
                     .with(csrf())
-                    .contentType(contentType))
+                    .contentType(contentType)
+                    .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status",is("FAIL")))
                     .andExpect(jsonPath("$.generalErrorText",is("Cannot de-authorize the last user")));

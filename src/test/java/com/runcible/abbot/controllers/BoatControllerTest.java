@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
+import org.springframework.http.MediaType;
 
 import com.runcible.abbot.service.BoatService;
 import com.runcible.abbot.service.RaceSeriesService;
@@ -30,7 +30,9 @@ public class BoatControllerTest extends MvcTestWithJSON
         when(boatService.getBoatByID(TEST_BOAT_ID)).thenReturn(testBoat);
         
         mockMvc.perform(
-                get("/raceseries/"+TEST_RACE_SERIES_ID+"/boat.json/"+TEST_BOAT_ID))
+                get("/raceseries/"+TEST_RACE_SERIES_ID+"/boat.json/"+TEST_BOAT_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.sailNumber",is(TEST_SAIL_NUMBER)))
             .andExpect(jsonPath("$.name",is(TEST_BOAT_NAME)))
