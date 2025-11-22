@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.runcible.abbot.model.UserSummary;
 import com.runcible.abbot.service.LoggedOnUserService;
 import com.runcible.abbot.service.RaceSeriesAuthorizationService;
+import com.runcible.abbot.service.RaceSeriesService;
+import com.runcible.abbot.service.UserService;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -53,7 +55,9 @@ public class UserAuthorizationController
         {
         	try
         	{
-        	    raceSeriesAuthService.authorizeUserForRaceSeries(raceSeriesId,userToAuth.getEmailAddress());
+        	    raceSeriesAuthService.authorizeUserForRaceSeries(
+                    raceSeriesService.findByID(raceSeriesId),
+                    userService.findByEmail(userToAuth.getEmailAddress()));
         	}
         	catch( NoSuchUser e)
         	{
@@ -99,4 +103,10 @@ public class UserAuthorizationController
     
     @Autowired
     RaceSeriesAuthorizationService raceSeriesAuthService;    
+
+    @Autowired
+    RaceSeriesService raceSeriesService;
+    
+    @Autowired
+    UserService userService;
 }

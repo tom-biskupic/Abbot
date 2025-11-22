@@ -17,7 +17,10 @@ angular.module("abbot",
     //var header = $("meta[name='_csrf_header']").attr("content");
 
     //$httpProvider.defaults.headers.common[header] = token;
-	
+	$httpProvider.defaults.withCredentials = true;
+	$httpProvider.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
+	$httpProvider.defaults.xsrfCookieName = 'XSRF-TOKEN';
+
 	$routeProvider.when(
 			'/loginform',
 			{

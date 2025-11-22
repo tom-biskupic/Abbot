@@ -12,11 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.model.Competition;
 import com.runcible.abbot.service.CompetitionService;
@@ -27,10 +31,10 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
+@RestController
 public class CompetitionController 
 {
-    @RequestMapping(value="/raceseries/{id}/competitionlist.json",method=GET)
+    @GetMapping(value="/raceseries/{id}/competitionlist.json")
     public @ResponseBody Page<Competition> showList(
             @PathVariable("id") Integer raceSeriesId,
             Pageable                    p) throws NoSuchUser, UserNotPermitted
@@ -38,14 +42,14 @@ public class CompetitionController
         return competitionService.getAllCompetitionsForSeries(raceSeriesId, p);
     }
 
-    @RequestMapping(value="/raceseries/{id}/competitionlist.json/all",method=GET)
+    @GetMapping(value="/raceseries/{id}/competitionlist.json/all")
     public @ResponseBody List<Competition> getAll(
             @PathVariable("id") Integer raceSeriesId ) throws NoSuchUser, UserNotPermitted
     {
         return competitionService.getAllCompetitionsForSeries(raceSeriesId);
     }
 
-    @RequestMapping(value="/raceseries/{id}/competition.json",method=POST)
+    @PostMapping(value="/raceseries/{id}/competition.json")
     public @ResponseBody ValidationResponse save(
     			@Valid @RequestBody Competition	competition,
     			BindingResult                   result,
@@ -72,7 +76,7 @@ public class CompetitionController
         return response;
     }	
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/competition.json/{competitionId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/competition.json/{competitionId}")
     public @ResponseBody Competition getCompetition(
                 @PathVariable("raceSeriesId") Integer	raceSeriesId,
                 @PathVariable("competitionId") Integer	competitionId ) throws NoSuchCompetition, NoSuchUser, UserNotPermitted
@@ -80,7 +84,7 @@ public class CompetitionController
         return competitionService.getCompetitionByID(competitionId);
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/competition.json/{competitionId}",method={RequestMethod.DELETE})
+    @DeleteMapping(value="/raceseries/{raceSeriesId}/competition.json/{competitionId}")
     public @ResponseBody ValidationResponse removeBoatClass(
                 @PathVariable("raceSeriesId") Integer	raceSeriesId,
                 @PathVariable("competitionId") Integer  competitionId) throws NoSuchFleet, NoSuchCompetition, NoSuchUser, UserNotPermitted

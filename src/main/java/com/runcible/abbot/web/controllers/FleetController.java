@@ -12,11 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.service.FleetService;
@@ -26,10 +30,10 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
+@RestController
 public class FleetController 
 {
-    @RequestMapping(value="/raceseries/{id}/fleetlist.json",method=GET)
+    @GetMapping(value="/raceseries/{id}/fleetlist.json")
     public @ResponseBody Page<Fleet> showList(
             @PathVariable("id") Integer raceSeriesId,
             Pageable                    p) throws NoSuchUser, UserNotPermitted
@@ -38,14 +42,14 @@ public class FleetController
     }
 
     
-    @RequestMapping(value="/raceseries/{id}/fleetlist.json/all",method=GET)
+    @GetMapping(value="/raceseries/{id}/fleetlist.json/all")
     public @ResponseBody List<Fleet> getAll(
             @PathVariable("id") Integer raceSeriesId ) throws NoSuchUser, UserNotPermitted
     {
         return fleetService.getAllFleetsForSeries(raceSeriesId);
     }
 
-    @RequestMapping(value="/raceseries/{id}/fleet.json",method=POST)
+    @PostMapping(value="/raceseries/{id}/fleet.json")
     public @ResponseBody ValidationResponse save(
     			@Valid @RequestBody Fleet   	fleet,
     			BindingResult                   result,
@@ -72,7 +76,7 @@ public class FleetController
         return response;
     }
     
-    @RequestMapping(value="/raceseries/{raceSeriesId}/fleet.json/{fleetId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/fleet.json/{fleetId}")
     public @ResponseBody Fleet getFleet(
                 @PathVariable("raceSeriesId") Integer	raceSeriesId,
                 @PathVariable("fleetId") Integer		fleetId ) throws NoSuchFleet, NoSuchUser, UserNotPermitted
@@ -80,7 +84,7 @@ public class FleetController
         return fleetService.getFleetByID(fleetId);
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/fleet.json/{fleetId}",method={RequestMethod.DELETE})
+    @DeleteMapping(value="/raceseries/{raceSeriesId}/fleet.json/{fleetId}")
     public @ResponseBody ValidationResponse removeBoatClass(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("fleetId") Integer    	fleetId) throws NoSuchFleet, NoSuchUser, UserNotPermitted

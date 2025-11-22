@@ -77,7 +77,7 @@ angular.module("abbot").controller("resultListController",function($scope,$http,
         	$scope.init(
         			'',
         			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/resultlist.json',
-        			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/result.json/',
+        			'/raceseries/'+$scope.raceSeriesID+'/race/'+_race.id+'/result.json',
         			'views/raceresultform.html',
         			"Race Result");
     	}

@@ -66,20 +66,6 @@ public class RaceAuthorizationServiceTest
     }
 
     @Test
-    public void testAuthorizeUserForRaceSeriesUsingRaceSeriesId() throws UserNotPermitted, NoSuchUser, NoSuchRaceSeries
-    {
-        when(raceSeriesServiceMock.findByID(TEST_RACE_SERIES_ID)).thenReturn(seriesMock);
-        when(userServiceMock.findByEmail(TEST_EMAIL1)).thenReturn(userMock);
-        when(seriesMock.getId()).thenReturn(TEST_RACE_SERIES_ID);
-        when(raceSeriesUserRepoMock.countUserEntriesForRaceSeries(TEST_RACE_SERIES_ID)).thenReturn(1L);
-
-        setupIsUserPermttedMocks(true);
-
-        fixture.authorizeUserForRaceSeries(TEST_RACE_SERIES_ID, TEST_EMAIL1);
-        verifyRaceSeriesUserAdded();
-    }
-
-    @Test
     public void testAuthorizeUserForRaceSeriesNewSeries() throws UserNotPermitted, NoSuchUser
     {
         when(seriesMock.getId()).thenReturn(TEST_RACE_SERIES_ID);

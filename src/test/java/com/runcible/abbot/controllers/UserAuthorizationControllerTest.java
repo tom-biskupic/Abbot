@@ -34,6 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
 import com.runcible.abbot.model.UserSummary;
 import com.runcible.abbot.service.LoggedOnUserService;
 import com.runcible.abbot.service.RaceSeriesAuthorizationService;
+import com.runcible.abbot.service.RaceSeriesService;
+import com.runcible.abbot.service.UserService;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.web.controllers.UserAuthorizationController;
@@ -66,7 +68,9 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
     public void testAuthorizeUser() throws Exception
     {
         UserToAuthorize   userToAuth = new UserToAuthorize(TEST_EMAIL);
-        
+        when(raceSeriesService.findByID(TEST_RACE_SERIES_ID)).thenReturn(raceSeries);
+        when(userService.findByEmail(TEST_EMAIL)).thenReturn(user);
+
         mockMvc.perform(
                 post("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json")
                     .with(csrf())
@@ -75,7 +79,7 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status",is("SUCCESS")));
 
-        verify(raceSeriesAuthService).authorizeUserForRaceSeries(TEST_RACE_SERIES_ID, TEST_EMAIL);
+        verify(raceSeriesAuthService).authorizeUserForRaceSeries(raceSeries, user);
     }
 
     @Test
@@ -121,9 +125,9 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
     public void testAuthorizeUserInvalidUser() throws Exception
     {
         UserToAuthorize   userToAuth = new UserToAuthorize(TEST_EMAIL);
-        
-        doThrow(new NoSuchUser()).when(raceSeriesAuthService).authorizeUserForRaceSeries(TEST_RACE_SERIES_ID, TEST_EMAIL);
-        
+        when(raceSeriesService.findByID(TEST_RACE_SERIES_ID)).thenReturn(raceSeries);
+        when(userService.findByEmail(TEST_EMAIL)).thenThrow(new NoSuchUser());
+
         mockMvc.perform(
                 post("/raceseries/"+TEST_RACE_SERIES_ID+"/authorizeduser.json")
                     .with(csrf())
@@ -171,6 +175,12 @@ public class UserAuthorizationControllerTest extends MvcTestWithJSON
 
     @MockitoBean
     LoggedOnUserService loggedOnUserService;
+
+    @MockitoBean
+    UserService userService;
+
+    @MockitoBean
+    RaceSeriesService raceSeriesService;
 
     @Autowired
     private MockMvc mockMvc;

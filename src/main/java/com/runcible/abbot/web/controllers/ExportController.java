@@ -1,19 +1,17 @@
 package com.runcible.abbot.web.controllers;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.service.ExportService;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
@@ -21,10 +19,10 @@ import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
-@Controller
+@RestController
 public class ExportController
 {
-    @RequestMapping(value="/raceseries/{raceSeriesId}/exportPoints.json",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/exportPoints.json")
     public ResponseEntity<ByteArrayResource> exportPointsHTML(
                 @PathVariable("raceSeriesId")   Integer       raceSeriesId,
                 @RequestParam("competition")  Collection<Integer>   competitionIds ) 
@@ -35,7 +33,7 @@ public class ExportController
         
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/exportRaces.json/{fleetId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/exportRaces.json/{fleetId}")
     public ResponseEntity<ByteArrayResource> exportRacesHTML(
                 @PathVariable("raceSeriesId") Integer   raceSeriesID,
                 @PathVariable("fleetId")Integer   fleetID ) 
@@ -45,7 +43,7 @@ public class ExportController
         return makeResponseEntity(pointsAsHTML.getBytes());
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/exportHandicaps.json/{fleetId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/exportHandicaps.json/{fleetId}")
     public ResponseEntity<ByteArrayResource> exportHandicapsHTML(
                 @PathVariable("raceSeriesId") Integer   raceSeriesID,
                 @PathVariable("fleetId") Integer        fleetID ) 
@@ -55,7 +53,7 @@ public class ExportController
         return makeResponseEntity(pointsAsHTML.getBytes());
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/exportShortCourseHandicaps.json/{fleetId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/exportShortCourseHandicaps.json/{fleetId}")
     public ResponseEntity<ByteArrayResource> exportShortCourseHandicapsHTML(
                 @PathVariable("raceSeriesId") Integer   raceSeriesID,
                 @PathVariable("fleetId") Integer        fleetID ) 

@@ -35,15 +35,15 @@ angular.module("abbot").controller("loggedOnUserController",function($scope,$con
 	}
 	
 	authenticate();
-	  
+	
 	$scope.credentials = {};
 	$scope.login = function() 
 	{
-		$http.post('/login', $.param($scope.credentials), 
+		$http.post('/perform_login', $.param($scope.credentials), 
 		{
 	      headers : 
 	      {
-	        "content-type" : "application/x-www-form-urlencoded"
+	        "content-type" : "application/x-www-form-urlencoded",
 	      }
 		}).then(function(data) 
         {

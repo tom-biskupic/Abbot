@@ -2,6 +2,7 @@ package com.runcible.abbot.application;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestAuthenticationFailureEntryPoint extends SimpleUrlAuthenticationFailureHandler
 {
+    Logger logger = Logger.getLogger(RestAuthenticationFailureEntryPoint.class.getName());
 
     @Override
     public void onAuthenticationFailure(
@@ -21,6 +23,7 @@ public class RestAuthenticationFailureEntryPoint extends SimpleUrlAuthentication
             HttpServletResponse     response, 
             AuthenticationException authException)            throws IOException, ServletException
     {
+        logger.info("Authentication failed: "+authException.getMessage());
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         

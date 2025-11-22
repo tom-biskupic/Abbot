@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -144,7 +145,11 @@ public class Race implements ModelWithId
     }
 
     @ManyToMany(fetch=FetchType.EAGER)
-    @JoinColumn(name="COMPETITION")
+    @JoinTable(
+        name = "RACE_COMPETITION",
+        joinColumns = @JoinColumn(name = "Race_RACE_ID"),
+        inverseJoinColumns = @JoinColumn(name = "competitions_COMP_ID")
+    )
     public Set<Competition> getCompetitions()
     {
         return competitions;

@@ -1,9 +1,7 @@
 package com.runcible.abbot.web.controllers;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 import java.security.Principal;
+import java.util.logging.Logger;
 
 import jakarta.validation.Valid;
 
@@ -11,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,38 +25,39 @@ import com.runcible.abbot.service.exceptions.DuplicateUserException;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
 @RestController
 public class UserController
 {
-	@RequestMapping(value="/user",method=GET)
+    Logger logger = Logger.getLogger(UserController.class.getName());
+
+	@GetMapping(value="/user")
 	public Principal user(Principal user) 
 	{
 	    return user;
 	}
 	
-    @RequestMapping(value="/userlist",method=GET)
+    @GetMapping(value="/userlist")
     public ModelAndView showPage()
     {
         return new ModelAndView("userlist");
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN'")
-    @RequestMapping(value="/userlist.json",method=GET)
+    @GetMapping(value="/userlist.json")
     public @ResponseBody Page<User> showList(Pageable p)
     {
         return userService.findAll(p);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN'") 
-    @RequestMapping(value="/user.json/{id}",method=GET)
+    @GetMapping(value="/user.json/{id}")
     public @ResponseBody User showUser(@PathVariable("id") Integer id) throws NoSuchUser
     {
         return userService.findByID(id);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN'")
-    @RequestMapping(value="/user.json",method=POST)
+    @PostMapping(value="/user.json")
     public @ResponseBody ValidationResponse editUser(
             @Valid @RequestBody User user,
             BindingResult       result)
@@ -102,7 +101,7 @@ public class UserController
         return response;
     }
 
-    @RequestMapping(value="/register",method=GET)
+    @GetMapping(value="/register")
     public ModelAndView showForm()
     {
         ModelAndView mav = new ModelAndView("registerform");
@@ -110,7 +109,7 @@ public class UserController
         return mav;
     }
         
-    @RequestMapping(value="/register",method=POST)
+    @PostMapping(value="/register")
     public @ResponseBody ValidationResponse registerUser(
             @Valid @RequestBody User 	user,
             BindingResult           	result )

@@ -1,7 +1,7 @@
 plugins {
 	id("org.springframework.boot") version("3.4.3")
 	id("java")
-    id("com.bmuschko.docker-remote-api") version "9.4.0"
+    id("com.bmuschko.docker-spring-boot-application") version "10.0.0"
 }
 
 version = '1.0.2'
@@ -43,13 +43,32 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java:8.0.33'
     testRuntimeOnly 'mysql:mysql-connector-java:8.0.33'
     testImplementation 'org.springframework.security:spring-security-test'
-    implementation 'com.bmuschko.docker-remote-api:com.bmuschko.docker-remote-api.gradle.plugin:9.4.0'
+
+    implementation 'org.webjars:bootstrap:3.3.7'
+    implementation 'org.webjars:jquery:3.3.1-2'
+    implementation 'org.webjars:jquery-validation:1.13.0'
+    implementation 'org.webjars:angularjs:1.7.5'
+    // implementation 'org.webjars:angularjs-animate:1.7.5'
+    // implementation 'org.webjars:angularjs-touch:1.7.5'
+    
 }
 
-task buildDockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage) {
-        dependsOn assemble // Ensure your application is built first
-        inputDir = file('src/main/docker/abbot') // Or the directory containing your Dockerfile
-        images.add('your-dockerhub-username/your-application-name:latest')
+		// <script src="/webjars/jquery-validation/1.13.0/jquery.validate.min.js"></script>
+		// <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>     
+		// <script src="/webjars/angular/1.7.5/angular.min.js"></script>
+		// <script src="/webjars/angular-animate/1.7.5/angular-animate.min.js"></script>
+		// <script src="/webjars/angular-touch/1.7.5/angular-touch.min.js"></script>
+		// <script src="/webjars/angular-route/1.7.5/angular-route.min.js"></script>
+				       
+		// <script src="/js/ui-bootstrap-tpls-2.3.1.min.js"></script>
+		// <script src="/js/abn_tree_directive.js"></script>
+docker {
+    springBootApplication {
+        baseImage = 'eclipse-temurin:21-jdk-alpine'
+        ports = [9090, 8080]
+        images = ['tombi/abbot:2.0', 'tombi/abbot:latest']
+        jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m']
+    }
 }
 
 jar {

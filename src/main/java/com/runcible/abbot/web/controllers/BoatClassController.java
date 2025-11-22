@@ -13,11 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.model.BoatClass;
 import com.runcible.abbot.model.BoatDivision;
@@ -29,10 +33,10 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
+@RestController
 public class BoatClassController 
 {
-    @RequestMapping(value="/raceseries/{id}/boatclasslist.json",method=GET)
+    @GetMapping(value="/raceseries/{id}/boatclasslist.json")
     public @ResponseBody Page<BoatClass> showList(
             @PathVariable("id") Integer raceSeriesId,
             Pageable                    p) throws NoSuchUser, UserNotPermitted
@@ -40,14 +44,14 @@ public class BoatClassController
         return boatClassService.getAllBoatClassesForSeries(raceSeriesId, p);
     }
 
-    @RequestMapping(value="/raceseries/{id}/boatclasslist.json/all",method=GET)
+    @GetMapping(value="/raceseries/{id}/boatclasslist.json/all")
     public @ResponseBody List<BoatClass> getAll(
             @PathVariable("id") Integer raceSeriesId ) throws NoSuchUser, UserNotPermitted
     {
         return boatClassService.getAllBoatClassesForSeries(raceSeriesId);
     }
 
-    @RequestMapping(value="/raceseries/{id}/boatclass.json",method=POST)
+    @PostMapping(value="/raceseries/{id}/boatclass.json")
     public @ResponseBody ValidationResponse save(
     			@Valid @RequestBody BoatClass   boatClass,
     			BindingResult                   result,
@@ -74,7 +78,7 @@ public class BoatClassController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}",method={RequestMethod.DELETE})
+    @DeleteMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}")
     public @ResponseBody ValidationResponse removeBoatClass(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("boatClassId") Integer    boatClassId) throws NoSuchBoatClass, NoSuchUser, UserNotPermitted
@@ -85,7 +89,7 @@ public class BoatClassController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}")
     public @ResponseBody BoatClass getBoatClass(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("boatClassId") Integer    boatClassId ) throws NoSuchBoatClass, NoSuchUser, UserNotPermitted
@@ -93,7 +97,7 @@ public class BoatClassController
         return boatClassService.getBoatClassByID(boatClassId);
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}/division.json/{divisionId}",method=GET)
+    @GetMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}/division.json/{divisionId}")
     public @ResponseBody BoatDivision getDivision(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("boatClassId") Integer    boatClassId,
@@ -102,7 +106,7 @@ public class BoatClassController
         return boatClassService.getBoatClassByID(boatClassId).getDivision(divisionId);
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}/division.json/{divisionId}",method={RequestMethod.DELETE})
+    @DeleteMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}/division.json/{divisionId}")
     public @ResponseBody ValidationResponse removeDivision(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("boatClassId") Integer    boatClassId,
@@ -114,7 +118,7 @@ public class BoatClassController
         return response;
     }
     
-    @RequestMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}/division.json",method=POST)
+    @PostMapping(value="/raceseries/{raceSeriesId}/boatclass.json/{boatClassId}/division.json")
     public @ResponseBody ValidationResponse addDivision(
                 @PathVariable("raceSeriesId") Integer   raceSeriesId,
                 @PathVariable("boatClassId") Integer    boatClassId,

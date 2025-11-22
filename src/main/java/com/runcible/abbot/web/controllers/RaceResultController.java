@@ -1,8 +1,5 @@
 package com.runcible.abbot.web.controllers;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 import java.util.Collection;
 
 import jakarta.validation.Valid;
@@ -10,14 +7,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.model.Boat;
 import com.runcible.abbot.model.RaceResult;
@@ -34,10 +32,10 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 import com.runcible.abbot.web.model.ValidationResponse;
 
-@Controller
+@RestController
 public class RaceResultController 
 {
-    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/resultlist.json",method=GET)
+    @GetMapping(value="/raceseries/{raceseriesid}/race/{raceid}/resultlist.json")
     public @ResponseBody Page<RaceResult> getResultsForRace(
             @PathVariable("raceseriesid")  Integer raceSeriesId,
             @PathVariable("raceid")        Integer raceId,
@@ -46,7 +44,7 @@ public class RaceResultController
         return raceResultService.findAll(raceId,p);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}",method=GET)
+    @GetMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}")
     public @ResponseBody RaceResult getResult(
             @PathVariable("raceseriesid")  Integer raceSeriesId,
             @PathVariable("raceid")        Integer raceId,
@@ -55,7 +53,7 @@ public class RaceResultController
         return raceResultService.getResultByID(resultId);
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json",method=POST)
+    @PostMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json")
     public @ResponseBody ValidationResponse save(
                 @Valid @RequestBody RaceResult	raceResult,
                 BindingResult                   bindingResult,
@@ -155,7 +153,7 @@ public class RaceResultController
         response.setStatus("FAIL");
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}",method={RequestMethod.DELETE})
+    @DeleteMapping(value="/raceseries/{raceseriesid}/race/{raceid}/result.json/{raceresultid}")
     public @ResponseBody ValidationResponse removeRace(
                 @PathVariable("raceseriesid") Integer   raceSeriesId,
                 @PathVariable("raceid") Integer         raceId,
@@ -168,7 +166,7 @@ public class RaceResultController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceseriesid}/race/{raceid}/boatsnotselected.json",method={RequestMethod.GET})
+    @GetMapping(value="/raceseries/{raceseriesid}/race/{raceid}/boatsnotselected.json")
     public @ResponseBody Collection<Boat> getUnaddedBoats(
                 @PathVariable("raceseriesid") Integer   raceSeriesId,
                 @PathVariable("raceid") Integer         raceId) 
@@ -177,7 +175,7 @@ public class RaceResultController
         return raceResultService.findBoatsNotInRace(raceId);
     }   
     
-    @RequestMapping(value="/raceseries/{raceSeriesId}/race/{raceid}/addnonstarters.json",method= {RequestMethod.POST})
+    @PostMapping(value="/raceseries/{raceSeriesId}/race/{raceid}/addnonstarters.json")
     public @ResponseBody ValidationResponse updateRaceStatus(
             @RequestBody                    String  resultStatusString,
             @PathVariable("raceSeriesId")   Integer raceSeriesID,
@@ -190,7 +188,7 @@ public class RaceResultController
         return response;
     }
 
-    @RequestMapping(value="/raceseries/{raceSeriesId}/race/{raceid}/updatehandicaps.json",method= {RequestMethod.POST})
+    @PostMapping(value="/raceseries/{raceSeriesId}/race/{raceid}/updatehandicaps.json")
     public @ResponseBody ValidationResponse updateRaceResultHandicaps(
             @RequestBody                    String body,
             @PathVariable("raceSeriesId")   Integer raceSeriesID,

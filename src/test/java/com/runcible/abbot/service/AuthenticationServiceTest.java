@@ -87,6 +87,5 @@ public class AuthenticationServiceTest
     @Mock private Authentication    authenticationMock;
     @Mock private User              userMock;
     
-    @InjectMocks
-    private AuthenticationService fixture = new AuthenticationService();
+    private AuthenticationService fixture = new AuthenticationService(userServiceMock);
 }

@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,10 +67,16 @@ public class RaceSeriesServiceImpl extends AuthorizedService implements RaceSeri
 
     private void auditEvent(RaceSeries series, AuditEventType eventType) throws NoSuchUser, UserNotPermitted
     {
-        audit.auditEvent(
-                eventType, 
-                RACE_SERIES_OBJECT_NAME, 
-                series.getName());
+        //
+        // This doesn't use the AuditService to avoid a circular dependency
+        //
+        logger.info(
+            String.format(
+                    "%s %s %s named %s", 
+                    loggedOnUserService.getLoggedOnUser().getEmail(),
+                    eventType.toString(),
+                    RACE_SERIES_OBJECT_NAME,
+                    series.getName() ));
     }
 
     private static final String RACE_SERIES_OBJECT_NAME = "Race series";
@@ -81,7 +89,6 @@ public class RaceSeriesServiceImpl extends AuthorizedService implements RaceSeri
     
     @Autowired
     private RaceSeriesAuthorizationService raceSeriesAuthorizationService;
-    
-    @Autowired
-    private AuditService audit;
+
+    private static final Logger logger = LogManager.getLogger(AuditService.class);
 }

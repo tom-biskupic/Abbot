@@ -17,7 +17,6 @@ import com.runcible.abbot.model.User;
 import com.runcible.abbot.model.UserSummary;
 import com.runcible.abbot.repository.RaceSeriesUserRepository;
 import com.runcible.abbot.service.exceptions.CannotDeAuthorizeLastUser;
-import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
 import com.runcible.abbot.service.exceptions.UserNotPermitted;
 
@@ -33,14 +32,6 @@ public class RaceSeriesAuthorizationServiceImpl implements RaceSeriesAuthorizati
         
         return ( raceSeriesUserRepo.countUserEntriesForRaceSeries(raceSeriesID, loggedOnUser.getId()) != 0);
     }
-
-    public void authorizeUserForRaceSeries(Integer raceSeriesId, String emailAddress) 
-            throws UserNotPermitted, NoSuchUser, NoSuchRaceSeries
-	{
-    	authorizeUserForRaceSeries(
-    			raceSeriesService.findByID(raceSeriesId), 
-    			userService.findByEmail(emailAddress));
-	}
 
     public void authorizeUserForRaceSeries(RaceSeries series, User user) throws UserNotPermitted, NoSuchUser
     {
@@ -104,10 +95,5 @@ public class RaceSeriesAuthorizationServiceImpl implements RaceSeriesAuthorizati
     
     @Autowired
     private LoggedOnUserService loggedOnUserService;
-    
-    @Autowired
-    private RaceSeriesService raceSeriesService;
-    
-    @Autowired
-    private UserService userService;
+ 
 }

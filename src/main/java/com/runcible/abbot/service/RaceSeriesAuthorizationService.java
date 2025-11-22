@@ -33,16 +33,6 @@ public interface RaceSeriesAuthorizationService
     public void authorizeUserForRaceSeries(RaceSeries series, User user) throws UserNotPermitted, NoSuchUser;
     
     /**
-     * Authorizes the user provided to manage the race series provided
-     * @param raceSeriesId The ID of the series to be managed
-     * @param emailAddress The email address of the user being authorized.
-     * @throws UserNotPermitted If the logged on user is not permitted to manage this race series
-     * @throws NoSuchUser The logged on user is not recognized
-     */
-    public void authorizeUserForRaceSeries(Integer raceSeriesId, String emailAddress) 
-    		throws UserNotPermitted, NoSuchUser, NoSuchRaceSeries;
-    
-    /**
      * De-Authorizes a user from a race series. Will fail if you try an de-authorize the last user.
      * @param raceSeriesID The ID of the race series being modified
      * @param userId The ID of the user being de-authorized

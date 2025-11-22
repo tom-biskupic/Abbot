@@ -152,8 +152,5 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
     private RaceRespository raceRepo;
     
     @Autowired
-    private RaceSeriesService raceSeriesService;
-    
-    @Autowired
     private AuditService audit;
 }
