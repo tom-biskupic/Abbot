@@ -1,6 +1,9 @@
 package com.runcible.abbot.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import com.runcible.abbot.service.exceptions.NoSuchUser;
 @Transactional
 public class UserServiceImpl implements UserService
 {
+    Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
 
     @Override
     public User validateLogon(String email, String password)
@@ -55,11 +59,16 @@ public class UserServiceImpl implements UserService
         //  If this email address is the same as that of a different user
         //  then we throw
         //
-        if ( sameEmailUser != null && sameEmailUser.getId() != user.getId())
+        if ( sameEmailUser != null )
         {
-            throw new DuplicateUserException();            
+            logger.info("Updateing user email "+user.getEmail()+" id "+user.getId()+". Found same email user with ID "+
+                sameEmailUser.getId());
+
+            if ( ! sameEmailUser.getId().equals(user.getId()) )
+            {
+                throw new DuplicateUserException();            
+            }
         }
-        
         userRepo.save(user);
     }
 
@@ -68,6 +77,13 @@ public class UserServiceImpl implements UserService
     public Page<User> findAll(Pageable page)
     {
         return userRepo.findAll(page);
+    }
+
+    public List<User> findAll()
+    {
+        List<User> users = new ArrayList<>();
+        userRepo.findAll().forEach(users::add);
+        return users;
     }
 
     @Override

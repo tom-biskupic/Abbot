@@ -35,10 +35,10 @@ public class AuthenticationService implements UserDetailsService
         {
             User user = userService.findByEmail(username);
             List<GrantedAuthority> roles = this.getRoles(user);
-  
-                    logger.info("Login succeeded for "+username);
+            logger.info("Login succeeded for "+username);
+            
             return new org.springframework.security.core.userdetails.User(
-                username, "{noop}"+user.getPassword(), roles);
+                username, user.getPassword(), roles);
         }
         catch( NoSuchUser e )
         {

@@ -6,7 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -35,6 +37,11 @@ public class WebSecurityConfig {
         this.authService = authService;
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() 
+    {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity http) throws Exception 
@@ -44,7 +51,7 @@ public class WebSecurityConfig {
 
         authBuilder
             .userDetailsService(authService)     // configurer
-            .passwordEncoder(NoOpPasswordEncoder.getInstance());          // still configurer
+            .passwordEncoder(passwordEncoder());          // still configurer
 
         return authBuilder.build();  // <-- now called on builder, not configurer
     }

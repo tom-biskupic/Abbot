@@ -1,5 +1,7 @@
 package com.runcible.abbot.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -39,6 +41,12 @@ public interface UserService
      * @return The page of users
      */
     public Page<User> findAll(Pageable page);
+
+    /**
+     * Returns all of the users in the system
+     * @return The list of users
+     */
+    public List<User> findAll();
 
     /**
      * Returns the user identified by the ID provided. Throws if no matching user
