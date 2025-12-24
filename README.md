@@ -12,6 +12,7 @@ The application allows you to:
 * Have a race that contributes to multiple competitions - for example the same race could contribute to a season point score as well as a championship (scratch) competition.
 * Adjust handicaps based on the Mark Foy 3-2-1 handicap system with the additional 3rd win rule. (More handicap systems to follow).
 
+
 # How it works
 
 You can configure a set of boat classes for each race series and then you can register boats of those classes. Classes can have divisions to allow for sub-groups such as Laser Radial or Laser Standard etc.
