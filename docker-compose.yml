@@ -19,6 +19,7 @@ services:
     image: "tombi/abbot"
     ports:
       - "8080:8080"
+      - "8443:8443"
     networks:
       - todo_net
     links:
@@ -29,6 +30,12 @@ services:
       - dbuser=AbbotUser
       - dbhostname=abbot-mysql
       - serverport=8080
+      - enable_ssl=true
+      - server_port=8443
+    volumes:
+      - type: bind
+        source: ./dev-certs
+        target: /certs
 volumes:
   AbbotDB:
 
