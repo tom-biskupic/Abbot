@@ -25,7 +25,6 @@ variable "name" {
 variable "domain_name" {
   description = "The domain name to be used for the Lightsail domain"
   type        = string
-  default     = "abbotracemanager.com"
 }
 
 variable "key_pair_name" {
@@ -37,7 +36,7 @@ variable "key_pair_name" {
 variable "hostname" {
   description = "The hostname for the Lightsail instance"
   type        = string
-  default     = "www2"
+  default     = "www"
 }
 
 variable "aws_region" {
@@ -49,5 +48,10 @@ variable "aws_region" {
 variable "branch" {
   description = "The branch of the Abbot repository to deploy from"
   type        = string
-  default     = "tls_support"
+  default     = "master"
+}
+
+variable "email_address" {
+  description = "The email address to use for certbot registration"
+  type        = string
 }

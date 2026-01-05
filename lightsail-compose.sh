@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dnf install -y docker libxcrypt-compat certbot cronie
+dnf install -y docker libxcrypt-compat certbot cronie mariadb105
 systemctl start crond
 systemctl enable crond
 
@@ -18,6 +18,7 @@ chmod +x /usr/libexec/docker/cli-plugins/docker-compose
 #
 mkdir -p /opt/abbot
 curl -o /opt/abbot/docker-compose.yml https://raw.githubusercontent.com/tom-biskupic/Abbot/refs/heads/${BRANCH}/docker-compose.yml
+sed -i "s/##DOMAIN_NAME##/${DOMAIN_NAME}/g" /opt/abbot/docker-compose.yml
 
 certbot certonly --non-interactive --agree-tos -d $DOMAIN_NAME -m $EMAIL --standalone
 mkdir -p /opt/abbot/certs
@@ -66,3 +67,13 @@ EOF
 systemctl daemon-reload
 systemctl enable docker-compose-app
 systemctl start docker-compose-app
+
+cat << EOF > /opt/abbot/backup-db.sh
+#!/bin/bash
+mysqldump -u AbbotUser -h ip6-localhost --protocol=TCP --port=3306 -p AbbotDB  > abbotdb-dump.sql
+EOF 
+
+cat << EOF > /opt/abbot/restore-db.sh
+#!/bin/bash
+mysql -u AbbotUser -h ip6-localhost --protocol=TCP --port=3306 -p AbbotDB  < abbotdb-dump.sql
+EOF

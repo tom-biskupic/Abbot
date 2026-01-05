@@ -7,3 +7,5 @@ abbotdb-dump.sql
 backend.conf
 .terraform/
 .terraform.lock.hcl
+plan
+*.tfvars

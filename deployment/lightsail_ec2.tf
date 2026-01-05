@@ -6,7 +6,7 @@ resource "aws_lightsail_instance" "abbot_instance" {
   availability_zone = var.availability_zone
   blueprint_id      = var.blueprint_id
   bundle_id         = var.bundle_id
-  user_data         = "export BRANCH=${var.branch} && export DOMAIN_NAME=${var.hostname}.${var.domain_name} && curl https://raw.githubusercontent.com/tom-biskupic/Abbot/refs/heads/${var.branch}/lightsail-compose.sh | bash"
+  user_data         = "export BRANCH=${var.branch} && export DOMAIN_NAME=${var.hostname}.${var.domain_name} && export EMAIL=${var.email_address} && curl https://raw.githubusercontent.com/tom-biskupic/Abbot/refs/heads/${var.branch}/lightsail-compose.sh | bash"
   key_pair_name     = aws_lightsail_key_pair.aws_light_sail_abbot_key_pair.id
 }
 

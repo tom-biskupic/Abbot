@@ -31,6 +31,7 @@ services:
       - serverport=8080
       - enable_ssl=true
       - server_port=8443
+      - domain=##DOMAIN_NAME##
     volumes:
       - type: bind
         source: ./certs
