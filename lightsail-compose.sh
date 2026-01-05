@@ -1,7 +1,6 @@
 #!/bin/bash
 
-dnf install -y docker
-dnf install -y libxcrypt-compat
+dnf install -y docker libxcrypt-compat git
 
 # make it so you don't need to sudo to run docker commands
 usermod -aG docker ec2-user
