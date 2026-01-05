@@ -40,13 +40,14 @@ cat <<EOF > /opt/abbot/renew-certs.sh
 #!/bin/bash
 certbot renew --pre-hook "systemctl stop docker-compose-app" --post-hook "/opt/abbot/make-p12.sh $DOMAIN_NAME && systemctl start docker-compose-app" >> /var/log/le-renew.log
 EOF
+
 chmod +x /opt/abbot/renew-certs.sh
 (crontab -l 2>/dev/null; echo "30 2 * * 1 /opt/abbot/renew-certs.sh") | crontab -
 
 #
 # Copy in the script required to make docker compose a daemon
 #
-cat << EOF > /etc/systemd/system/docker-compose-app.service
+cat <<EOF > /etc/systemd/system/docker-compose-app.service
 [Unit]
 Description=Docker Compose Application Service
 Requires=docker.service
@@ -68,14 +69,16 @@ systemctl daemon-reload
 systemctl enable docker-compose-app
 systemctl start docker-compose-app
 
-cat << EOF > /opt/abbot/backup-db.sh
+cat <<EOF > /opt/abbot/dump-db.sh
 #!/bin/bash
 mysqldump -u AbbotUser -h localhost --protocol=TCP --port=3306 -p AbbotDB  > abbotdb-dump.sql
-EOF 
-chmod +x /opt/abbot/backup-db.sh
+EOF
 
-cat << EOF > /opt/abbot/restore-db.sh
+chmod +x /opt/abbot/dump-db.sh
+
+cat <<EOF > /opt/abbot/restore-db.sh
 #!/bin/bash
 mysql -u AbbotUser -h localhost --protocol=TCP --port=3306 -p AbbotDB  < abbotdb-dump.sql
 EOF
+
 chmod +x /opt/abbot/restore-db.sh
