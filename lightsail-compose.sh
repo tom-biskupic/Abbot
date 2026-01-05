@@ -70,10 +70,12 @@ systemctl start docker-compose-app
 
 cat << EOF > /opt/abbot/backup-db.sh
 #!/bin/bash
-mysqldump -u AbbotUser -h ip6-localhost --protocol=TCP --port=3306 -p AbbotDB  > abbotdb-dump.sql
+mysqldump -u AbbotUser -h localhost --protocol=TCP --port=3306 -p AbbotDB  > abbotdb-dump.sql
 EOF 
+chmod +x /opt/abbot/backup-db.sh
 
 cat << EOF > /opt/abbot/restore-db.sh
 #!/bin/bash
-mysql -u AbbotUser -h ip6-localhost --protocol=TCP --port=3306 -p AbbotDB  < abbotdb-dump.sql
+mysql -u AbbotUser -h localhost --protocol=TCP --port=3306 -p AbbotDB  < abbotdb-dump.sql
 EOF
+chmod +x /opt/abbot/restore-db.sh
