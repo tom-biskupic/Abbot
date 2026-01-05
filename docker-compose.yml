@@ -16,7 +16,7 @@ services:
       - MYSQL_USER=AbbotUser
       - MYSQL_PASSWORD=password
   abbot:
-    image: "tombi/abbot"
+    image: "tombi/abbot:2.0"
     ports:
       - "8080:8080"
       - "8443:8443"

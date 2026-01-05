@@ -27,3 +27,27 @@ variable "domain_name" {
   type        = string
   default     = "abbotracemanager.com"
 }
+
+variable "key_pair_name" {
+  description = "The name of the AWS key pair"
+  type        = string
+  default     = "abbot_key_pair"
+}
+
+variable "hostname" {
+  description = "The hostname for the Lightsail instance"
+  type        = string
+  default     = "www2"
+}
+
+variable "aws_region" {
+  description = "The AWS region to deploy resources in"
+  type        = string
+  default     = "ap-southeast-2"
+}
+
+variable "branch" {
+  description = "The branch of the Abbot repository to deploy from"
+  type        = string
+  default     = "tls_support"
+}
