@@ -69,16 +69,16 @@ systemctl daemon-reload
 systemctl enable docker-compose-app
 systemctl start docker-compose-app
 
-cat <<EOF > /opt/abbot/dump-db.sh
+cat <<EOF1 > /opt/abbot/dump-db.sh
 #!/bin/bash
 mysqldump -u AbbotUser -h localhost --protocol=TCP --port=3306 -p AbbotDB  > abbotdb-dump.sql
-EOF
+EOF1
 
 chmod +x /opt/abbot/dump-db.sh
 
-cat <<EOF > /opt/abbot/restore-db.sh
+cat <<EOF2 > /opt/abbot/restore-db.sh
 #!/bin/bash
 mysql -u AbbotUser -h localhost --protocol=TCP --port=3306 -p AbbotDB  < abbotdb-dump.sql
-EOF
+EOF2
 
 chmod +x /opt/abbot/restore-db.sh
