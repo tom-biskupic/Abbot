@@ -18,8 +18,7 @@ services:
   abbot:
     image: "tombi/abbot:2.0"
     ports:
-      - "8080:8080"
-      - "8443:8443"
+      - "443:8443"
     networks:
       - todo_net
     links:
@@ -34,7 +33,7 @@ services:
       - server_port=8443
     volumes:
       - type: bind
-        source: ./dev-certs
+        source: ./certs
         target: /certs
 volumes:
   AbbotDB:

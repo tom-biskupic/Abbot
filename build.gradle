@@ -53,15 +53,6 @@ dependencies {
     
 }
 
-		// <script src="/webjars/jquery-validation/1.13.0/jquery.validate.min.js"></script>
-		// <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>     
-		// <script src="/webjars/angular/1.7.5/angular.min.js"></script>
-		// <script src="/webjars/angular-animate/1.7.5/angular-animate.min.js"></script>
-		// <script src="/webjars/angular-touch/1.7.5/angular-touch.min.js"></script>
-		// <script src="/webjars/angular-route/1.7.5/angular-route.min.js"></script>
-				       
-		// <script src="/js/ui-bootstrap-tpls-2.3.1.min.js"></script>
-		// <script src="/js/abn_tree_directive.js"></script>
 docker {
     springBootApplication {
         baseImage = 'eclipse-temurin:21-jdk-alpine'
