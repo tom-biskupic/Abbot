@@ -20,7 +20,9 @@ mkdir -p /opt/abbot
 curl -o /opt/abbot/docker-compose.yml https://raw.githubusercontent.com/tom-biskupic/Abbot/refs/heads/${BRANCH}/docker-compose.yml
 sed -i "s/##DOMAIN_NAME##/${DOMAIN_NAME}/g" /opt/abbot/docker-compose.yml
 
-certbot certonly --non-interactive --agree-tos -d $DOMAIN_NAME -m $EMAIL --standalone
+DOMAIN_PART="${DOMAIN_NAME#*.}"
+
+certbot certonly --non-interactive --agree-tos -d $DOMAIN_NAME -d $DOMAIN_PART -m $EMAIL --standalone
 mkdir -p /opt/abbot/certs
 
 cat << EOF > /opt/abbot/make-p12.sh
