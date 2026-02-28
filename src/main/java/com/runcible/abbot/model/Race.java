@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.GenerationType;
 
 /**
  * A RaceModel represent a boat race on a given day for a single class. 
@@ -65,7 +66,7 @@ public class Race implements ModelWithId
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="RACE_ID")    
     public Integer getId()
     {

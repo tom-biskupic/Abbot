@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.GenerationType;
 
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Entity
 @Table(name="RACE_SERIES_TBL")
 @Component
-public class RaceSeries implements ModelWithId
+public class RaceSeries
 {
 	public RaceSeries(	Integer 		id,
 						RaceSeriesType 	seriesType,
@@ -64,7 +65,7 @@ public class RaceSeries implements ModelWithId
      * @return the ID of this raceSeries
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID")
     public Integer getId()
     {
@@ -176,7 +177,7 @@ public class RaceSeries implements ModelWithId
         this.comment = comment;
     }
 
-    private Integer         id = 0;
+    private Integer         id = null;
     private RaceSeriesType  seriesType = RaceSeriesType.SEASON;
     
     @Size(min=1, message="Name must be provided.")

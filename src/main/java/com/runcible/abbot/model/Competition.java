@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.GenerationType;
 
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Entity
 @Table(name="COMPETITION")
 @Component
-public class Competition implements ModelWithId
+public class Competition
 {
 
     public Competition()
@@ -80,7 +81,7 @@ public class Competition implements ModelWithId
      * Returns the database ID of this competition
      * @return
      */
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "COMP_ID")
     public Integer getId()
     {

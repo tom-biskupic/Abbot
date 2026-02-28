@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.GenerationType;
 
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Entity
 @Table(name="BOAT_CLASS")
 @Component
-public class BoatClass implements Cloneable, ModelWithId
+public class BoatClass implements Cloneable
 {
     public BoatClass(
             Integer     id, 
@@ -61,7 +62,8 @@ public class BoatClass implements Cloneable, ModelWithId
     {
     }
 
-    @Id @GeneratedValue
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "CLASS_ID")
     public Integer getId()
     {
@@ -158,7 +160,7 @@ public class BoatClass implements Cloneable, ModelWithId
         this.raceSeriesId = raceSeriesID;
     }
     
-    private Integer                         id = 0;
+    private Integer                         id = null;
     
     @Size(min=1, message="Class name must be provided.")
     private String                          name = "";

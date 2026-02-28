@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.GenerationType;
 
 import org.springframework.stereotype.Component;
 	
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Entity
 @Table(name="FLEET")
 @Component
-public class Fleet implements ModelWithId
+public class Fleet
 {
     public Fleet(
     		Integer				id,
@@ -56,7 +57,7 @@ public class Fleet implements ModelWithId
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="FLEET_ID")
     public Integer getId()
     {

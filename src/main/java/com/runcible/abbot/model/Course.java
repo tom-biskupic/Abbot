@@ -5,10 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name="COURSES")
-public class Course implements Cloneable, ModelWithId
+public class Course implements Cloneable
 {
     public Course(Integer courseNumber, String courseName, Float courseLength)
     {
@@ -31,7 +32,7 @@ public class Course implements Cloneable, ModelWithId
 	}
 
 	@Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer getId()
     {
         return id;

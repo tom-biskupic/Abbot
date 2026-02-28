@@ -111,7 +111,7 @@ public class UserSummary
         this.id = id;
     }
 
-    private Integer id = 0;
+    private Integer id = null;
     private String name = "";
     private String emailAddress = "";
     private boolean currentUser = false;

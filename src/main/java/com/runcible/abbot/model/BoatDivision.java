@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.GenerationType;
 
 /**
  * The BoatDivisionModel object represents a sub-division of a class. Classes can 
@@ -15,7 +16,7 @@ import jakarta.validation.constraints.Size;
  */
 @Entity
 @Table(name="BOAT_CLASS_DIVISON")
-public class BoatDivision implements Cloneable, ModelWithId
+public class BoatDivision implements Cloneable
 {
     public BoatDivision(Integer id,String name,Float yardstick)
     {
@@ -39,7 +40,7 @@ public class BoatDivision implements Cloneable, ModelWithId
     }
     
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID")
     public Integer getId()
     {
