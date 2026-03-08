@@ -1,0 +1,68 @@
+<div ngbAccordion [closeOthers]="false" class="mt-3">
+
+  <div ngbAccordionItem>
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Boat Classes</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-boat-class-list [seriesId]="seriesId" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div ngbAccordionItem>
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Fleets</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-fleet-list [seriesId]="seriesId" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div ngbAccordionItem>
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Competitions</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-competition-list [seriesId]="seriesId" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div ngbAccordionItem>
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Handicap</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-handicap-list [seriesId]="seriesId" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div ngbAccordionItem>
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Authorized Users</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-authorized-user-list [seriesId]="seriesId" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+</div>
