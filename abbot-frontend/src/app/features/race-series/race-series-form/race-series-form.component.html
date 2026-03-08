@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <h4 class="modal-title">Race Series</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  <div class="mb-3">
+    <label class="form-label">Name <span class="text-danger">*</span></label>
+    <input class="form-control" [(ngModel)]="series.name" name="name" required />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Type</label>
+    <select class="form-select" [(ngModel)]="series.seriesType" name="seriesType">
+      @for (t of seriesTypes; track t.id) {
+        <option [value]="t.id">{{ t.label }}</option>
+      }
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Comment</label>
+    <input class="form-control" [(ngModel)]="series.comment" name="comment" />
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="ok()" [disabled]="!series.name">OK</button>
+  <button class="btn btn-warning" (click)="cancel()">Cancel</button>
+</div>
