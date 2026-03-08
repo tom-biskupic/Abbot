@@ -1,0 +1,36 @@
+<div class="row justify-content-center">
+  <div class="col-md-4">
+    <h1>Login</h1>
+    <form (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="username" class="form-label">Email</label>
+        <input
+          id="username"
+          class="form-control"
+          name="username"
+          [(ngModel)]="username"
+          required
+          autocomplete="username"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control"
+          name="password"
+          [(ngModel)]="password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+      @if (error()) {
+        <div class="alert alert-danger">Login Failed</div>
+      }
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
+        @if (loading()) { Logging in... } @else { Login }
+      </button>
+    </form>
+  </div>
+</div>
