@@ -1,0 +1,74 @@
+<div class="modal-header">
+  <h4 class="modal-title">Fleet</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  <form>
+    <div class="mb-3">
+      <label class="form-label">Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['fleetName']"
+             [(ngModel)]="fleet.fleetName" name="fleetName"
+             (ngModelChange)="clearFieldError('fleetName')" />
+      @if (fieldErrors['fleetName']) { <div class="invalid-feedback">{{ fieldErrors['fleetName'] }}</div> }
+    </div>
+
+    <div class="mb-3 form-check">
+      <input class="form-check-input" type="checkbox"
+             [(ngModel)]="fleet.competeOnYardstick" name="competeOnYardstick" id="competeOnYardstick" />
+      <label class="form-check-label" for="competeOnYardstick">Fleet competes on yardstick?</label>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Classes in this Fleet</label>
+      <div class="border rounded p-2">
+        @if ((fleet.fleetClasses ?? []).length === 0) {
+          <p class="text-muted small mb-2">No boat classes selected.</p>
+        }
+        @for (fs of fleet.fleetClasses; track $index) {
+          <div class="d-flex align-items-center mb-1">
+            <button type="button" class="btn btn-sm btn-outline-danger me-2"
+                    (click)="removeFleetSelector(fs)"><i class="bi bi-x"></i></button>
+            {{ fs.boatClass.name }}
+            @if (fs.boatDivision) { <span class="ms-1 text-muted">/ {{ fs.boatDivision.name }}</span> }
+          </div>
+        }
+
+        <div class="row g-2 mt-1 align-items-end">
+          <div class="col-5">
+            <select class="form-select form-select-sm"
+                    [(ngModel)]="classToAdd" [compareWith]="compareById"
+                    name="classToAdd" (ngModelChange)="onClassChange()">
+              <option [ngValue]="null">Select class...</option>
+              @for (bc of boatClasses; track bc.id) {
+                <option [ngValue]="bc">{{ bc.name }}</option>
+              }
+            </select>
+          </div>
+          @if (availableDivisions.length > 0) {
+            <div class="col-5">
+              <select class="form-select form-select-sm"
+                      [(ngModel)]="divisionToAdd" [compareWith]="compareById"
+                      name="divisionToAdd">
+                <option [ngValue]="null">Select division...</option>
+                @for (div of availableDivisions; track div.id) {
+                  <option [ngValue]="div">{{ div.name }}</option>
+                }
+              </select>
+            </div>
+          }
+          <div class="col-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary w-100"
+                    [disabled]="!canAdd" (click)="addToFleet()">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

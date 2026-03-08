@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h4 class="modal-title">Boat Class</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  <form>
+    <div class="mb-3">
+      <label class="form-label">Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['name']"
+             [(ngModel)]="boatClass.name" name="name" (ngModelChange)="clearFieldError('name')" />
+      @if (fieldErrors['name']) { <div class="invalid-feedback">{{ fieldErrors['name'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Yardstick <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['yardStick']"
+             type="number" step="0.1" [(ngModel)]="boatClass.yardStick" name="yardStick"
+             (ngModelChange)="clearFieldError('yardStick')" />
+      @if (fieldErrors['yardStick']) { <div class="invalid-feedback">{{ fieldErrors['yardStick'] }}</div> }
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

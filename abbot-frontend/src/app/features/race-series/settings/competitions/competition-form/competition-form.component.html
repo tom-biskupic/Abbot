@@ -1,0 +1,63 @@
+<div class="modal-header">
+  <h4 class="modal-title">Competition</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  <form>
+    <div class="mb-3">
+      <label class="form-label">Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['name']"
+             [(ngModel)]="competition.name" name="name" (ngModelChange)="clearFieldError('name')" />
+      @if (fieldErrors['name']) { <div class="invalid-feedback">{{ fieldErrors['name'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Fleet <span class="text-danger">*</span></label>
+      <select class="form-select" [class.is-invalid]="fieldErrors['fleet']"
+              [(ngModel)]="competition.fleet" [compareWith]="compareById" name="fleet" required
+              (ngModelChange)="clearFieldError('fleet')">
+        <option [ngValue]="null" disabled>Select a fleet</option>
+        @for (f of fleets; track f.id) { <option [ngValue]="f">{{ f.fleetName }}</option> }
+      </select>
+      @if (fieldErrors['fleet']) { <div class="invalid-feedback">{{ fieldErrors['fleet'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Points System <span class="text-danger">*</span></label>
+      <select class="form-select" [class.is-invalid]="fieldErrors['pointsSystem']"
+              [(ngModel)]="competition.pointsSystem" name="pointsSystem"
+              (ngModelChange)="clearFieldError('pointsSystem')">
+        @for (ps of pointsSystemValues; track ps.id) { <option [value]="ps.id">{{ ps.label }}</option> }
+      </select>
+      @if (fieldErrors['pointsSystem']) { <div class="invalid-feedback">{{ fieldErrors['pointsSystem'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Result Type <span class="text-danger">*</span></label>
+      <select class="form-select" [class.is-invalid]="fieldErrors['resultType']"
+              [(ngModel)]="competition.resultType" name="resultType"
+              (ngModelChange)="clearFieldError('resultType')">
+        @for (rt of resultTypeValues; track rt.id) { <option [value]="rt.id">{{ rt.label }}</option> }
+      </select>
+      @if (fieldErrors['resultType']) { <div class="invalid-feedback">{{ fieldErrors['resultType'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Fleet Size <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['fleetSize']"
+             type="number" min="1" [(ngModel)]="competition.fleetSize" name="fleetSize"
+             (ngModelChange)="clearFieldError('fleetSize')" />
+      @if (fieldErrors['fleetSize']) { <div class="invalid-feedback">{{ fieldErrors['fleetSize'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Number of Drops <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['drops']"
+             type="number" min="0" [(ngModel)]="competition.drops" name="drops"
+             (ngModelChange)="clearFieldError('drops')" />
+      @if (fieldErrors['drops']) { <div class="invalid-feedback">{{ fieldErrors['drops'] }}</div> }
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

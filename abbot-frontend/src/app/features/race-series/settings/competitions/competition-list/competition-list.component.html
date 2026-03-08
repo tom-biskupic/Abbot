@@ -1,0 +1,35 @@
+<div class="d-flex align-items-center mb-2 mt-3">
+  <p class="mb-0 me-auto text-muted small">Defines competitions that we can generate points tables for.</p>
+  <div class="btn-group">
+    <button class="btn btn-outline-secondary btn-sm" (click)="openForm()"><i class="bi bi-pencil"></i> New</button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="load()"><i class="bi bi-arrow-clockwise"></i></button>
+  </div>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+@if (loading()) { <p class="text-muted">Loading...</p> }
+
+@if (!loading()) {
+  @if (page(); as p) {
+    <table class="table table-striped table-sm">
+      <thead><tr><th>Competition Name</th><th>Fleet Name</th></tr></thead>
+      <tbody>
+        @for (comp of p.content; track comp.id) {
+          <tr>
+            <td>
+              <button class="btn btn-sm btn-outline-danger me-1" (click)="deleteCompetition(comp.id!)"><i class="bi bi-x"></i></button>
+              <a style="cursor:pointer" class="text-primary" (click)="openForm(comp.id)">{{ comp.name }}</a>
+            </td>
+            <td>{{ comp.fleet.fleetName }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="2" class="text-muted text-center">No competitions found.</td></tr>
+        }
+      </tbody>
+    </table>
+    @if (p.totalPages > 1) {
+      <ngb-pagination [collectionSize]="p.totalElements" [(page)]="currentPage" [pageSize]="pageSize"
+        (pageChange)="onPageChange($event)" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" />
+    }
+  }
+}

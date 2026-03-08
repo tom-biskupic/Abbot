@@ -1,0 +1,39 @@
+<div class="d-flex align-items-center mb-2 mt-3">
+  <p class="mb-0 me-auto text-muted small">Configure the list of users permitted to manage this race series.</p>
+  <div class="btn-group">
+    <button class="btn btn-outline-secondary btn-sm" (click)="openForm()"><i class="bi bi-person-plus"></i> Add</button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="load()"><i class="bi bi-arrow-clockwise"></i></button>
+  </div>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+@if (loading()) { <p class="text-muted">Loading...</p> }
+
+@if (!loading()) {
+  @if (page(); as p) {
+    <table class="table table-striped table-sm">
+      <thead><tr><th>Name</th><th>Email Address</th><th></th></tr></thead>
+      <tbody>
+        @for (user of p.content; track user.id) {
+          <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.emailAddress }}</td>
+            <td>
+              @if (!user.currentUser) {
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user.id!)">
+                  <i class="bi bi-x"></i>
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="3" class="text-muted text-center">No authorized users found.</td></tr>
+        }
+      </tbody>
+    </table>
+    @if (p.totalPages > 1) {
+      <ngb-pagination [collectionSize]="p.totalElements" [(page)]="currentPage" [pageSize]="pageSize"
+        (pageChange)="onPageChange($event)" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" />
+    }
+  }
+}
