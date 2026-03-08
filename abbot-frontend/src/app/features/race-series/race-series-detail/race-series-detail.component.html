@@ -13,7 +13,7 @@
     <li [ngbNavItem]="'results'">
       <button ngbNavLink>Results</button>
       <ng-template ngbNavContent>
-        <p class="mt-3 text-muted">Results coming soon.</p>
+        <app-race-days [seriesId]="series.id!" />
       </ng-template>
     </li>
     <li [ngbNavItem]="'races'">
@@ -43,7 +43,7 @@
     <li [ngbNavItem]="'settings'">
       <button ngbNavLink>Settings</button>
       <ng-template ngbNavContent>
-        <p class="mt-3 text-muted">Settings coming soon.</p>
+        <app-settings-panel [seriesId]="series.id!" />
       </ng-template>
     </li>
   </ul>

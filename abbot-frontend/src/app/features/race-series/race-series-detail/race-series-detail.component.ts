@@ -4,11 +4,13 @@ import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { RaceSeriesService } from '../../../core/services/race-series.service';
 import { RaceSeries } from '../../../core/models/race-series.model';
 import { RaceListComponent } from '../races/race-list/race-list.component';
+import { RaceDaysComponent } from '../races/race-days/race-days.component';
+import { SettingsPanelComponent } from '../settings/settings-panel/settings-panel.component';
 
 @Component({
   selector: 'app-race-series-detail',
   standalone: true,
-  imports: [NgbNavModule, RaceListComponent],
+  imports: [NgbNavModule, RaceListComponent, RaceDaysComponent, SettingsPanelComponent],
   templateUrl: './race-series-detail.component.html'
 })
 export class RaceSeriesDetailComponent implements OnInit {

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Race, ValidationResponse } from '../models/race.model';
+import { Race, RaceDay, ValidationResponse } from '../models/race.model';
 import { Page } from '../models/race-series.model';
 
 @Injectable({ providedIn: 'root' })
@@ -23,5 +23,9 @@ export class RaceService {
 
   delete(seriesId: number, raceId: number): Promise<{ status: string }> {
     return firstValueFrom(this.http.delete<{ status: string }>(`/raceseries/${seriesId}/race.json/${raceId}`));
+  }
+
+  getRaceDays(seriesId: number): Promise<RaceDay[]> {
+    return firstValueFrom(this.http.get<RaceDay[]>(`/raceseries/${seriesId}/racedays.json`));
   }
 }
