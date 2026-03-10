@@ -1,14 +1,20 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" routerLink="/">Abbot</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <a class="navbar-brand" routerLink="/" (click)="closeNav()">Abbot</a>
+    <button class="navbar-toggler" type="button" [attr.aria-expanded]="navOpen()"
+            [class.collapsed]="!navOpen()" (click)="toggleNav()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="navbar-collapse" [class.collapse]="!navOpen()" [class.show]="navOpen()">
       <ul class="navbar-nav me-auto">
         @if (auth.isAuthenticated()) {
           <li class="nav-item">
-            <a class="nav-link" routerLink="/race-series">Race Series</a>
+            <a class="nav-link" routerLink="/race-series" (click)="closeNav()">Race Series</a>
+          </li>
+        }
+        @if (auth.isAdmin()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users" (click)="closeNav()">Manage Users</a>
           </li>
         }
       </ul>
@@ -18,11 +24,11 @@
             <span class="nav-link text-light">{{ auth.user()?.name }}</span>
           </li>
           <li class="nav-item">
-            <button class="btn btn-outline-light btn-sm ms-2" (click)="auth.logout()">Logout</button>
+            <button class="btn btn-outline-light btn-sm ms-2" (click)="auth.logout(); closeNav()">Logout</button>
           </li>
         } @else {
           <li class="nav-item">
-            <a class="nav-link" routerLink="/login">Login</a>
+            <a class="nav-link" routerLink="/login" (click)="closeNav()">Login</a>
           </li>
         }
       </ul>
