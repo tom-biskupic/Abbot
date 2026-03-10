@@ -1,0 +1,64 @@
+<div class="modal-header">
+  <h4 class="modal-title">User</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  <form>
+    <div class="mb-3">
+      <label class="form-label">First Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['firstName']"
+             [(ngModel)]="user.firstName" name="firstName"
+             (ngModelChange)="clearFieldError('firstName')" />
+      @if (fieldErrors['firstName']) { <div class="invalid-feedback">{{ fieldErrors['firstName'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Last Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['lastName']"
+             [(ngModel)]="user.lastName" name="lastName"
+             (ngModelChange)="clearFieldError('lastName')" />
+      @if (fieldErrors['lastName']) { <div class="invalid-feedback">{{ fieldErrors['lastName'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Email Address <span class="text-danger">*</span></label>
+      <input type="email" class="form-control" [class.is-invalid]="fieldErrors['email']"
+             [(ngModel)]="user.email" name="email"
+             (ngModelChange)="clearFieldError('email')" />
+      @if (fieldErrors['email']) { <div class="invalid-feedback">{{ fieldErrors['email'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Organisation / Club</label>
+      <input class="form-control" [(ngModel)]="user.organisation" name="organisation" />
+    </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="administrator"
+             [(ngModel)]="user.administrator" name="administrator" />
+      <label class="form-check-label" for="administrator">Administrator</label>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">
+        Password @if (!isNew) { <span class="text-muted fw-normal">(leave blank to keep current)</span> }
+        @if (isNew) { <span class="text-danger">*</span> }
+      </label>
+      <input type="password" class="form-control" [class.is-invalid]="fieldErrors['password']"
+             [(ngModel)]="user.password" name="password"
+             (ngModelChange)="clearFieldError('password'); clearFieldError('passwordConfirm')" />
+      @if (fieldErrors['password']) { <div class="invalid-feedback">{{ fieldErrors['password'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">
+        Confirm Password @if (isNew) { <span class="text-danger">*</span> }
+      </label>
+      <input type="password" class="form-control" [class.is-invalid]="fieldErrors['passwordConfirm']"
+             [(ngModel)]="passwordConfirm" name="passwordConfirm"
+             (ngModelChange)="clearFieldError('passwordConfirm')" />
+      @if (fieldErrors['passwordConfirm']) { <div class="invalid-feedback">{{ fieldErrors['passwordConfirm'] }}</div> }
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

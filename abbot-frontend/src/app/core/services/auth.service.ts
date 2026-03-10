@@ -53,4 +53,8 @@ export class AuthService {
       this.router.navigate(['/']);
     }
   }
+
+  clearAuth(): void {
+    this.userSignal.set(null);
+  }
 }
