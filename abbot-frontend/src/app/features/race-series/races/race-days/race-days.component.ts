@@ -1,15 +1,18 @@
 import { Component, inject, signal, OnInit, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { RaceService } from '../../../../core/services/race.service';
 import { RaceResultService } from '../../../../core/services/race-result.service';
 import { Race, RaceDay, RaceResult } from '../../../../core/models/race.model';
 import { Page } from '../../../../core/models/race-series.model';
+import { RaceResultFormComponent } from '../race-result-form/race-result-form.component';
+import { AddNonStartersFormComponent } from '../add-non-starters-form/add-non-starters-form.component';
+import { RaceStatusFormComponent } from '../race-status-form/race-status-form.component';
 
 @Component({
   selector: 'app-race-days',
   standalone: true,
-  imports: [DatePipe, NgbPaginationModule],
+  imports: [DatePipe, NgbPaginationModule, RaceResultFormComponent, AddNonStartersFormComponent, RaceStatusFormComponent],
   templateUrl: './race-days.component.html',
   styles: [`
     .tree-node {
@@ -34,6 +37,7 @@ export class RaceDaysComponent implements OnInit {
 
   private readonly raceService = inject(RaceService);
   private readonly raceResultService = inject(RaceResultService);
+  private readonly modalService = inject(NgbModal);
 
   raceDays = signal<RaceDay[]>([]);
   loading = signal(false);
@@ -131,6 +135,47 @@ export class RaceDaysComponent implements OnInit {
     } catch {
       this.resultsError.set('Failed to update handicaps.');
     }
+  }
+
+  async updateRaceStatus(): Promise<void> {
+    const race = this.selectedRace();
+    if (!race) return;
+    const ref = this.modalService.open(RaceStatusFormComponent);
+    ref.componentInstance.seriesId = this.seriesId;
+    ref.componentInstance.race = race;
+    try {
+      const newStatus = await ref.result;
+      // Update the local race object so the badge reflects the change immediately
+      this.selectedRace.set({ ...race, raceStatus: newStatus });
+      await this.loadResults();
+    } catch { /* dismissed */ }
+  }
+
+  async addNonStarters(): Promise<void> {
+    const race = this.selectedRace();
+    if (!race) return;
+    const ref = this.modalService.open(AddNonStartersFormComponent);
+    ref.componentInstance.seriesId = this.seriesId;
+    ref.componentInstance.raceId = race.id;
+    try { await ref.result; await this.loadResults(); } catch { /* dismissed */ }
+  }
+
+  async openResultForm(resultId?: number): Promise<void> {
+    const race = this.selectedRace();
+    if (!race) return;
+    const ref = this.modalService.open(RaceResultFormComponent);
+    ref.componentInstance.seriesId = this.seriesId;
+    ref.componentInstance.race = race;
+    if (resultId !== undefined) {
+      try {
+        ref.componentInstance.result = await this.raceResultService.getById(this.seriesId, race.id!, resultId);
+      } catch {
+        this.resultsError.set('Failed to load result.');
+        ref.dismiss();
+        return;
+      }
+    }
+    try { await ref.result; await this.loadResults(); } catch { /* dismissed */ }
   }
 
   onPageChange(p: number): void {

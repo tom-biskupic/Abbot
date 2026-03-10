@@ -79,6 +79,13 @@ export interface Boat {
   crew?: string;
 }
 
+export interface Handicap {
+  id?: number;
+  boatID: number;
+  raceID: number;
+  value: number;
+}
+
 export type ResultStatus =
   'FINISHED' | 'DNS' | 'DNF' | 'DNC' | 'OCS' |
   'ZFP' | 'UFD' | 'BFD' | 'SCP' | 'RET' |

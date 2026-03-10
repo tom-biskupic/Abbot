@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Race, RaceDay, ValidationResponse } from '../models/race.model';
+import { Race, RaceDay, RaceStatus, ValidationResponse } from '../models/race.model';
+
+export interface RaceStatusUpdate {
+  raceStatus: RaceStatus;
+  addDNSBoats: boolean;
+  resultStatusForNonStarters: string;
+  updateHandicaps: boolean;
+}
 import { Page } from '../models/race-series.model';
 
 @Injectable({ providedIn: 'root' })
@@ -27,5 +34,10 @@ export class RaceService {
 
   getRaceDays(seriesId: number): Promise<RaceDay[]> {
     return firstValueFrom(this.http.get<RaceDay[]>(`/raceseries/${seriesId}/racedays.json`));
+  }
+
+  updateRaceStatus(seriesId: number, raceId: number, update: RaceStatusUpdate): Promise<ValidationResponse> {
+    return firstValueFrom(this.http.post<ValidationResponse>(
+      `/raceseries/${seriesId}/racestatus.json/${raceId}`, update));
   }
 }

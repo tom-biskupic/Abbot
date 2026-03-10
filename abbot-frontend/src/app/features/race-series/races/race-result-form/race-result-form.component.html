@@ -1,0 +1,76 @@
+<div class="modal-header">
+  <h4 class="modal-title">Race Result</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  @if (loading) {
+    <p class="text-muted">Loading...</p>
+  } @else {
+    <form>
+      <div class="mb-3">
+        <label class="form-label">Boat <span class="text-danger">*</span></label>
+        <select class="form-select" [class.is-invalid]="fieldErrors['boat']"
+                [(ngModel)]="selectedBoat" name="boat"
+                [compareWith]="compareById"
+                (ngModelChange)="onBoatChanged(); clearFieldError('boat')">
+          <option [ngValue]="undefined">-- Select boat --</option>
+          @for (boat of boats; track boat.id) {
+            <option [ngValue]="boat">{{ boat.name }}</option>
+          }
+        </select>
+        @if (fieldErrors['boat']) { <div class="invalid-feedback">{{ fieldErrors['boat'] }}</div> }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Status <span class="text-danger">*</span></label>
+        <select class="form-select" [class.is-invalid]="fieldErrors['status']"
+                [(ngModel)]="selectedStatus" name="status"
+                (ngModelChange)="clearFieldError('status')">
+          @for (s of statusValues; track s.id) {
+            <option [value]="s.id">{{ s.label }}</option>
+          }
+        </select>
+        @if (fieldErrors['status']) { <div class="invalid-feedback">{{ fieldErrors['status'] }}</div> }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Start Time</label>
+        <input type="time" class="form-control" [class.is-invalid]="fieldErrors['startTime']"
+               step="1" [(ngModel)]="startTimeStr" name="startTime"
+               (ngModelChange)="clearFieldError('startTime')" />
+        @if (fieldErrors['startTime']) { <div class="invalid-feedback">{{ fieldErrors['startTime'] }}</div> }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Finish Time</label>
+        <input type="time" class="form-control" [class.is-invalid]="fieldErrors['finishTime']"
+               step="1" [(ngModel)]="finishTimeStr" name="finishTime"
+               (ngModelChange)="clearFieldError('finishTime')" />
+        @if (fieldErrors['finishTime']) { <div class="invalid-feedback">{{ fieldErrors['finishTime'] }}</div> }
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="overrideHandicap"
+               [(ngModel)]="overrideHandicap" name="overrideHandicap"
+               (ngModelChange)="onOverrideChanged()" />
+        <label class="form-check-label" for="overrideHandicap">Override calculated handicap?</label>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Handicap</label>
+        <input type="number" class="form-control" [class.is-invalid]="fieldErrors['handicap']"
+               [(ngModel)]="handicap" name="handicap" min="0" max="99" step="0.5"
+               [disabled]="!overrideHandicap"
+               (ngModelChange)="clearFieldError('handicap')" />
+        @if (fieldErrors['handicap']) { <div class="invalid-feedback">{{ fieldErrors['handicap'] }}</div> }
+      </div>
+    </form>
+  }
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving || loading" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>
