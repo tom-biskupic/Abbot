@@ -21,8 +21,4 @@ abbot-frontend/node_modules/
 abbot-frontend/.angular/
 
 # Angular - build output (compiled into src/main/resources/static/)
-src/main/resources/static/*.js
-src/main/resources/static/*.js.map
-src/main/resources/static/*.css
-src/main/resources/static/*.css.map
-src/main/resources/static/3rdpartylicenses.txt
+src/main/resources/static/
