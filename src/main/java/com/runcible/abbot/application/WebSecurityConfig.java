@@ -78,6 +78,7 @@ public class WebSecurityConfig {
                     "/favicon.ico",
                     "/*.js",
                     "/*.css",
+                    "/media/**",
                     "/css/**",
                     "/js/**",
                     "/img/**",
