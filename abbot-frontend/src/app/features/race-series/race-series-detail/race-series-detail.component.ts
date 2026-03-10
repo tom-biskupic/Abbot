@@ -6,11 +6,13 @@ import { RaceSeries } from '../../../core/models/race-series.model';
 import { RaceListComponent } from '../races/race-list/race-list.component';
 import { RaceDaysComponent } from '../races/race-days/race-days.component';
 import { SettingsPanelComponent } from '../settings/settings-panel/settings-panel.component';
+import { BoatListComponent } from '../boats/boat-list/boat-list.component';
+import { ExportPanelComponent } from '../export/export-panel.component';
 
 @Component({
   selector: 'app-race-series-detail',
   standalone: true,
-  imports: [NgbNavModule, RaceListComponent, RaceDaysComponent, SettingsPanelComponent],
+  imports: [NgbNavModule, RaceListComponent, RaceDaysComponent, SettingsPanelComponent, BoatListComponent, ExportPanelComponent],
   templateUrl: './race-series-detail.component.html'
 })
 export class RaceSeriesDetailComponent implements OnInit {

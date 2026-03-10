@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h4 class="modal-title">Update Race Status</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (error) { <div class="alert alert-danger">{{ error }}</div> }
+
+  <div class="mb-3">
+    <label class="form-label">Race Status</label>
+    <select class="form-select" [(ngModel)]="raceStatus" name="raceStatus">
+      @for (s of raceStatusOptions; track s.id) {
+        <option [value]="s.id">{{ s.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (raceStatus === 'COMPLETED') {
+    <div class="border rounded p-3">
+      <p class="fw-semibold mb-2">Update Race</p>
+
+      <div class="form-check mb-2">
+        <input type="checkbox" class="form-check-input" id="addDNSBoats"
+               [(ngModel)]="addDNSBoats" name="addDNSBoats" />
+        <label class="form-check-label" for="addDNSBoats">
+          Add results for boats that did not start?
+        </label>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Result status for non-starting boats</label>
+        <select class="form-select" [(ngModel)]="resultStatusForNonStarters"
+                name="resultStatusForNonStarters" [disabled]="!addDNSBoats">
+          @for (s of nonStarterStatusOptions; track s.id) {
+            <option [value]="s.id">{{ s.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="updateHandicaps"
+               [(ngModel)]="updateHandicaps" name="updateHandicaps" />
+        <label class="form-check-label" for="updateHandicaps">
+          Update handicaps from results?
+        </label>
+      </div>
+    </div>
+  }
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

@@ -75,7 +75,7 @@
           <button class="btn btn-outline-primary" (click)="loadResults()" title="Refresh">
             <i class="bi bi-arrow-clockwise"></i> Refresh
           </button>
-          <button class="btn btn-outline-primary" title="New Result">
+          <button class="btn btn-outline-primary" title="New Result" (click)="openResultForm()">
             <i class="bi bi-pencil"></i> New
           </button>
         </div>
@@ -84,10 +84,10 @@
       <!-- Race actions -->
       <div class="d-flex align-items-center gap-2 mb-3">
         <span class="badge bg-secondary">{{ race.raceStatus }}</span>
-        <button class="btn btn-sm btn-outline-secondary" title="Update Race Status">
+        <button class="btn btn-sm btn-outline-secondary" title="Update Race Status" (click)="updateRaceStatus()">
           Update Race Status
         </button>
-        <button class="btn btn-sm btn-outline-secondary" title="Add Non-starters">
+        <button class="btn btn-sm btn-outline-secondary" title="Add Non-starters" (click)="addNonStarters()">
           Add Non-starters
         </button>
         <button class="btn btn-sm btn-outline-secondary" (click)="updateHandicaps()" title="Update Handicaps">
@@ -128,7 +128,7 @@
                             (click)="deleteResult(result.id!)">
                       <i class="bi bi-x"></i>
                     </button>
-                    <a style="cursor:pointer" class="text-primary">{{ result.boat.name }}</a>
+                    <a style="cursor:pointer" class="text-primary" (click)="openResultForm(result.id)">{{ result.boat.name }}</a>
                   </td>
                   <td>{{ result.boat.sailNumber }}</td>
                   <td>{{ result.handicap }}</td>

@@ -1,0 +1,62 @@
+<div class="modal-header">
+  <h4 class="modal-title">Boat</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  <form>
+    <div class="mb-3">
+      <label class="form-label">Sail Number <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['sailNumber']"
+             [(ngModel)]="boat.sailNumber" name="sailNumber" autofocus
+             (ngModelChange)="clearFieldError('sailNumber')" />
+      @if (fieldErrors['sailNumber']) { <div class="invalid-feedback">{{ fieldErrors['sailNumber'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Boat Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['name']"
+             [(ngModel)]="boat.name" name="name"
+             (ngModelChange)="clearFieldError('name')" />
+      @if (fieldErrors['name']) { <div class="invalid-feedback">{{ fieldErrors['name'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Boat Class <span class="text-danger">*</span></label>
+      <select class="form-select" [class.is-invalid]="fieldErrors['boatClass']"
+              [(ngModel)]="boat.boatClass" name="boatClass"
+              [compareWith]="compareById"
+              (ngModelChange)="onBoatClassChange(); clearFieldError('boatClass')">
+        <option [ngValue]="undefined">-- Select class --</option>
+        @for (bc of boatClasses; track bc.id) {
+          <option [ngValue]="bc">{{ bc.name }}</option>
+        }
+      </select>
+      @if (fieldErrors['boatClass']) { <div class="invalid-feedback">{{ fieldErrors['boatClass'] }}</div> }
+    </div>
+    @if (availableDivisions.length > 0) {
+      <div class="mb-3">
+        <label class="form-label">Boat Division</label>
+        <select class="form-select" [(ngModel)]="boat.division" name="division"
+                [compareWith]="compareById">
+          <option [ngValue]="undefined">-- Select division --</option>
+          @for (div of availableDivisions; track div.id) {
+            <option [ngValue]="div">{{ div.name }}</option>
+          }
+        </select>
+      </div>
+    }
+    <div class="mb-3">
+      <label class="form-label">Skipper Name</label>
+      <input class="form-control" [(ngModel)]="boat.skipper" name="skipper" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Crew Name</label>
+      <input class="form-control" [(ngModel)]="boat.crew" name="crew" />
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

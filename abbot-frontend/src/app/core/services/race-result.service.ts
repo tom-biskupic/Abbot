@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { RaceResult, ValidationResponse } from '../models/race.model';
+import { Boat, Handicap, RaceResult, ValidationResponse } from '../models/race.model';
 import { Page } from '../models/race-series.model';
 
 @Injectable({ providedIn: 'root' })
@@ -32,5 +32,20 @@ export class RaceResultService {
   updateHandicaps(seriesId: number, raceId: number): Promise<ValidationResponse> {
     return firstValueFrom(this.http.post<ValidationResponse>(
       `/raceseries/${seriesId}/race/${raceId}/updatehandicaps.json`, '{}'));
+  }
+
+  addNonStarters(seriesId: number, raceId: number, resultStatus: string): Promise<ValidationResponse> {
+    return firstValueFrom(this.http.post<ValidationResponse>(
+      `/raceseries/${seriesId}/race/${raceId}/addnonstarters.json`, resultStatus));
+  }
+
+  getBoatsNotSelected(seriesId: number, raceId: number): Promise<Boat[]> {
+    return firstValueFrom(this.http.get<Boat[]>(
+      `/raceseries/${seriesId}/race/${raceId}/boatsnotselected.json`));
+  }
+
+  getHandicapsForFleet(seriesId: number, fleetId: number, raceId: number): Promise<Handicap[]> {
+    return firstValueFrom(this.http.get<Handicap[]>(
+      `/raceseries/${seriesId}/fleet/${fleetId}/${raceId}/handicaplist.json`));
   }
 }

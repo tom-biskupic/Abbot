@@ -25,7 +25,7 @@
     <li [ngbNavItem]="'boats'">
       <button ngbNavLink>Registered Boats</button>
       <ng-template ngbNavContent>
-        <p class="mt-3 text-muted">Registered boats coming soon.</p>
+        <app-boat-list [seriesId]="series.id!" />
       </ng-template>
     </li>
     <li [ngbNavItem]="'points'">
@@ -37,7 +37,7 @@
     <li [ngbNavItem]="'export'">
       <button ngbNavLink>Export</button>
       <ng-template ngbNavContent>
-        <p class="mt-3 text-muted">Export coming soon.</p>
+        <app-export-panel [seriesId]="series.id!" />
       </ng-template>
     </li>
     <li [ngbNavItem]="'settings'">
