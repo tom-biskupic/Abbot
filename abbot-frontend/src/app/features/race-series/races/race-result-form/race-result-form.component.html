@@ -36,18 +36,38 @@
 
       <div class="mb-3">
         <label class="form-label">Start Time</label>
-        <input type="time" class="form-control" [class.is-invalid]="fieldErrors['startTime']"
-               step="1" [(ngModel)]="startTimeStr" name="startTime"
-               (ngModelChange)="clearFieldError('startTime')" />
-        @if (fieldErrors['startTime']) { <div class="invalid-feedback">{{ fieldErrors['startTime'] }}</div> }
+        <div class="d-flex align-items-center gap-1" [class.is-invalid]="fieldErrors['startTime']">
+          <input type="number" class="form-control text-center" style="width:4.5rem"
+                 min="0" max="23" [(ngModel)]="startH" name="startH"
+                 (ngModelChange)="onStartTimeChanged()" placeholder="HH" />
+          <span>:</span>
+          <input type="number" class="form-control text-center" style="width:4.5rem"
+                 min="0" max="59" [(ngModel)]="startM" name="startM"
+                 (ngModelChange)="onStartTimeChanged()" placeholder="MM" />
+          <span>:</span>
+          <input type="number" class="form-control text-center" style="width:4.5rem"
+                 min="0" max="59" [(ngModel)]="startS" name="startS"
+                 (ngModelChange)="onStartTimeChanged()" placeholder="SS" />
+        </div>
+        @if (fieldErrors['startTime']) { <div class="invalid-feedback d-block">{{ fieldErrors['startTime'] }}</div> }
       </div>
 
       <div class="mb-3">
         <label class="form-label">Finish Time</label>
-        <input type="time" class="form-control" [class.is-invalid]="fieldErrors['finishTime']"
-               step="1" [(ngModel)]="finishTimeStr" name="finishTime"
-               (ngModelChange)="clearFieldError('finishTime')" />
-        @if (fieldErrors['finishTime']) { <div class="invalid-feedback">{{ fieldErrors['finishTime'] }}</div> }
+        <div class="d-flex align-items-center gap-1" [class.is-invalid]="fieldErrors['finishTime']">
+          <input type="number" class="form-control text-center" style="width:4.5rem"
+                 min="0" max="23" [(ngModel)]="finishH" name="finishH"
+                 (ngModelChange)="onFinishTimeChanged()" placeholder="HH" />
+          <span>:</span>
+          <input type="number" class="form-control text-center" style="width:4.5rem"
+                 min="0" max="59" [(ngModel)]="finishM" name="finishM"
+                 (ngModelChange)="onFinishTimeChanged()" placeholder="MM" />
+          <span>:</span>
+          <input type="number" class="form-control text-center" style="width:4.5rem"
+                 min="0" max="59" [(ngModel)]="finishS" name="finishS"
+                 (ngModelChange)="onFinishTimeChanged()" placeholder="SS" />
+        </div>
+        @if (fieldErrors['finishTime']) { <div class="invalid-feedback d-block">{{ fieldErrors['finishTime'] }}</div> }
       </div>
 
       <div class="mb-3 form-check">

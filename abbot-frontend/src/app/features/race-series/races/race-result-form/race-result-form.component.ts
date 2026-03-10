@@ -49,26 +49,34 @@ export class RaceResultFormComponent implements OnInit {
   // Form-bound values
   selectedBoat: Boat | undefined;
   selectedStatus: ResultStatus = 'FINISHED';
-  startTimeStr = '';
-  finishTimeStr = '';
+  startH = 0; startM = 0; startS = 0;
+  finishH = 0; finishM = 0; finishS = 0;
   overrideHandicap = false;
   handicap = 0;
 
   private editingResultId: number | undefined;
+  /** Composed strings used only internally for timeStrToMs() and lastStartTime */
+  private startTimeStr = '';
+  private finishTimeStr = '';
 
   set result(r: RaceResult) {
     this.editingResultId = r.id;
     this.selectedBoat = r.boat;
     this.selectedStatus = r.status ?? 'FINISHED';
-    this.startTimeStr = r.startTime ? this.msToTimeStr(r.startTime) : (lastStartTime ?? '');
-    this.finishTimeStr = r.finishTime ? this.msToTimeStr(r.finishTime) : '';
+    const startStr = r.startTime ? this.msToHms(r.startTime) : (lastStartTime ?? '');
+    [this.startH, this.startM, this.startS] = this.parseHms(startStr);
+    this.startTimeStr = startStr;
+    const finishStr = r.finishTime ? this.msToHms(r.finishTime) : '';
+    [this.finishH, this.finishM, this.finishS] = this.parseHms(finishStr);
+    this.finishTimeStr = finishStr;
     this.overrideHandicap = r.overrideHandicap ?? false;
     this.handicap = r.handicap ?? 0;
   }
 
   ngOnInit(): void {
     // Pre-fill start time from last used value when creating a new result
-    if (!this.editingResultId && !this.startTimeStr && lastStartTime) {
+    if (!this.editingResultId && lastStartTime) {
+      [this.startH, this.startM, this.startS] = this.parseHms(lastStartTime);
       this.startTimeStr = lastStartTime;
     }
 
@@ -111,25 +119,30 @@ export class RaceResultFormComponent implements OnInit {
 
   clearFieldError(f: string): void { delete this.fieldErrors[f]; }
 
+  onStartTimeChanged(): void { this.startTimeStr = this.buildHms(this.startH, this.startM, this.startS); this.clearFieldError('startTime'); }
+  onFinishTimeChanged(): void { this.finishTimeStr = this.buildHms(this.finishH, this.finishM, this.finishS); this.clearFieldError('finishTime'); }
+
   async ok(): Promise<void> {
     this.fieldErrors = {};
     this.generalError = null;
     this.saving = true;
+    const hasStart = this.startH || this.startM || this.startS;
+    const hasFinish = this.finishH || this.finishM || this.finishS;
     try {
       const result: RaceResult = {
         id: this.editingResultId,
         raceId: this.race.id,
         boat: this.selectedBoat!,
         status: this.selectedStatus,
-        startTime: this.startTimeStr ? this.timeStrToMs(this.startTimeStr) : undefined,
-        finishTime: this.finishTimeStr ? this.timeStrToMs(this.finishTimeStr) : undefined,
+        startTime: hasStart ? this.timeStrToMs(this.startTimeStr) : undefined,
+        finishTime: hasFinish ? this.timeStrToMs(this.finishTimeStr) : undefined,
         overrideHandicap: this.overrideHandicap,
         handicap: this.handicap,
       };
 
       const response = await this.service.save(this.seriesId, this.race.id!, result);
       if (response.status === 'SUCCESS') {
-        if (this.startTimeStr) lastStartTime = this.startTimeStr;
+        if (hasStart) lastStartTime = this.startTimeStr;
         this.modal.close();
       } else {
         this.applyErrors(response.errorMessageList ?? []);
@@ -149,9 +162,16 @@ export class RaceResultFormComponent implements OnInit {
     return this.handicaps.find(h => h.boatID === boatId)?.value ?? 0;
   }
 
-  private msToTimeStr(ms: number): string {
+  private pad(n: number): string { return String(n).padStart(2, '0'); }
+  private buildHms(h: number, m: number, s: number): string { return `${this.pad(h)}:${this.pad(m)}:${this.pad(s)}`; }
+  private parseHms(ts: string): [number, number, number] {
+    if (!ts) return [0, 0, 0];
+    const [h, m, s] = ts.split(':').map(Number);
+    return [h ?? 0, m ?? 0, s ?? 0];
+  }
+  private msToHms(ms: number): string {
     const d = new Date(ms);
-    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+    return this.buildHms(d.getHours(), d.getMinutes(), d.getSeconds());
   }
 
   private timeStrToMs(timeStr: string): number {
