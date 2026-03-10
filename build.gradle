@@ -7,6 +7,28 @@ plugins {
 version = '1.0.2'
 group = 'org.gradle.samples'
 
+def frontendDir = "$projectDir/abbot-frontend"
+def npm = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
+
+task npmInstall(type: Exec) {
+    workingDir frontendDir
+    commandLine npm, 'install'
+    inputs.file "$frontendDir/package.json"
+    inputs.file "$frontendDir/package-lock.json"
+    outputs.dir "$frontendDir/node_modules"
+}
+
+task buildFrontend(type: Exec) {
+    dependsOn npmInstall
+    workingDir frontendDir
+    commandLine npm, 'run', 'build'
+    inputs.dir "$frontendDir/src"
+    inputs.files "$frontendDir/angular.json", "$frontendDir/tsconfig.json", "$frontendDir/tsconfig.app.json"
+    outputs.dir "$projectDir/src/main/resources/static"
+}
+
+processResources.dependsOn buildFrontend
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))

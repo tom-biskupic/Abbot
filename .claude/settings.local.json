@@ -3,7 +3,13 @@
     "allow": [
       "Bash(xargs grep:*)",
       "Bash(git:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(npx ng:*)",
+      "Bash(grep:*)",
+      "Bash(./gradlew tasks:*)",
+      "Bash(cmd:*)",
+      "Bash(gradle tasks:*)",
+      "Bash(gradle dockerBuildImage:*)"
     ]
   }
 }
