@@ -12,18 +12,16 @@
 @if (!loading()) {
   @if (page(); as p) {
     <table class="table table-striped table-sm">
-      <thead><tr><th>Competition Name</th><th>Fleet Name</th></tr></thead>
+      <thead><tr><th>Competition Name</th><th>Fleet Name</th><th></th></tr></thead>
       <tbody>
         @for (comp of p.content; track comp.id) {
           <tr>
-            <td>
-              <button class="btn btn-sm btn-outline-danger me-1" (click)="deleteCompetition(comp.id!)"><i class="bi bi-x"></i></button>
-              <a style="cursor:pointer" class="text-primary" (click)="openForm(comp.id)">{{ comp.name }}</a>
-            </td>
+            <td><a style="cursor:pointer" class="text-primary" (click)="openForm(comp.id)">{{ comp.name }}</a></td>
             <td>{{ comp.fleet.fleetName }}</td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-danger" (click)="deleteCompetition(comp.id!)"><i class="bi bi-trash3"></i></button></td>
           </tr>
         } @empty {
-          <tr><td colspan="2" class="text-muted text-center">No competitions found.</td></tr>
+          <tr><td colspan="3" class="text-muted text-center">No competitions found.</td></tr>
         }
       </tbody>
     </table>

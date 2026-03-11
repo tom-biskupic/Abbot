@@ -118,18 +118,13 @@
                 <th>Corrected Time</th>
                 <th>Hcp Place</th>
                 <th>Scratch Place</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               @for (result of page.content; track result.id) {
                 <tr>
-                  <td>
-                    <button type="button" class="btn btn-sm btn-outline-danger me-1"
-                            (click)="deleteResult(result.id!)">
-                      <i class="bi bi-x"></i>
-                    </button>
-                    <a style="cursor:pointer" class="text-primary" (click)="openResultForm(result.id)">{{ result.boat.name }}</a>
-                  </td>
+                  <td><a style="cursor:pointer" class="text-primary" (click)="openResultForm(result.id)">{{ result.boat.name }}</a></td>
                   <td>{{ result.boat.sailNumber }}</td>
                   <td>{{ result.handicap }}</td>
                   <td>{{ result.status }}</td>
@@ -139,10 +134,15 @@
                   <td>{{ formatDuration(result.correctedTime) }}</td>
                   <td>{{ result.handicapPlace }}</td>
                   <td>{{ result.scratchPlace }}</td>
+                  <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteResult(result.id!)">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </td>
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="10" class="text-muted text-center">No results recorded yet.</td>
+                  <td colspan="11" class="text-muted text-center">No results recorded yet.</td>
                 </tr>
               }
             </tbody>

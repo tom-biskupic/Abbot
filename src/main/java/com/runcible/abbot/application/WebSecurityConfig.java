@@ -30,6 +30,9 @@ public class WebSecurityConfig {
     @Autowired
     RestAuthenticationFailureEntryPoint restAuthFailureHandler;
 
+    @Autowired
+    SpaAuthenticationEntryPoint spaAuthEntryPoint;
+
     private AuthenticationService authService;
 
     public WebSecurityConfig( AuthenticationService authService )
@@ -96,6 +99,9 @@ public class WebSecurityConfig {
                     "/perform_login"
                 ).permitAll()
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(spaAuthEntryPoint)
             )
             .formLogin(form -> form
                 .loginProcessingUrl("/perform_login")

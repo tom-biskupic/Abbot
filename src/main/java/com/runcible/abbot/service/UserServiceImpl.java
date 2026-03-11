@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.runcible.abbot.model.User;
+import com.runcible.abbot.repository.RaceSeriesUserRepository;
 import com.runcible.abbot.repository.UserRepository;
 import com.runcible.abbot.service.exceptions.DuplicateUserException;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -103,17 +104,32 @@ public class UserServiceImpl implements UserService
     public User findByEmail(String name) throws NoSuchUser
     {
         User user = userRepo.findByEmail(name);
-        
+
         if ( user == null )
         {
             throw new NoSuchUser();
         }
-        
+
         return user;
+    }
+
+    @Override
+    @Transactional(readOnly=false)
+    public void deleteUser(Integer id) throws NoSuchUser
+    {
+        if (!userRepo.existsById(id))
+        {
+            throw new NoSuchUser();
+        }
+        raceSeriesUserRepo.removeAllForUser(id);
+        userRepo.deleteById(id);
     }
 
 
     @Autowired
     UserRepository userRepo;
+
+    @Autowired
+    RaceSeriesUserRepository raceSeriesUserRepo;
 
 }

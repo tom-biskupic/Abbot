@@ -63,4 +63,11 @@ public interface UserService
      */
     public User findByEmail(String name) throws NoSuchUser;
 
+    /**
+     * Deletes the user with the specified ID.
+     * @param id The ID of the user to delete
+     * @throws NoSuchUser if no user with that ID exists
+     */
+    public void deleteUser(Integer id) throws NoSuchUser;
+
 }
