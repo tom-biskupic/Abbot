@@ -20,25 +20,26 @@
           <th>Division</th>
           <th>Skipper</th>
           <th>Crew</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         @for (boat of p.content; track boat.id) {
           <tr>
-            <td>
-              <button class="btn btn-sm btn-outline-danger me-1" (click)="delete(boat.id!)">
-                <i class="bi bi-x"></i>
-              </button>
-              <a style="cursor:pointer" class="text-primary" (click)="openForm(boat.id)">{{ boat.name }}</a>
-            </td>
+            <td><a style="cursor:pointer" class="text-primary" (click)="openForm(boat.id)">{{ boat.name }}</a></td>
             <td>{{ boat.sailNumber }}</td>
             <td>{{ boat.boatClass?.name }}</td>
             <td>{{ boat.division?.name }}</td>
             <td>{{ boat.skipper }}</td>
             <td>{{ boat.crew }}</td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-danger" (click)="delete(boat.id!)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </td>
           </tr>
         } @empty {
-          <tr><td colspan="6" class="text-muted text-center">No boats registered.</td></tr>
+          <tr><td colspan="7" class="text-muted text-center">No boats registered.</td></tr>
         }
       </tbody>
     </table>

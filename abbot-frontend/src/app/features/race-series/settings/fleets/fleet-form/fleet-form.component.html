@@ -28,7 +28,7 @@
         @for (fs of fleet.fleetClasses; track $index) {
           <div class="d-flex align-items-center mb-1">
             <button type="button" class="btn btn-sm btn-outline-danger me-2"
-                    (click)="removeFleetSelector(fs)"><i class="bi bi-x"></i></button>
+                    (click)="removeFleetSelector(fs)"><i class="bi bi-trash3"></i></button>
             {{ fs.boatClass.name }}
             @if (fs.boatDivision) { <span class="ms-1 text-muted">/ {{ fs.boatDivision.name }}</span> }
           </div>

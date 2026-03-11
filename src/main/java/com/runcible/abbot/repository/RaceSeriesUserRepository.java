@@ -44,4 +44,8 @@ public interface RaceSeriesUserRepository extends CrudRepository<RaceSeriesUser,
     void removeUser(
             @Param("seriesId") Integer series,
             @Param("userId") Integer userId );
+
+    @Modifying
+    @Query("delete from RaceSeriesUser r where r.user.id = :userId")
+    void removeAllForUser(@Param("userId") Integer userId);
 }

@@ -30,4 +30,8 @@ export class UserService {
   save(user: User): Promise<ValidationResponse> {
     return firstValueFrom(this.http.post<ValidationResponse>('/user.json', user));
   }
+
+  delete(id: number): Promise<void> {
+    return firstValueFrom(this.http.delete<void>(`/user.json/${id}`));
+  }
 }
