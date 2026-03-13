@@ -79,7 +79,7 @@ docker {
     springBootApplication {
         baseImage = 'eclipse-temurin:21-jdk-alpine'
         ports = [9090, 8080]
-        images = ['tombi/abbot:2.0', 'tombi/abbot:latest']
+        images = ['tombi/abbot:2.5', 'tombi/abbot:latest']
         jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m']
     }
 }
