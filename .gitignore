@@ -3,6 +3,9 @@
 /.gradle/
 /build/
 
+# Claude Code
+.claude/
+
 # Local dev
 /dev-certs/
 /.vscode/
