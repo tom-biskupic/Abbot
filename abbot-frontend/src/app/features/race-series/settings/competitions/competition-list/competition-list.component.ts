@@ -6,10 +6,9 @@ import { Competition } from '../../../../../core/models/race.model';
 import { Page } from '../../../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-competition-list',
-  standalone: true,
-  imports: [NgbPaginationModule],
-  templateUrl: './competition-list.component.html'
+    selector: 'app-competition-list',
+    imports: [NgbPaginationModule],
+    templateUrl: './competition-list.component.html'
 })
 export class CompetitionListComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;

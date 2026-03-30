@@ -10,10 +10,9 @@ import { BoatListComponent } from '../boats/boat-list/boat-list.component';
 import { ExportPanelComponent } from '../export/export-panel.component';
 
 @Component({
-  selector: 'app-race-series-detail',
-  standalone: true,
-  imports: [NgbNavModule, RaceListComponent, RaceDaysComponent, SettingsPanelComponent, BoatListComponent, ExportPanelComponent],
-  templateUrl: './race-series-detail.component.html'
+    selector: 'app-race-series-detail',
+    imports: [NgbNavModule, RaceListComponent, RaceDaysComponent, SettingsPanelComponent, BoatListComponent, ExportPanelComponent],
+    templateUrl: './race-series-detail.component.html'
 })
 export class RaceSeriesDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

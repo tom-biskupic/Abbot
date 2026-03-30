@@ -5,10 +5,9 @@ import { BoatClassService } from '../../../../../core/services/boat-class.servic
 import { BoatClass, FieldValidationError } from '../../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-boat-class-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './boat-class-form.component.html'
+    selector: 'app-boat-class-form',
+    imports: [FormsModule],
+    templateUrl: './boat-class-form.component.html'
 })
 export class BoatClassFormComponent {
   readonly modal = inject(NgbActiveModal);

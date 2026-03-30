@@ -10,10 +10,9 @@ import {
 } from '../../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-export-config-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './export-config-form.component.html'
+    selector: 'app-export-config-form',
+    imports: [FormsModule],
+    templateUrl: './export-config-form.component.html'
 })
 export class ExportConfigFormComponent implements OnInit {
   readonly modal = inject(NgbActiveModal);

@@ -5,10 +5,9 @@ import { RaceService } from '../../../../core/services/race.service';
 import { Race } from '../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-race-status-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './race-status-form.component.html'
+    selector: 'app-race-status-form',
+    imports: [FormsModule],
+    templateUrl: './race-status-form.component.html'
 })
 export class RaceStatusFormComponent {
   readonly modal = inject(NgbActiveModal);

@@ -7,10 +7,9 @@ import { Race } from '../../../../core/models/race.model'; // needed for Page<Ra
 import { Page } from '../../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-race-list',
-  standalone: true,
-  imports: [DatePipe, NgbPaginationModule],
-  templateUrl: './race-list.component.html'
+    selector: 'app-race-list',
+    imports: [DatePipe, NgbPaginationModule],
+    templateUrl: './race-list.component.html'
 })
 export class RaceListComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;

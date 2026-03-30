@@ -4,10 +4,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { RaceSeries, RaceSeriesType } from '../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-race-series-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './race-series-form.component.html'
+    selector: 'app-race-series-form',
+    imports: [FormsModule],
+    templateUrl: './race-series-form.component.html'
 })
 export class RaceSeriesFormComponent {
   readonly modal = inject(NgbActiveModal);

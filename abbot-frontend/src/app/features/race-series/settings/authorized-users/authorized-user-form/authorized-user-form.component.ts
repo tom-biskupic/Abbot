@@ -5,10 +5,9 @@ import { AuthorizedUserService } from '../../../../../core/services/authorized-u
 import { FieldValidationError } from '../../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-authorized-user-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './authorized-user-form.component.html'
+    selector: 'app-authorized-user-form',
+    imports: [FormsModule],
+    templateUrl: './authorized-user-form.component.html'
 })
 export class AuthorizedUserFormComponent {
   readonly modal = inject(NgbActiveModal);

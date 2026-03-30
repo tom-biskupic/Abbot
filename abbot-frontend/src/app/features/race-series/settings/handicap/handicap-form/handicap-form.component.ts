@@ -7,10 +7,9 @@ import { HandicapLimit } from '../../../../../core/models/settings.model';
 import { Fleet, FieldValidationError } from '../../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-handicap-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './handicap-form.component.html'
+    selector: 'app-handicap-form',
+    imports: [FormsModule],
+    templateUrl: './handicap-form.component.html'
 })
 export class HandicapFormComponent implements OnInit {
   readonly modal = inject(NgbActiveModal);

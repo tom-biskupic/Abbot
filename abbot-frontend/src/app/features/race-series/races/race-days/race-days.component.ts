@@ -10,11 +10,10 @@ import { AddNonStartersFormComponent } from '../add-non-starters-form/add-non-st
 import { RaceStatusFormComponent } from '../race-status-form/race-status-form.component';
 
 @Component({
-  selector: 'app-race-days',
-  standalone: true,
-  imports: [DatePipe, NgbPaginationModule, RaceResultFormComponent, AddNonStartersFormComponent, RaceStatusFormComponent],
-  templateUrl: './race-days.component.html',
-  styles: [`
+    selector: 'app-race-days',
+    imports: [DatePipe, NgbPaginationModule, RaceResultFormComponent, AddNonStartersFormComponent, RaceStatusFormComponent],
+    templateUrl: './race-days.component.html',
+    styles: [`
     .tree-node {
       cursor: pointer;
       user-select: none;

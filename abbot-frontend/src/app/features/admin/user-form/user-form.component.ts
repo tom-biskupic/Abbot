@@ -5,10 +5,9 @@ import { UserService, User } from '../../../core/services/user.service';
 import { FieldValidationError } from '../../../core/models/race.model';
 
 @Component({
-  selector: 'app-user-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './user-form.component.html'
+    selector: 'app-user-form',
+    imports: [FormsModule],
+    templateUrl: './user-form.component.html'
 })
 export class UserFormComponent {
   readonly modal = inject(NgbActiveModal);

@@ -6,10 +6,9 @@ import { UserSummary } from '../../../../../core/models/settings.model';
 import { Page } from '../../../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-authorized-user-list',
-  standalone: true,
-  imports: [NgbPaginationModule],
-  templateUrl: './authorized-user-list.component.html'
+    selector: 'app-authorized-user-list',
+    imports: [NgbPaginationModule],
+    templateUrl: './authorized-user-list.component.html'
 })
 export class AuthorizedUserListComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;

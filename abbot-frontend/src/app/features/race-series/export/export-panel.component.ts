@@ -5,10 +5,9 @@ import { FleetService } from '../../../core/services/fleet.service';
 import { ExportConfig, Fleet } from '../../../core/models/race.model';
 
 @Component({
-  selector: 'app-export-panel',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './export-panel.component.html'
+    selector: 'app-export-panel',
+    imports: [FormsModule],
+    templateUrl: './export-panel.component.html'
 })
 export class ExportPanelComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;

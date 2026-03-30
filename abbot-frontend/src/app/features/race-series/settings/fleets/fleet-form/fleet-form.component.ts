@@ -6,10 +6,9 @@ import { BoatClassService } from '../../../../../core/services/boat-class.servic
 import { Fleet, BoatClass, BoatDivision, FleetSelector, FieldValidationError } from '../../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-fleet-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './fleet-form.component.html'
+    selector: 'app-fleet-form',
+    imports: [FormsModule],
+    templateUrl: './fleet-form.component.html'
 })
 export class FleetFormComponent implements OnInit {
   readonly modal = inject(NgbActiveModal);

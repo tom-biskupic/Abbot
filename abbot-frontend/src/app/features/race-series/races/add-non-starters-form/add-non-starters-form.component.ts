@@ -4,10 +4,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { RaceResultService } from '../../../../core/services/race-result.service';
 
 @Component({
-  selector: 'app-add-non-starters-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './add-non-starters-form.component.html'
+    selector: 'app-add-non-starters-form',
+    imports: [FormsModule],
+    templateUrl: './add-non-starters-form.component.html'
 })
 export class AddNonStartersFormComponent {
   readonly modal = inject(NgbActiveModal);

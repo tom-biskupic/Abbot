@@ -6,10 +6,9 @@ import { UserFormComponent } from '../user-form/user-form.component';
 import { Page } from '../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-user-list',
-  standalone: true,
-  imports: [NgbPaginationModule],
-  templateUrl: './user-list.component.html'
+    selector: 'app-user-list',
+    imports: [NgbPaginationModule],
+    templateUrl: './user-list.component.html'
 })
 export class UserListComponent implements OnInit {
   private readonly service = inject(UserService);

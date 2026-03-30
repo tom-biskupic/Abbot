@@ -7,10 +7,9 @@ import { CompetitionService } from '../../../../core/services/competition.servic
 import { RaceService } from '../../../../core/services/race.service';
 
 @Component({
-  selector: 'app-race-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './race-form.component.html'
+    selector: 'app-race-form',
+    imports: [FormsModule],
+    templateUrl: './race-form.component.html'
 })
 export class RaceFormComponent implements OnInit {
   readonly modal = inject(NgbActiveModal);

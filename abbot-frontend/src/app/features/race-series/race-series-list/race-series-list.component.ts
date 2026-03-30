@@ -7,10 +7,9 @@ import { RaceSeriesFormComponent } from '../race-series-form/race-series-form.co
 import { RaceSeries, Page } from '../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-race-series-list',
-  standalone: true,
-  imports: [DatePipe, NgbPaginationModule],
-  templateUrl: './race-series-list.component.html'
+    selector: 'app-race-series-list',
+    imports: [DatePipe, NgbPaginationModule],
+    templateUrl: './race-series-list.component.html'
 })
 export class RaceSeriesListComponent implements OnInit {
   private readonly service = inject(RaceSeriesService);

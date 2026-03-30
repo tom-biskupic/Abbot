@@ -25,10 +25,9 @@ const STATUS_LABELS: { id: ResultStatus; label: string }[] = [
 let lastStartTime: string | null = null;
 
 @Component({
-  selector: 'app-race-result-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './race-result-form.component.html'
+    selector: 'app-race-result-form',
+    imports: [FormsModule],
+    templateUrl: './race-result-form.component.html'
 })
 export class RaceResultFormComponent implements OnInit {
   readonly modal = inject(NgbActiveModal);

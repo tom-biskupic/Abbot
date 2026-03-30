@@ -8,18 +8,17 @@ import { AuthorizedUserListComponent } from '../authorized-users/authorized-user
 import { ExportConfigListComponent } from '../export-configs/export-config-list/export-config-list.component';
 
 @Component({
-  selector: 'app-settings-panel',
-  standalone: true,
-  imports: [
-    NgbAccordionModule,
-    BoatClassListComponent,
-    FleetListComponent,
-    CompetitionListComponent,
-    HandicapListComponent,
-    AuthorizedUserListComponent,
-    ExportConfigListComponent
-  ],
-  templateUrl: './settings-panel.component.html'
+    selector: 'app-settings-panel',
+    imports: [
+        NgbAccordionModule,
+        BoatClassListComponent,
+        FleetListComponent,
+        CompetitionListComponent,
+        HandicapListComponent,
+        AuthorizedUserListComponent,
+        ExportConfigListComponent
+    ],
+    templateUrl: './settings-panel.component.html'
 })
 export class SettingsPanelComponent {
   @Input({ required: true }) seriesId!: number;

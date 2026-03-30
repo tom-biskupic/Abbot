@@ -6,10 +6,9 @@ import { Boat } from '../../../../core/models/race.model';
 import { Page } from '../../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-boat-list',
-  standalone: true,
-  imports: [NgbPaginationModule],
-  templateUrl: './boat-list.component.html'
+    selector: 'app-boat-list',
+    imports: [NgbPaginationModule],
+    templateUrl: './boat-list.component.html'
 })
 export class BoatListComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;

@@ -6,10 +6,9 @@ import { FleetService } from '../../../../../core/services/fleet.service';
 import { Competition, Fleet, FieldValidationError } from '../../../../../core/models/race.model';
 
 @Component({
-  selector: 'app-competition-form',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './competition-form.component.html'
+    selector: 'app-competition-form',
+    imports: [FormsModule],
+    templateUrl: './competition-form.component.html'
 })
 export class CompetitionFormComponent implements OnInit {
   readonly modal = inject(NgbActiveModal);

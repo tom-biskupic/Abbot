@@ -6,10 +6,9 @@ import { ExportConfig } from '../../../../../core/models/race.model';
 import { Page } from '../../../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-export-config-list',
-  standalone: true,
-  imports: [NgbPaginationModule],
-  templateUrl: './export-config-list.component.html'
+    selector: 'app-export-config-list',
+    imports: [NgbPaginationModule],
+    templateUrl: './export-config-list.component.html'
 })
 export class ExportConfigListComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;

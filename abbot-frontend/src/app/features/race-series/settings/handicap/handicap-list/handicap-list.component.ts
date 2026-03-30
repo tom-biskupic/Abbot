@@ -6,10 +6,9 @@ import { HandicapLimit } from '../../../../../core/models/settings.model';
 import { Page } from '../../../../../core/models/race-series.model';
 
 @Component({
-  selector: 'app-handicap-list',
-  standalone: true,
-  imports: [NgbPaginationModule],
-  templateUrl: './handicap-list.component.html'
+    selector: 'app-handicap-list',
+    imports: [NgbPaginationModule],
+    templateUrl: './handicap-list.component.html'
 })
 export class HandicapListComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;
