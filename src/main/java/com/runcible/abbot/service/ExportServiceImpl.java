@@ -99,19 +99,18 @@ public class ExportServiceImpl implements ExportService
     public String exportAll(Integer raceSeriesID, ExportConfig config)
             throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
     {
-        String tableClass = config.getTableClass() != null ? config.getTableClass() : "results-table";
         StringBuffer result = new StringBuffer();
         for (ExportConfigItem item : config.getItems())
         {
             if (item instanceof CompetitionExportConfigItem competitionItem)
             {
-                result.append(exportCompetition(raceSeriesID, competitionItem.getCompetitionId(), tableClass));
+                result.append(exportCompetition(raceSeriesID, competitionItem.getCompetitionId()));
             }
             else if (item instanceof FleetExportConfigItem fleetItem)
             {
                 Fleet fleet = fleetService.getFleetByID(fleetItem.getFleetId());
                 result.append("<h2>").append(fleet.getFleetName()).append("</h2>\n");
-                appendRacesForFleet(raceSeriesID, fleet, tableClass, result);
+                appendRacesForFleet(raceSeriesID, fleet, result);
                 audit.auditEvent(AuditEventType.EXPORTED, raceSeriesID, "Races", fleet.getFleetName());
             }
         }
@@ -122,7 +121,7 @@ public class ExportServiceImpl implements ExportService
     {
         Fleet fleet = fleetService.getFleetByID(fleetID);
         StringBuffer buffer = new StringBuffer();
-        appendRacesForFleet(raceSeriesID, fleet, "results-table", buffer);
+        appendRacesForFleet(raceSeriesID, fleet, buffer);
         audit.auditEvent(
                 AuditEventType.EXPORTED,
                 raceSeriesID,
@@ -131,17 +130,17 @@ public class ExportServiceImpl implements ExportService
         return buffer.toString();
     }
 
-    private void appendRacesForFleet(Integer raceSeriesID, Fleet fleet, String tableClass, StringBuffer buffer)
+    private void appendRacesForFleet(Integer raceSeriesID, Fleet fleet, StringBuffer buffer)
             throws NoSuchUser, UserNotPermitted
     {
         List<Race> races = raceService.getRacesForFleet(raceSeriesID, fleet.getId());
         for (Race race : races)
         {
-            exportRace(race, tableClass, buffer);
+            exportRace(race, buffer);
         }
     }
-
-    private void exportRace(Race race, String tableClass, StringBuffer buffer) throws NoSuchUser, UserNotPermitted
+    
+    private void exportRace(Race race, StringBuffer buffer) throws NoSuchUser, UserNotPermitted
     {
         List<RaceResult> results = raceResultService.findAll(race.getId());
         
