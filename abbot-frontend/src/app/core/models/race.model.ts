@@ -91,6 +91,26 @@ export type ResultStatus =
   'ZFP' | 'UFD' | 'BFD' | 'SCP' | 'RET' |
   'DSQ' | 'DNE' | 'RDG' | 'DPI';
 
+export interface CompetitionExportConfigItem {
+  itemType: 'COMPETITION';
+  competitionId: number;
+}
+
+export interface FleetExportConfigItem {
+  itemType: 'FLEET';
+  fleetId: number;
+}
+
+export type ExportConfigItem = CompetitionExportConfigItem | FleetExportConfigItem;
+
+export interface ExportConfig {
+  id?: number;
+  name: string;
+  raceSeriesId?: number;
+  tableClass: string;
+  items: ExportConfigItem[];
+}
+
 export interface RaceResult {
   id?: number;
   raceId?: number;

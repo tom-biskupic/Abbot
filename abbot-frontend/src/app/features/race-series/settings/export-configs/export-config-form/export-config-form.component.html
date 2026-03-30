@@ -1,0 +1,72 @@
+<div class="modal-header">
+  <h4 class="modal-title">Export Configuration</h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (generalError) { <div class="alert alert-danger">{{ generalError }}</div> }
+  <form>
+    <div class="mb-3">
+      <label class="form-label">Name <span class="text-danger">*</span></label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['name']"
+             [(ngModel)]="config.name" name="name" (ngModelChange)="clearFieldError('name')" />
+      @if (fieldErrors['name']) { <div class="invalid-feedback">{{ fieldErrors['name'] }}</div> }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Table CSS Class</label>
+      <input class="form-control" [class.is-invalid]="fieldErrors['tableClass']"
+             [(ngModel)]="config.tableClass" name="tableClass" (ngModelChange)="clearFieldError('tableClass')" />
+      @if (fieldErrors['tableClass']) { <div class="invalid-feedback">{{ fieldErrors['tableClass'] }}</div> }
+    </div>
+
+    <label class="form-label">Items</label>
+    <div class="border rounded p-2 mb-3">
+      @if (config.items.length === 0) {
+        <p class="text-muted small mb-0 text-center">No items added yet.</p>
+      }
+      @for (item of config.items; track $index) {
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="badge" [class.bg-primary]="item.itemType === 'COMPETITION'" [class.bg-secondary]="item.itemType === 'FLEET'">
+            {{ item.itemType === 'COMPETITION' ? 'Competition' : 'Fleet' }}
+          </span>
+          <span class="flex-grow-1">{{ itemLabel(item) }}</span>
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-secondary" title="Move up"
+                    [disabled]="$index === 0" (click)="moveUp($index)"><i class="bi bi-arrow-up"></i></button>
+            <button type="button" class="btn btn-outline-secondary" title="Move down"
+                    [disabled]="$index === config.items.length - 1" (click)="moveDown($index)"><i class="bi bi-arrow-down"></i></button>
+            <button type="button" class="btn btn-outline-danger" title="Remove" (click)="removeItem($index)"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+      }
+
+      <hr class="my-2" />
+
+      <div class="d-flex gap-2 mb-2">
+        <select class="form-select form-select-sm" [(ngModel)]="selectedFleetId" name="addFleet">
+          <option [ngValue]="null" disabled>Add fleet…</option>
+          @for (f of availableFleets; track f.id) { <option [ngValue]="f.id">{{ f.fleetName }}</option> }
+        </select>
+        <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap"
+                [disabled]="selectedFleetId === null" (click)="addFleet()">
+          <i class="bi bi-plus"></i> Add
+        </button>
+      </div>
+      <div class="d-flex gap-2">
+        <select class="form-select form-select-sm" [(ngModel)]="selectedCompetitionId" name="addCompetition">
+          <option [ngValue]="null" disabled>Add competition…</option>
+          @for (c of availableCompetitions; track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+        </select>
+        <button type="button" class="btn btn-sm btn-outline-primary text-nowrap"
+                [disabled]="selectedCompetitionId === null" (click)="addCompetition()">
+          <i class="bi bi-plus"></i> Add
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" [disabled]="saving" (click)="ok()">
+    @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> } OK
+  </button>
+  <button class="btn btn-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+</div>

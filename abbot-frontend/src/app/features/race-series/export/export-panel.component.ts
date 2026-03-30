@@ -1,9 +1,8 @@
 import { Component, inject, signal, OnInit, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExportService } from '../../../core/services/export.service';
-import { CompetitionService } from '../../../core/services/competition.service';
 import { FleetService } from '../../../core/services/fleet.service';
-import { Competition, Fleet } from '../../../core/models/race.model';
+import { ExportConfig, Fleet } from '../../../core/models/race.model';
 
 @Component({
   selector: 'app-export-panel',
@@ -15,20 +14,15 @@ export class ExportPanelComponent implements OnInit {
   @Input({ required: true }) seriesId!: number;
 
   private readonly exportService = inject(ExportService);
-  private readonly competitionService = inject(CompetitionService);
   private readonly fleetService = inject(FleetService);
 
-  competitions = signal<Competition[]>([]);
+  exportConfigs = signal<ExportConfig[]>([]);
   fleets = signal<Fleet[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 
-  // Points export
-  selectedCompetition: Competition | undefined;
-  competitionsToExport: Competition[] = [];
-
-  // Races export
-  selectedRacesFleet: Fleet | undefined;
+  // Export all
+  selectedExportConfig: ExportConfig | undefined;
 
   // Handicap export
   selectedHandicapFleet: Fleet | undefined;
@@ -36,10 +30,10 @@ export class ExportPanelComponent implements OnInit {
   ngOnInit(): void {
     this.loading.set(true);
     Promise.all([
-      this.competitionService.getAll(this.seriesId),
+      this.exportService.getConfigAll(this.seriesId),
       this.fleetService.getAll(this.seriesId),
-    ]).then(([competitions, fleets]) => {
-      this.competitions.set(competitions);
+    ]).then(([configs, fleets]) => {
+      this.exportConfigs.set(configs);
       this.fleets.set(fleets);
     }).catch(() => {
       this.error.set('Failed to load export data.');
@@ -48,39 +42,14 @@ export class ExportPanelComponent implements OnInit {
     });
   }
 
-  addCompetition(): void {
-    if (!this.selectedCompetition) return;
-    if (!this.competitionsToExport.some(c => c.id === this.selectedCompetition!.id)) {
-      this.competitionsToExport = [...this.competitionsToExport, this.selectedCompetition];
-    }
-  }
-
-  clearCompetitions(): void {
-    this.competitionsToExport = [];
-  }
-
-  async exportPoints(): Promise<void> {
-    if (this.competitionsToExport.length === 0) return;
+  async exportAll(): Promise<void> {
+    if (!this.selectedExportConfig) return;
     this.error.set(null);
     try {
-      const blob = await this.exportService.exportPoints(
-        this.seriesId,
-        this.competitionsToExport.map(c => c.id!)
-      );
-      this.saveBlob(blob, 'ExportedCompetitions.html');
+      const blob = await this.exportService.exportAll(this.seriesId, this.selectedExportConfig.id!);
+      this.saveBlob(blob, `${this.selectedExportConfig.name}.html`);
     } catch {
-      this.error.set('Failed to export points.');
-    }
-  }
-
-  async exportRaces(): Promise<void> {
-    if (!this.selectedRacesFleet) return;
-    this.error.set(null);
-    try {
-      const blob = await this.exportService.exportRaces(this.seriesId, this.selectedRacesFleet.id);
-      this.saveBlob(blob, `${this.selectedRacesFleet.fleetName}.html`);
-    } catch {
-      this.error.set('Failed to export races.');
+      this.error.set('Failed to export.');
     }
   }
 
