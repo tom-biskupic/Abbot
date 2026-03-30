@@ -41,6 +41,19 @@
 
   <div ngbAccordionItem>
     <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Export Configurations</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-export-config-list [seriesId]="seriesId" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div ngbAccordionItem>
+    <h2 ngbAccordionHeader>
       <button ngbAccordionButton>Handicap</button>
     </h2>
     <div ngbAccordionCollapse>

@@ -2,6 +2,7 @@ package com.runcible.abbot.service;
 
 import java.util.Collection;
 
+import com.runcible.abbot.model.ExportConfig;
 import com.runcible.abbot.service.exceptions.NoSuchCompetition;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -53,6 +54,19 @@ public interface ExportService
      * @throws NoSuchUser 
      * @throws NoSuchFleet 
      */
+    /**
+     * Exports a combined document containing competition points tables and/or race
+     * results for each item in the list. Fleet items are preceded by a fleet-name heading.
+     *
+     * @param raceSeriesID  The race series
+     * @param config        The saved export configuration
+     * @return The combined HTML
+     */
+    public String exportAll(
+            Integer      raceSeriesID,
+            ExportConfig config)
+                    throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet;
+
     public String exportHandicapTable(
             Integer raceSeriesId, 
             Integer fleetID,

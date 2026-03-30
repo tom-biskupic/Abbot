@@ -1,0 +1,34 @@
+<div class="d-flex align-items-center mb-2 mt-3">
+  <p class="mb-0 me-auto text-muted small">Saved export configurations combining competition points tables and race results.</p>
+  <div class="btn-group">
+    <button class="btn btn-outline-secondary btn-sm" title="New" (click)="openForm()"><i class="bi bi-pencil"></i></button>
+    <button class="btn btn-outline-secondary btn-sm" title="Refresh" (click)="load()"><i class="bi bi-arrow-clockwise"></i></button>
+  </div>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+@if (loading()) { <p class="text-muted">Loading...</p> }
+
+@if (!loading()) {
+  @if (page(); as p) {
+    <table class="table table-striped table-sm">
+      <thead><tr><th>Name</th><th>Table Class</th><th>Items</th><th></th></tr></thead>
+      <tbody>
+        @for (cfg of p.content; track cfg.id) {
+          <tr>
+            <td><a style="cursor:pointer" class="text-primary" (click)="openForm(cfg.id)">{{ cfg.name }}</a></td>
+            <td>{{ cfg.tableClass }}</td>
+            <td>{{ cfg.items.length }}</td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-danger" (click)="deleteConfig(cfg.id!)"><i class="bi bi-trash3"></i></button></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="4" class="text-muted text-center">No export configurations found.</td></tr>
+        }
+      </tbody>
+    </table>
+    @if (p.totalPages > 1) {
+      <ngb-pagination [collectionSize]="p.totalElements" [(page)]="currentPage" [pageSize]="pageSize"
+        (pageChange)="onPageChange($event)" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" />
+    }
+  }
+}

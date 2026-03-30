@@ -6,6 +6,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.runcible.abbot.model.CompetitionExportConfigItem;
+import com.runcible.abbot.model.ExportConfig;
+import com.runcible.abbot.model.ExportConfigItem;
+import com.runcible.abbot.model.FleetExportConfigItem;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -90,25 +95,49 @@ public class ExportServiceImpl implements ExportService
         return result.toString();
     }
 
+    @Override
+    public String exportAll(Integer raceSeriesID, ExportConfig config)
+            throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        StringBuffer result = new StringBuffer();
+        for (ExportConfigItem item : config.getItems())
+        {
+            if (item instanceof CompetitionExportConfigItem competitionItem)
+            {
+                result.append(exportCompetition(raceSeriesID, competitionItem.getCompetitionId()));
+            }
+            else if (item instanceof FleetExportConfigItem fleetItem)
+            {
+                Fleet fleet = fleetService.getFleetByID(fleetItem.getFleetId());
+                result.append("<h2>").append(fleet.getFleetName()).append("</h2>\n");
+                appendRacesForFleet(raceSeriesID, fleet, result);
+                audit.auditEvent(AuditEventType.EXPORTED, raceSeriesID, "Races", fleet.getFleetName());
+            }
+        }
+        return result.toString();
+    }
+
     public String exportRaces(Integer raceSeriesID, Integer fleetID) throws NoSuchUser, UserNotPermitted, NoSuchFleet
     {
         Fleet fleet = fleetService.getFleetByID(fleetID);
-        
-        List<Race> races = raceService.getRacesForFleet(raceSeriesID, fleetID);
         StringBuffer buffer = new StringBuffer();
-        
-        for(Race race : races)
-        {
-            exportRace(race,buffer);
-        }
-        
+        appendRacesForFleet(raceSeriesID, fleet, buffer);
         audit.auditEvent(
-                AuditEventType.EXPORTED, 
-                raceSeriesID, 
-                "Races", 
+                AuditEventType.EXPORTED,
+                raceSeriesID,
+                "Races",
                 fleet.getFleetName() );
-
         return buffer.toString();
+    }
+
+    private void appendRacesForFleet(Integer raceSeriesID, Fleet fleet, StringBuffer buffer)
+            throws NoSuchUser, UserNotPermitted
+    {
+        List<Race> races = raceService.getRacesForFleet(raceSeriesID, fleet.getId());
+        for (Race race : races)
+        {
+            exportRace(race, buffer);
+        }
     }
     
     private void exportRace(Race race, StringBuffer buffer) throws NoSuchUser, UserNotPermitted

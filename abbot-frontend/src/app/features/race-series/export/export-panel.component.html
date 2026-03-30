@@ -2,56 +2,25 @@
 @if (loading()) { <p class="text-muted mt-3">Loading...</p> }
 
 @if (!loading()) {
-  <!-- Export Points Tables -->
+  <!-- Export All -->
   <div class="border rounded p-3 mt-3">
-    <h6 class="fw-semibold mb-3">Export Points Tables</h6>
-
-    @if (competitionsToExport.length > 0) {
-      <table class="table table-striped table-sm mb-3">
-        <thead><tr><th>Competition Name</th></tr></thead>
-        <tbody>
-          @for (c of competitionsToExport; track c.id) {
-            <tr><td>{{ c.name }}</td></tr>
-          }
-        </tbody>
-      </table>
+    <h6 class="fw-semibold mb-3">Export</h6>
+    @if (exportConfigs().length === 0) {
+      <p class="text-muted small mb-0">No export configurations defined. Create one in Settings.</p>
     } @else {
-      <p class="text-muted small mb-3">No competitions selected for export.</p>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <select class="form-select form-select-sm" style="width: auto"
+                [(ngModel)]="selectedExportConfig" name="exportConfig"
+                [compareWith]="compareById">
+          <option [ngValue]="undefined">-- Select export configuration --</option>
+          @for (cfg of exportConfigs(); track cfg.id) {
+            <option [ngValue]="cfg">{{ cfg.name }}</option>
+          }
+        </select>
+        <button class="btn btn-sm btn-outline-primary" (click)="exportAll()"
+                [disabled]="!selectedExportConfig">Export</button>
+      </div>
     }
-
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <select class="form-select form-select-sm" style="width: auto"
-              [(ngModel)]="selectedCompetition" name="competition"
-              [compareWith]="compareById">
-        <option [ngValue]="undefined">-- Select competition --</option>
-        @for (c of competitions(); track c.id) {
-          <option [ngValue]="c">{{ c.name }}</option>
-        }
-      </select>
-      <button class="btn btn-sm btn-outline-secondary" (click)="addCompetition()"
-              [disabled]="!selectedCompetition">Add</button>
-      <button class="btn btn-sm btn-outline-primary" (click)="exportPoints()"
-              [disabled]="competitionsToExport.length === 0">Export Points</button>
-      <button class="btn btn-sm btn-outline-secondary" (click)="clearCompetitions()"
-              [disabled]="competitionsToExport.length === 0">Clear</button>
-    </div>
-  </div>
-
-  <!-- Export Races -->
-  <div class="border rounded p-3 mt-3">
-    <h6 class="fw-semibold mb-3">Export Races</h6>
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <select class="form-select form-select-sm" style="width: auto"
-              [(ngModel)]="selectedRacesFleet" name="racesFleet"
-              [compareWith]="compareById">
-        <option [ngValue]="undefined">-- Select fleet --</option>
-        @for (f of fleets(); track f.id) {
-          <option [ngValue]="f">{{ f.fleetName }}</option>
-        }
-      </select>
-      <button class="btn btn-sm btn-outline-primary" (click)="exportRaces()"
-              [disabled]="!selectedRacesFleet">Export</button>
-    </div>
   </div>
 
   <!-- Export Handicap Tables -->
