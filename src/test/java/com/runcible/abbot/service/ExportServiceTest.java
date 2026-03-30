@@ -88,9 +88,56 @@ public class ExportServiceTest
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    public void testExportAll_customTableClass_usedInCompetitionTable()
+            throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        setupCompetitionMocks();
+
+        String result = fixture.exportAll(
+                RACE_SERIES_ID,
+                configWith(CUSTOM_TABLE_CLASS, new CompetitionExportConfigItem(COMPETITION_ID)));
+
+        assertTrue(result.contains("<table class=\"" + CUSTOM_TABLE_CLASS + "\">"),
+                "Competition table should use the config's tableClass");
+    }
+
+    @Test
+    public void testExportAll_customTableClass_usedInRaceTable()
+            throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        setupFleetMocks();
+
+        String result = fixture.exportAll(
+                RACE_SERIES_ID,
+                configWith(CUSTOM_TABLE_CLASS, new FleetExportConfigItem(FLEET_ID)));
+
+        assertTrue(result.contains("<table class=\"" + CUSTOM_TABLE_CLASS + "\">"),
+                "Race table should use the config's tableClass");
+    }
+
+    @Test
+    public void testExportAll_nullTableClass_defaultsToResultsTable()
+            throws NoSuchCompetition, NoSuchUser, UserNotPermitted, NoSuchFleet
+    {
+        setupCompetitionMocks();
+
+        String result = fixture.exportAll(
+                RACE_SERIES_ID,
+                configWith((String) null, new CompetitionExportConfigItem(COMPETITION_ID)));
+
+        assertTrue(result.contains("<table class=\"results-table\">"),
+                "Null tableClass should fall back to results-table");
+    }
+
     private ExportConfig configWith(ExportConfigItem... items)
     {
         return new ExportConfig("test", RACE_SERIES_ID, "results-table", List.of(items));
+    }
+
+    private ExportConfig configWith(String tableClass, ExportConfigItem... items)
+    {
+        return new ExportConfig("test", RACE_SERIES_ID, tableClass, List.of(items));
     }
 
     private void setupCompetitionMocks()
@@ -120,7 +167,8 @@ public class ExportServiceTest
     private static final Integer RACE_ID          = 4;
     private static final String  COMPETITION_NAME = "Laser Championship";
     private static final String  FLEET_NAME       = "Laser Fleet";
-    private static final String  RACE_NAME        = "Race 1";
+    private static final String  RACE_NAME         = "Race 1";
+    private static final String  CUSTOM_TABLE_CLASS = "table table-striped table-light";
 
     @Mock private Competition          mockCompetition;
     @Mock private Fleet                mockFleet;
