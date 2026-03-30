@@ -11,7 +11,7 @@ import { RaceStatusFormComponent } from '../race-status-form/race-status-form.co
 
 @Component({
     selector: 'app-race-days',
-    imports: [DatePipe, NgbPaginationModule, RaceResultFormComponent, AddNonStartersFormComponent, RaceStatusFormComponent],
+    imports: [DatePipe, NgbPaginationModule],
     templateUrl: './race-days.component.html',
     styles: [`
     .tree-node {
