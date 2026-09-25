@@ -28,7 +28,7 @@
             <i class="bi me-1 text-warning"
                [class.bi-folder2-open]="isExpanded(raceDay.day)"
                [class.bi-folder2]="!isExpanded(raceDay.day)"></i>
-            <span class="small">{{ raceDay.day | date:'dd/MM/yyyy':'UTC' }}</span>
+            <span class="small">{{ raceDay.day | date:'dd/MM/yyyy' }}</span>
             <i class="bi ms-auto"
                [class.bi-chevron-down]="isExpanded(raceDay.day)"
                [class.bi-chevron-right]="!isExpanded(raceDay.day)"
@@ -69,7 +69,7 @@
       <div class="d-flex align-items-center mb-2">
         <h5 class="mb-0">
           {{ race.fleet.fleetName }} – {{ race.name }}
-          <small class="text-muted fw-normal ms-1">{{ race.raceDate | date:'dd/MM/yyyy':'UTC' }}</small>
+          <small class="text-muted fw-normal ms-1">{{ race.raceDate | date:'dd/MM/yyyy' }}</small>
         </h5>
         <div class="ms-auto btn-group btn-group-sm">
           <button class="btn btn-outline-primary" (click)="loadResults()" title="Refresh">
