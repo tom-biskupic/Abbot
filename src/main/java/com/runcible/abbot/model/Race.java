@@ -1,7 +1,9 @@
 package com.runcible.abbot.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +37,7 @@ public class Race implements ModelWithId
 
     public Race(
             Integer                 raceSeriesId,
-            Date                    raceDate,
+            LocalDate               raceDate,
             String                  name,
             Fleet                   fleet,
             boolean                 shortCourse,
@@ -44,10 +46,10 @@ public class Race implements ModelWithId
         this(null,raceSeriesId,raceDate,name,fleet,shortCourse,competitions,1);
     }
 
-    public Race(    
-            Integer                 raceId, 
+    public Race(
+            Integer                 raceId,
             Integer                 raceSeriesId,
-            Date                    raceDate,
+            LocalDate               raceDate,
             String                  name,
             Fleet                   fleet,
             boolean                 shortCourse,
@@ -90,12 +92,13 @@ public class Race implements ModelWithId
     }
 
     @Column(name="RACE_DATE")
-    public Date getRaceDate()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    public LocalDate getRaceDate()
     {
         return raceDate;
     }
 
-    public void setRaceDate(Date raceDate)
+    public void setRaceDate(LocalDate raceDate)
     {
         this.raceDate = raceDate;
     }
@@ -221,7 +224,7 @@ public class Race implements ModelWithId
     private   Integer                       raceSeriesId;
     
     @NotNull(message="A race date is required")
-    private   Date                          raceDate;
+    private   LocalDate                     raceDate;
     
     private   String                        name;
     

@@ -42,7 +42,7 @@ export class RaceDaysComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
 
-  expandedDays = signal(new Set<number>());
+  expandedDays = signal(new Set<string>());
   selectedRace = signal<Race | null>(null);
 
   resultsPage = signal<Page<RaceResult> | null>(null);
@@ -78,7 +78,7 @@ export class RaceDaysComponent implements OnInit {
     }
   }
 
-  toggleDay(day: number): void {
+  toggleDay(day: string): void {
     const current = new Set(this.expandedDays());
     if (current.has(day)) {
       current.delete(day);
@@ -88,7 +88,7 @@ export class RaceDaysComponent implements OnInit {
     this.expandedDays.set(current);
   }
 
-  isExpanded(day: number): boolean {
+  isExpanded(day: string): boolean {
     return this.expandedDays().has(day);
   }
 

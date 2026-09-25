@@ -1,6 +1,6 @@
 package com.runcible.abbot.repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -43,7 +43,7 @@ public interface RaceRespository extends PagingAndSortingRepository<Race, Intege
                         "ORDER by RACE_DATE DESC, RACE_NUMBER DESC LIMIT 1")
      public Integer findPreviousRaceID(
              @Param("raceSeriesId") Integer     raceSeriesId,
-             @Param("raceDate")     Date        raceDate,
+             @Param("raceDate")     LocalDate   raceDate,
              @Param("raceNumber")   Integer     raceNumber,
              @Param("fleetId")      Integer     fleetId,
              @Param("shortCourse")  Integer     shortCourse );

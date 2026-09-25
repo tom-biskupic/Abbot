@@ -1,7 +1,7 @@
 package com.runcible.abbot.service;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -135,9 +135,9 @@ public interface RaceResultService
      * @return
      */
     public int getWinsForBoatBeforeDate(
-            Integer raceSeriesId,
-            Integer fleetId,
-            Integer boatId,
-            Date    thisRaceDate,
-            boolean shortCourse);
+            Integer   raceSeriesId,
+            Integer   fleetId,
+            Integer   boatId,
+            LocalDate thisRaceDate,
+            boolean   shortCourse);
 }

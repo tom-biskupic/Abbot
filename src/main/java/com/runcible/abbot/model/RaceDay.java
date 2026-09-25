@@ -1,8 +1,10 @@
 package com.runcible.abbot.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Models a day on which races occur. There could be one or more races on
@@ -10,13 +12,13 @@ import java.util.List;
  */
 public class RaceDay 
 {
-	public RaceDay( Date day, List<Race> races)
+	public RaceDay( LocalDate day, List<Race> races)
 	{
 		this.day = day;
 		this.races = races;
 	}
 
-	public RaceDay(Date day)
+	public RaceDay(LocalDate day)
 	{
 		this.day = day;
 	}
@@ -25,16 +27,17 @@ public class RaceDay
 	 * Returns the date of this race day
 	 * @return
 	 */
-	public Date getDay() 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	public LocalDate getDay()
 	{
 		return day;
 	}
-	
+
 	/**
 	 * Sets the date of this RaceDay
 	 * @param day the date of the race day
 	 */
-	public void setDay(Date day) 
+	public void setDay(LocalDate day)
 	{
 		this.day = day;
 	}
@@ -58,6 +61,6 @@ public class RaceDay
 		this.races = races;
 	}
 
-	private Date day;
+	private LocalDate day;
 	private List<Race> races = new ArrayList<Race>();
 }

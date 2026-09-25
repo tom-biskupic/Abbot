@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -294,18 +295,13 @@ public class ExportServiceImpl implements ExportService
         return result.toString();
     }
     
-    static  SimpleDateFormat pointsTableHeadingDateFormat = new SimpleDateFormat("dd/MM");
-    static  SimpleDateFormat raceDateFormat = new SimpleDateFormat("dd/MM/YYYY");
+    static final DateTimeFormatter pointsTableHeadingDateFormat = DateTimeFormatter.ofPattern("dd/MM");
+    static final DateTimeFormatter raceDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     static SimpleDateFormat raceTimeFormat = new SimpleDateFormat("hh:mm:ss");
-    
+
     static
     {
-        //
-        //  Ugly hack...
-        //
         TimeZone timeZone = TimeZone.getTimeZone("Australia/Sydney");
-        pointsTableHeadingDateFormat.setTimeZone(timeZone);
-        raceDateFormat.setTimeZone(timeZone);
         raceTimeFormat.setTimeZone(timeZone);
     }
 

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -158,7 +158,7 @@ public class ExportServiceTest
         when(mockRaceResultService.findAll(RACE_ID)).thenReturn(List.of());
         when(mockRace.getRaceStatus()).thenReturn(RaceStatus.COMPLETED);
         when(mockRace.getName()).thenReturn(RACE_NAME);
-        when(mockRace.getRaceDate()).thenReturn(new Date());
+        when(mockRace.getRaceDate()).thenReturn(LocalDate.now());
     }
 
     private static final Integer RACE_SERIES_ID   = 1;

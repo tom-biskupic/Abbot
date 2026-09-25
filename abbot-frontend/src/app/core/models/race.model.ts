@@ -53,7 +53,7 @@ export interface ValidationResponse {
 export interface Race {
   id?: number;
   raceSeriesId?: number;
-  raceDate: number;   // Unix timestamp (ms) from backend
+  raceDate: string;   // ISO date string "YYYY-MM-DD" from backend
   name: string;
   raceNumber?: number;
   fleet: Fleet;
@@ -63,7 +63,7 @@ export interface Race {
 }
 
 export interface RaceDay {
-  day: number;   // Unix timestamp (ms) from backend
+  day: string;   // ISO date string "YYYY-MM-DD" from backend
   races: Race[];
 }
 

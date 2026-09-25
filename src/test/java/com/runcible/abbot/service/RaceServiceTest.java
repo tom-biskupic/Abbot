@@ -3,9 +3,8 @@ package com.runcible.abbot.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,11 +124,9 @@ public class RaceServiceTest
         //
         //	Create two races on today and one on tomorrow
         //
-        Calendar cal = Calendar.getInstance();
-        Date date1 = cal.getTime();
-        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH)+1);
-        Date date2 = cal.getTime();
-        
+        LocalDate date1 = LocalDate.now();
+        LocalDate date2 = date1.plusDays(1);
+
         List<Race> testRaceList = new ArrayList<Race>();
         testRaceList.add(new Race(TEST_RACE_SERIES_ID,date1,"Race1",null,false,null));
         testRaceList.add(new Race(TEST_RACE_SERIES_ID,date1,"Race2",null,false,null));
@@ -181,7 +178,6 @@ public class RaceServiceTest
     @Mock private RaceRespository   raceRepoMock;
     @Mock private Pageable          pageableMock;
     @Mock private Page<Race>        pageMock;
-    @Mock private List<Date>        dateListMock;
     @Mock private AuditService      auditMock;
     
     @InjectMocks private RaceServiceImpl fixture;

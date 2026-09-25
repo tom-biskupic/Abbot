@@ -32,7 +32,7 @@
       <tbody>
         @for (race of p.content; track race.id) {
           <tr>
-            <td><a style="cursor:pointer" class="text-primary" (click)="openForm(race.id)">{{ race.raceDate | date:'dd/MM/yyyy' }}</a></td>
+            <td><a style="cursor:pointer" class="text-primary" (click)="openForm(race.id)">{{ race.raceDate | date:'dd/MM/yyyy':'UTC' }}</a></td>
             <td>{{ race.name }}</td>
             <td>{{ race.fleet.fleetName }}</td>
             <td>{{ race.raceStatus }}</td>

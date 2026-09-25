@@ -48,7 +48,7 @@ public class RaceControllerTest extends MvcTestWithJSON
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].day",is(testRaceDayList.get(0).getDay().getTime())));
+            .andExpect(jsonPath("$[0].day",is(testRaceDayList.get(0).getDay().toString())));
     }
 
     @MockitoBean
