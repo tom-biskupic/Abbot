@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.runcible.abbot.model.Fleet;
 import com.runcible.abbot.service.FleetService;
+import com.runcible.abbot.service.exceptions.FleetInUse;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -87,8 +88,16 @@ public class FleetController
                 @PathVariable("fleetId") Integer    	fleetId) throws NoSuchFleet, NoSuchUser, UserNotPermitted
     {
     	ValidationResponse response = new ValidationResponse();
-        fleetService.removeFleet(fleetId);
-        response.setStatus("SUCCESS");
+        try
+        {
+            fleetService.removeFleet(fleetId);
+            response.setStatus("SUCCESS");
+        }
+        catch( FleetInUse e )
+        {
+            response.setStatus("FAIL");
+            response.setGeneralErrorText(e.getMessage());
+        }
         return response;
     }
     

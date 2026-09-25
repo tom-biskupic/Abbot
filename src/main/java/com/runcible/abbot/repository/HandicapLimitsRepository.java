@@ -1,5 +1,7 @@
 package com.runcible.abbot.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +20,9 @@ public interface HandicapLimitsRepository extends PagingAndSortingRepository<Han
             @Param("seriesid")  Integer seriesid,
             @Param("fleetid")   Integer fleetID);
     
-    @Query("select h from HandicapLimit h where h.raceSeriesID = :seriesid")    
+    @Query("select h from HandicapLimit h where h.fleet.id = :fleetid")
+    public List<HandicapLimit> findAllByFleetID(@Param("fleetid") Integer fleetID);
+
+    @Query("select h from HandicapLimit h where h.raceSeriesID = :seriesid")
     public Page<HandicapLimit> getHandicapLimits(@Param("seriesid") Integer raceSeriesId, Pageable page);
 }
