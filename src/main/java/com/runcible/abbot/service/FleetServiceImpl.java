@@ -10,9 +10,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.runcible.abbot.model.Fleet;
+import com.runcible.abbot.repository.CompetitionRepository;
 import com.runcible.abbot.repository.FleetRespository;
+import com.runcible.abbot.repository.HandicapLimitsRepository;
+import com.runcible.abbot.repository.RaceRespository;
 import com.runcible.abbot.service.audit.AuditEventType;
 import com.runcible.abbot.service.audit.AuditService;
+import com.runcible.abbot.service.exceptions.FleetInUse;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -76,16 +80,34 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
     }
     
     @Override
-    public void removeFleet(Integer fleetId) throws NoSuchFleet, NoSuchUser, UserNotPermitted
+    public void removeFleet(Integer fleetId) throws NoSuchFleet, NoSuchUser, UserNotPermitted, FleetInUse
     {
         Optional<Fleet> found = fleetRepo.findById(fleetId);
-        
+
         if ( ! found.isPresent() )
         {
             throw new NoSuchFleet();
         }
 
         throwIfUserNotPermitted(found.get().getRaceSeriesId());
+
+        //
+        // The DB does not enforce foreign keys so we must check for references
+        // ourselves. Races and competitions must keep their fleet so we refuse
+        // the delete. Handicap limits are meaningless without the fleet so
+        // they are removed along with it.
+        //
+        if ( raceRepo.countRacesForFleet(fleetId) > 0 )
+        {
+            throw new FleetInUse("This fleet cannot be deleted because races have been created for it");
+        }
+
+        if ( competitionRepo.countCompetitionsForFleet(fleetId) > 0 )
+        {
+            throw new FleetInUse("This fleet cannot be deleted because it is used by a competition");
+        }
+
+        handicapLimitsRepo.deleteAll(handicapLimitsRepo.findAllByFleetID(fleetId));
 
         fleetRepo.deleteById(fleetId);
         
@@ -106,6 +128,15 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
     
     @Autowired
     private FleetRespository fleetRepo;
+
+    @Autowired
+    private RaceRespository raceRepo;
+
+    @Autowired
+    private CompetitionRepository competitionRepo;
+
+    @Autowired
+    private HandicapLimitsRepository handicapLimitsRepo;
     
     @Autowired
     private AuditService audit;

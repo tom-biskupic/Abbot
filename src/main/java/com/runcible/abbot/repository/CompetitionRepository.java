@@ -19,4 +19,7 @@ public interface CompetitionRepository extends CrudRepository<Competition, Integ
 
     @Query("select c from Competition c where c.raceSeriesId = :seriesid")
     public List<Competition> findByRaceSeries(@Param("seriesid") Integer raceSeriesId);
+
+    @Query("select count(c) from Competition c where c.fleet.id = :fleetid")
+    public long countCompetitionsForFleet(@Param("fleetid") Integer fleetid);
 }

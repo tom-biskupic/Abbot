@@ -1,6 +1,7 @@
 package com.runcible.abbot.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,10 +18,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Fleet;
+import com.runcible.abbot.model.HandicapLimit;
 import com.runcible.abbot.model.RaceSeries;
+import com.runcible.abbot.repository.CompetitionRepository;
 import com.runcible.abbot.repository.FleetRespository;
+import com.runcible.abbot.repository.HandicapLimitsRepository;
+import com.runcible.abbot.repository.RaceRespository;
 import com.runcible.abbot.service.audit.AuditEventType;
 import com.runcible.abbot.service.audit.AuditService;
+import com.runcible.abbot.service.exceptions.FleetInUse;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -130,7 +136,7 @@ public class FleetServiceTest
     }
 
     @Test
-    public void testRemoveFleet() throws NoSuchFleet, NoSuchUser, UserNotPermitted
+    public void testRemoveFleet() throws NoSuchFleet, NoSuchUser, UserNotPermitted, FleetInUse
     {
         setupCheckPermissionsMocks(true);
 
@@ -145,7 +151,55 @@ public class FleetServiceTest
     }
 
     @Test
-    public void testRemoveFleetNoSuchFleet() throws NoSuchFleet, NoSuchUser, UserNotPermitted
+    public void testRemoveFleetDeletesHandicapLimits() throws NoSuchFleet, NoSuchUser, UserNotPermitted, FleetInUse
+    {
+        setupCheckPermissionsMocks(true);
+
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
+        when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(fleetMock.getFleetName()).thenReturn(TEST_NAME);
+        List<HandicapLimit> limits = List.of(handicapLimitMock);
+        when(handicapLimitsRepoMock.findAllByFleetID(TEST_FLEET_ID)).thenReturn(limits);
+        
+        fixture.removeFleet(TEST_FLEET_ID);
+        verify(handicapLimitsRepoMock).deleteAll(limits);
+        verify(fleetRepoMock).deleteById(TEST_FLEET_ID);
+    }
+
+    @Test
+    public void testRemoveFleetUsedByRace() throws NoSuchFleet, NoSuchUser, UserNotPermitted
+    {
+        setupCheckPermissionsMocks(true);
+
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
+        when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(raceRepoMock.countRacesForFleet(TEST_FLEET_ID)).thenReturn(1L);
+
+        Assertions.assertThrows(FleetInUse.class, () -> {
+            fixture.removeFleet(TEST_FLEET_ID);
+        });
+        verify(fleetRepoMock, never()).deleteById(TEST_FLEET_ID);
+        verify(handicapLimitsRepoMock, never()).deleteAll(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    public void testRemoveFleetUsedByCompetition() throws NoSuchFleet, NoSuchUser, UserNotPermitted
+    {
+        setupCheckPermissionsMocks(true);
+
+        when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.of(fleetMock));
+        when(fleetMock.getRaceSeriesId()).thenReturn(TEST_RACE_SERIES_ID);
+        when(competitionRepoMock.countCompetitionsForFleet(TEST_FLEET_ID)).thenReturn(1L);
+
+        Assertions.assertThrows(FleetInUse.class, () -> {
+            fixture.removeFleet(TEST_FLEET_ID);
+        });
+        verify(fleetRepoMock, never()).deleteById(TEST_FLEET_ID);
+        verify(handicapLimitsRepoMock, never()).deleteAll(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    public void testRemoveFleetNoSuchFleet() throws NoSuchFleet, NoSuchUser, UserNotPermitted, FleetInUse
     {
         when(fleetRepoMock.findById(TEST_FLEET_ID)).thenReturn(Optional.empty());
         Assertions.assertThrows(NoSuchFleet.class, () -> {
@@ -154,7 +208,7 @@ public class FleetServiceTest
     }
 
     @Test
-    public void testRemoveFleetUserNotPermitted() throws NoSuchFleet, NoSuchUser, UserNotPermitted
+    public void testRemoveFleetUserNotPermitted() throws NoSuchFleet, NoSuchUser, UserNotPermitted, FleetInUse
     {
         setupCheckPermissionsMocks(false);
 
@@ -182,6 +236,10 @@ public class FleetServiceTest
     public static final String  FLEET_OBJECT_NAME="Fleet";
     
     @Mock private FleetRespository      fleetRepoMock;
+    @Mock private RaceRespository       raceRepoMock;
+    @Mock private CompetitionRepository competitionRepoMock;
+    @Mock private HandicapLimitsRepository handicapLimitsRepoMock;
+    @Mock private HandicapLimit         handicapLimitMock;
     @Mock private RaceSeriesAuthorizationService raceSeriesAuthorizationServiceMock;
     @Mock private Fleet                 fleetMock;
     @Mock private Page<Fleet>           fleetPageMock;

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.runcible.abbot.model.Fleet;
+import com.runcible.abbot.service.exceptions.FleetInUse;
 import com.runcible.abbot.service.exceptions.NoSuchFleet;
 import com.runcible.abbot.service.exceptions.NoSuchRaceSeries;
 import com.runcible.abbot.service.exceptions.NoSuchUser;
@@ -70,8 +71,9 @@ public interface FleetService
      * @param fleetId The ID of the fleet to remove
      * @throws UserNotPermitted The logged on user is not permitted to manage this race series
      * @throws NoSuchUser 
+     * @throws FleetInUse The fleet is used by races or competitions
      */
     public abstract void removeFleet(Integer fleetId) throws NoSuchFleet,
-            NoSuchUser, UserNotPermitted;
+            NoSuchUser, UserNotPermitted, FleetInUse;
 
 }

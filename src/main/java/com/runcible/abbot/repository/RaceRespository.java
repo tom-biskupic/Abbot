@@ -32,6 +32,9 @@ public interface RaceRespository extends PagingAndSortingRepository<Race, Intege
             @Param("seriesid") Integer seriesid,
             @Param("fleetid") Integer fleetid);
 
+    @Query("select count(r) from Race r where r.fleet.id = :fleetid")
+    public long countRacesForFleet(@Param("fleetid") Integer fleetid);
+
      @Query(
              nativeQuery=true,
              value=     "select RACE_ID from RACE where "+

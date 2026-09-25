@@ -54,8 +54,9 @@ export class FleetListComponent implements OnInit {
   async deleteFleet(fleetId: number): Promise<void> {
     if (!confirm('Delete this fleet?')) return;
     try {
-      await this.service.delete(this.seriesId, fleetId);
-      this.load();
+      const response = await this.service.delete(this.seriesId, fleetId);
+      if (response.status === 'SUCCESS') this.load();
+      else this.error.set(response.generalErrorText ?? 'Failed to delete fleet.');
     } catch {
       this.error.set('Failed to delete fleet.');
     }

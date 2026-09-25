@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -183,6 +184,27 @@ public class HandicapControllerTest extends MvcTestWithJSON
             .andExpect(jsonPath(
                     "$.errorMessageList[0].defaultMessage",
                     is("A positive, non-zero limit value must be specified")));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    public void testSaveHandicapLimitNoFleet() throws Exception
+    {
+        HandicapLimit newLimit = new HandicapLimit(null,TEST_RACE_SERIES_ID,null,TEST_HANDICAP_LIMIT_VALUE);
+
+        mockMvc.perform(post("/raceseries/"+TEST_RACE_SERIES_ID+"/handicaplimit.json")
+                .with(csrf())
+                .content(convertObjectToJsonBytes(newLimit))
+                .contentType(contentType)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status", is("FAIL")))
+            .andExpect(jsonPath("$.errorMessageList[0].field",is("fleet")))
+            .andExpect(jsonPath(
+                    "$.errorMessageList[0].defaultMessage",
+                    is("A fleet must be selected")));
+
+        verify(handicapService, never()).addHandicapLimit(any(), any());
     }
 
     @Test
