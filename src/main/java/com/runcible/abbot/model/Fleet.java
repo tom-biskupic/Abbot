@@ -13,6 +13,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.GenerationType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import org.springframework.stereotype.Component;
 	
@@ -147,7 +149,11 @@ public class Fleet
     
     private Integer             id=0;
     private	Integer             raceSeriesId;
+    
+    @NotBlank(message="A fleet name must be provided")
     private String              fleetName="";
+    
+    @NotEmpty(message="At least one class must be added to the fleet")
     private Set<FleetSelector>  fleetClasses = new HashSet<FleetSelector>();
     private Boolean             competeOnYardstick = false;
 }

@@ -32,7 +32,14 @@ public class FleetServiceImpl extends AuthorizedService implements FleetService
         throwIfUserNotPermitted(raceSeriesId);
         
         fleet.setRaceSeriesId(raceSeriesId);
-        
+
+        //
+        // The UI sends id 0 for a new fleet. Any non-null id makes save() merge
+        // rather than persist, and merge inserts a copy of the fleet before its
+        // classes are copied across, which fails the fleetClasses validation.
+        //
+        fleet.setId(null);
+
         fleetRepo.save(fleet);
         
         auditEvent(fleet, AuditEventType.CREATED);
