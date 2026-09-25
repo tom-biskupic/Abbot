@@ -45,6 +45,8 @@ public class FleetServiceTest
         
         fixture.addFleet(TEST_RACE_SERIES_ID, fleetMock);
         verify(fleetMock).setRaceSeriesId(TEST_RACE_SERIES_ID);
+        // A non-null id makes save() merge, which breaks fleetClasses validation
+        verify(fleetMock).setId(null);
         verify(fleetRepoMock).save(fleetMock);
         
         verifiyAudit(AuditEventType.CREATED);

@@ -59,6 +59,7 @@ export class FleetFormComponent implements OnInit {
     if (!this.canAdd) return;
     const selector: FleetSelector = { boatClass: this.classToAdd!, boatDivision: this.divisionToAdd ?? null };
     this.fleet.fleetClasses = [...(this.fleet.fleetClasses ?? []), selector];
+    this.clearFieldError('fleetClasses');
     this.classToAdd = null;
     this.divisionToAdd = null;
   }
