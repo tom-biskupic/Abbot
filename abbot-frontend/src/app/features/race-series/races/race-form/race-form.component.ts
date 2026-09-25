@@ -20,22 +20,19 @@ export class RaceFormComponent implements OnInit {
   seriesId!: number;
   saving = false;
 
-  // Setter keeps raceDateStr in sync when parent sets race after open()
   private _race: Race = {
     name: '',
-    raceDate: Date.now(),
+    raceDate: new Date().toISOString().slice(0, 10),
     fleet: null!,
     shortCourseRace: false,
     competitions: []
   };
 
-  raceDateStr = this.timestampToDateInput(Date.now());
   fieldErrors: Record<string, string> = {};
   generalError: string | null = null;
 
   set race(r: Race) {
     this._race = { ...r, competitions: [...(r.competitions ?? [])] };
-    this.raceDateStr = this.timestampToDateInput(r.raceDate);
   }
 
   get race(): Race {
@@ -86,7 +83,6 @@ export class RaceFormComponent implements OnInit {
   }
 
   async ok(): Promise<void> {
-    this.race.raceDate = this.dateInputToTimestamp(this.raceDateStr);
     this.fieldErrors = {};
     this.generalError = null;
     this.saving = true;
@@ -121,15 +117,4 @@ export class RaceFormComponent implements OnInit {
     }
   }
 
-  private timestampToDateInput(ts: number): string {
-    const d = new Date(ts);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  private dateInputToTimestamp(s: string): number {
-    return new Date(s).getTime();
-  }
 }

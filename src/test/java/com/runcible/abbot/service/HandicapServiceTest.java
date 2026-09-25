@@ -6,9 +6,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -599,7 +598,7 @@ public class HandicapServiceTest
     
     private List<Boat> testBoatList = new ArrayList<Boat>();
     
-    private Date testRaceDate = Calendar.getInstance().getTime();
+    private LocalDate testRaceDate = LocalDate.now();
     private static final Float      testHandicapValue = 3.5f;
 
     private static final String     HANDICAP_OBJECT_NAME = "Handicap"; 

@@ -1,6 +1,6 @@
 package com.runcible.abbot.repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -35,6 +35,6 @@ public interface RaceResultRepository extends PagingAndSortingRepository<RaceRes
 	        @Param("raceSeriesId") Integer raceSeriesId,
 	        @Param("boatId")       Integer boatid,
 	        @Param("fleetId")      Integer fleetid,
-	        @Param("thisDate")     Date    thisDate,
+	        @Param("thisDate")     LocalDate thisDate,
 	        @Param("shortCourse")  boolean shortCourse);
 }

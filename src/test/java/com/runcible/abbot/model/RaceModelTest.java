@@ -2,7 +2,7 @@ package com.runcible.abbot.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public class RaceModelTest extends ValidationTest
         Set<Competition> competitions = new HashSet<Competition>();
         competitions.add(new Competition());
         
-        Race fixture = new Race(0,0,new Date(),"Name",new Fleet(),false, competitions,0);
+        Race fixture = new Race(0,0,LocalDate.now(),"Name",new Fleet(),false, competitions,0);
         
         return fixture;
     }

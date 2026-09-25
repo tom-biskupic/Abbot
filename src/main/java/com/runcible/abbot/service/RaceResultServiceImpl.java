@@ -1,7 +1,7 @@
 package com.runcible.abbot.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -303,11 +303,11 @@ public class RaceResultServiceImpl implements RaceResultService
     }
 
     public int getWinsForBoatBeforeDate(
-            Integer raceSeriesId,
-            Integer fleetId,
-            Integer boatId,
-            Date    thisRaceDate,
-            boolean shortCourse)
+            Integer   raceSeriesId,
+            Integer   fleetId,
+            Integer   boatId,
+            LocalDate thisRaceDate,
+            boolean   shortCourse)
     {
         return raceResultRepo.getWinsForBoat(raceSeriesId, boatId, fleetId, thisRaceDate, shortCourse);
     }

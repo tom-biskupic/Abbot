@@ -2,10 +2,9 @@ package com.runcible.abbot.controllers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,18 +41,18 @@ public class MvcTestWithJSON
         super();
         
         competitionSet.add(testCompetition);
-        Date testRaceTime = Calendar.getInstance().getTime();
+        LocalDate testRaceDate = LocalDate.now();
 		testRace = new Race(
                 TEST_RACE_ID,
                 TEST_RACE_SERIES_ID,
-                testRaceTime,
+                testRaceDate,
                 TEST_RACE_NAME,
                 testFleet,
                 false,
                 competitionSet,
                 0);
-        
-		testRaceDayList.add(new RaceDay(testRaceTime));
+
+		testRaceDayList.add(new RaceDay(testRaceDate));
 		
 		testHandicapList.add(testHandicap);
     }

@@ -1,8 +1,6 @@
 package com.runcible.abbot.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +78,7 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
 			
 			for(Race r : races)
 			{
-				if (sameDay(r.getRaceDate(),nextRaceDay.getDay()) )
+				if (r.getRaceDate().equals(nextRaceDay.getDay()))
 				{
 					nextRaceDay.getRaces().add(r);
 				}
@@ -125,17 +123,6 @@ public class RaceServiceImpl  extends AuthorizedService implements RaceService
                 thisRace.getFleet().getId(),
                 thisRace.isShortCourseRace() ? 1 : 0);
     }
-
-    private boolean sameDay(Date raceDate, Date day) 
-    {
-    	Calendar cal1 = Calendar.getInstance();
-    	Calendar cal2 = Calendar.getInstance();
-    	cal1.setTime(raceDate);
-    	cal2.setTime(day);
-    	return 	cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) 
-    			&&
-                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);	
-	}
 
     private void auditEvent(Race race, AuditEventType eventType) throws NoSuchUser, UserNotPermitted
     {
